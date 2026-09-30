@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="viaja_green">#0CA15F</color>
+    <color name="viaja_green_dark">#07854E</color>
+    <color name="viaja_cream">#F7F4ED</color>
+    <color name="viaja_text">#1C1C1E</color>
+    <color name="viaja_gray">#8E8E93</color>
+    <color name="viaja_field_border">#D9D9D9</color>
 </resources>
