@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/viaja_cream">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarTripDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/viaja_cream"
+        android:title="Rio de Janeiro"
+        android:titleTextColor="@color/viaja_text"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgTripDashboardHeader"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:contentDescription="Trip header"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_hero_beach"
+        app:layout_constraintTop_toBottomOf="@id/toolbarTripDashboard" />
+
+    <TextView
+        android:id="@+id/tvTripDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Rio de Janeiro, BR"
+        android:textColor="@color/viaja_text"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/be_vietnam_pro_extrabold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgTripDashboardHeader" />
+
+    <TextView
+        android:id="@+id/tvTripDates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:text="05 - 12 Out"
+        android:textColor="@color/viaja_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTripDestination" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/tvTripMode"
+        style="@style/Widget.Viaja.Chip.Selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Turismo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTripDates" />
+
+    <TextView
+        android:id="@+id/tvNextStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="Próxima parada"
+        android:textColor="@color/viaja_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTripMode" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardNextStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="@dimen/viaja_radius_card"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/white"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvNextStop">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvNextStopName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pão de Açúcar"
+                android:textColor="@color/viaja_text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNextStopTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="14:00 - Nota: não esquecer o ingresso do teleférico!"
+                android:textColor="@color/viaja_gray"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvWeatherTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Clima"
+        android:textColor="@color/viaja_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/cardNextStop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvWeatherTitle">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Ícone do clima"
+            android:src="@drawable/ic_launcher_foreground" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvWeatherTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="28°C"
+                android:textColor="@color/viaja_text"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWeatherDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sensação térmica de 31°C. Ensolarado."
+                android:textColor="@color/viaja_gray"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvItineraryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="Itinerário de Hoje"
+        android:textColor="@color/viaja_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/tvWeatherDesc" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_itinerary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvItineraryTitle" />
+
+    <TextView
+        android:id="@+id/tvNearbyTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="24dp"
+        android:text="Locais sugeridos por perto"
+        android:textColor="@color/viaja_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/recycler_itinerary" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_nearby"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        app:layout_constraintTop_toBottomOf="@id/tvNearbyTitle"
+        app:layout_constraintBottom_toTopOf="@id/btnChatVi" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnChatVi"
+        style="@style/Widget.Viaja.Button.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:text="💬 Conversar com a Vi"
+        app:layout_constraintTop_toBottomOf="@id/recycler_nearby"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        android:id="@+id/bottom_nav_bar"
+        layout="@layout/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
