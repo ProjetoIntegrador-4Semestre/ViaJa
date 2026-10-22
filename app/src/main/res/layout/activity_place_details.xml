@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/viaja_cream">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarPlaceDetails"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/viaja_cream"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivBookmark"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="Bookmark"
+        android:src="@drawable/ic_bookmark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgHero"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:contentDescription="Foto do lugar"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_hero_beach"
+        app:layout_constraintTop_toBottomOf="@id/toolbarPlaceDetails" />
+
+    <TextView
+        android:id="@+id/tvImageCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="#8A000000"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="2dp"
+        android:text="1/12"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/imgHero"
+        app:layout_constraintEnd_toEndOf="@id/imgHero" />
+
+    <TextView
+        android:id="@+id/tvPlaceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Nome do local"
+        android:textColor="@color/viaja_text"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/be_vietnam_pro_extrabold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgHero" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaceName">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="Star"
+            android:src="@drawable/ic_star_fill" />
+
+        <TextView
+            android:id="@+id/tvPlaceRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="0.0"
+            android:textColor="@color/viaja_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvPlaceRatingCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="(0)"
+            android:textColor="@color/viaja_gray"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivLocationPin"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="Location pin"
+        android:src="@drawable/ic_location_pin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaceRating" />
+
+    <TextView
+        android:id="@+id/tvPlaceCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:text="Cidade, UF"
+        android:textColor="@color/viaja_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/ivLocationPin"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaceRating" />
+
+    <LinearLayout
+        android:id="@+id/chipContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaceCity">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipType"
+            style="@style/Widget.Viaja.Chip.Selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipRating"
+            style="@style/Widget.Viaja.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Avaliação" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvAboutTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Sobre o Local"
+        android:textColor="@color/viaja_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/chipContainer" />
+
+    <TextView
+        android:id="@+id/tvPlaceDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="Descrição do local"
+        android:textColor="@color/viaja_text"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4sp"
+        app:layout_constraintTop_toBottomOf="@id/tvAboutTitle" />
+
+    <TextView
+        android:id="@+id/tvAmenitiesTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Comodidades"
+        android:textColor="@color/viaja_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/tvPlaceDescription" />
+
+    <LinearLayout
+        android:id="@+id/amenitiesRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvAmenitiesTitle">
+
+        <LinearLayout
+            android:id="@+id/amenity1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivAmenity1Icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Comodidade"
+                android:src="@drawable/ic_wifi" />
+
+            <TextView
+                android:id="@+id/tvAmenity1Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Comodidade"
+                android:textColor="@color/viaja_text"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/amenity2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivAmenity2Icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Comodidade"
+                android:src="@drawable/ic_pool" />
+
+            <TextView
+                android:id="@+id/tvAmenity2Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Comodidade"
+                android:textColor="@color/viaja_text"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/amenitiesRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/amenitiesRow1">
+
+        <LinearLayout
+            android:id="@+id/amenity3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivAmenity3Icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Comodidade"
+                android:src="@drawable/ic_coffee" />
+
+            <TextView
+                android:id="@+id/tvAmenity3Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Comodidade"
+                android:textColor="@color/viaja_text"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/amenity4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivAmenity4Icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Comodidade"
+                android:src="@drawable/ic_ac" />
+
+            <TextView
+                android:id="@+id/tvAmenity4Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Comodidade"
+                android:textColor="@color/viaja_text"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvLocationTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Localização"
+        android:textColor="@color/viaja_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:fontFamily="@font/plus_jakarta_sans_bold"
+        app:layout_constraintTop_toBottomOf="@id/amenitiesRow2" />
+
+    <ImageView
+        android:id="@+id/imgPlaceMap"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="Mapa do local"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_hero_beach"
+        app:layout_constraintTop_toBottomOf="@id/tvLocationTitle"
+        app:layout_constraintBottom_toTopOf="@id/tvPriceLabel" />
+
+    <TextView
+        android:id="@+id/tvPriceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="A partir de"
+        android:textColor="@color/viaja_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgPlaceMap" />
+
+    <TextView
+        android:id="@+id/tvPlacePrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
+        android:text="R$ 0,00 /noite"
+        android:textColor="@color/viaja_text"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/tvPriceLabel"
+        app:layout_constraintTop_toBottomOf="@id/imgPlaceMap" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddToTrip"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:text="Adicionar à Viagem"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/viaja_green"
+        app:cornerRadius="28dp"
+        app:layout_constraintTop_toBottomOf="@id/imgPlaceMap"
+        app:layout_constraintStart_toEndOf="@id/tvPlacePrice" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConsultSite"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
+        android:text="Consultar Site"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/viaja_green"
+        app:cornerRadius="28dp"
+        app:layout_constraintTop_toBottomOf="@id/imgPlaceMap"
+        app:layout_constraintStart_toEndOf="@id/btnAddToTrip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar" />
+
+    <include
+        android:id="@+id/bottom_nav_bar"
+        layout="@layout/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
