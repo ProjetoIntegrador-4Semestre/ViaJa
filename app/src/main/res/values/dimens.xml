@@ -1,0 +1,29 @@
+<resources>
+    <!-- Bordas arredondadas -->
+    <dimen name="viaja_radius_card">24dp</dimen>
+    <dimen name="viaja_radius_button">28dp</dimen>
+    <dimen name="viaja_radius_chip">12dp</dimen>
+    <dimen name="viaja_radius_avatar">24dp</dimen>
+    <dimen name="viaja_radius_input">12dp</dimen>
+
+    <!-- Espaçamentos -->
+    <dimen name="viaja_padding_screen">16dp</dimen>
+    <dimen name="viaja_padding_card">24dp</dimen>
+    <dimen name="viaja_gap_small">8dp</dimen>
+    <dimen name="viaja_gap_medium">16dp</dimen>
+    <dimen name="viaja_gap_large">24dp</dimen>
+
+    <!-- Altura de botão -->
+    <dimen name="viaja_button_height">56dp</dimen>
+    <dimen name="viaja_button_outline_height">52dp</dimen>
+
+    <!-- Tamanho do avatar -->
+    <dimen name="viaja_avatar_size">88dp</dimen>
+
+    <!-- Tamanho do ícone -->
+    <dimen name="viaja_icon_size">24dp</dimen>
+    <dimen name="viaja_icon_small">16dp</dimen>
+
+    <!-- Altura da toolbar -->
+    <dimen name="viaja_toolbar_height">56dp</dimen>
+</resources>

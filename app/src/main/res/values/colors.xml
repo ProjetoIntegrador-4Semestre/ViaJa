@@ -8,4 +8,9 @@
     <color name="viaja_text">#1C1C1E</color>
     <color name="viaja_gray">#8E8E93</color>
     <color name="viaja_field_border">#D9D9D9</color>
+    <color name="viaja_green_light">#E8F5EE</color>
+    <color name="viaja_surface">#FFFFFF</color>
+    <color name="viaja_chip_selected">#0CA15F</color>
+    <color name="viaja_chip_unselected">#F2F2F2</color>
+    <color name="viaja_overlay_dark">#80000000</color>
 </resources>
