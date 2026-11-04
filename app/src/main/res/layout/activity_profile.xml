@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/viaja_cream"
-    tools:context=".ProfileActivity">
+    tools:context=".ui.profile.ProfileActivity">
 
     <TextView
         android:id="@+id/tvProfileLogo"
