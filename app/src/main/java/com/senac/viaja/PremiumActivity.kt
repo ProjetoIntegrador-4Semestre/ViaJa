@@ -26,7 +26,7 @@ class PremiumActivity : AppCompatActivity() {
         window.statusBarColor = Color.rgb(29, 31, 30)
         window.navigationBarColor = Color.rgb(29, 31, 30)
         window.decorView.systemUiVisibility = 0
-        showPage(subscriptionScreen())
+        showPage(plansScreen())
     }
     private fun phone(content: View): View = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
@@ -74,7 +74,10 @@ class PremiumActivity : AppCompatActivity() {
 
     private fun plansScreen(): View {
         val page = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(cream) }
-        val header = label("‹                           Viajá", 18, green, true).apply { setPadding(dp(16), dp(12), dp(16), dp(12)); setBackgroundColor(Color.WHITE) }
+        val header = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(dp(16), dp(12), dp(16), dp(12)); setBackgroundColor(Color.WHITE) }
+        header.addView(label("‹", 27, green).apply { isClickable = true; setOnClickListener { finish() } }, LinearLayout.LayoutParams(dp(42), -2))
+        header.addView(label("Viajá", 18, green, true))
+        header.addView(label("Minha assinatura", 10, muted, true).apply { gravity = Gravity.END; isClickable = true; setOnClickListener { showPage(subscriptionScreen()) } }, LinearLayout.LayoutParams(0, -2, 1f))
         page.addView(header)
         val scroll = ScrollView(this)
         val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(12), dp(16), dp(18)) }
@@ -85,6 +88,7 @@ class PremiumActivity : AppCompatActivity() {
         body.addView(toggle, centered())
         body.addView(planCard("Aventureiro", "$0", "/sempre", "Planejamento básico\nAcesso a guias públicos\nMapas básicos", "Plano atual", false), spaced(6, 14))
         body.addView(planCard("Viajá\nPremium", "R$9,99", "/mês, cobrança anual", "Personalização completa\nCriação avançada de roteiros\nOrganização aprimorada\nAcesso completo sem internet", "Alterar agora", true), spaced(0, 14))
+        body.addView(button("Gerenciar assinatura", Color.WHITE, green, true) { showPage(subscriptionScreen()) }, spaced(0, 8))
         scroll.addView(body)
         page.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
         return page
@@ -123,9 +127,10 @@ class PremiumActivity : AppCompatActivity() {
     }
 
     private fun showPage(content: View) {
-        val canvas = LinearLayout(this).apply { gravity = Gravity.CENTER; setBackgroundColor(Color.rgb(29, 31, 30)); setPadding(dp(16), dp(16), dp(16), dp(16)) }
-        canvas.addView(phone(content), LinearLayout.LayoutParams(dp(360), dp(760)))
-        setContentView(canvas)
+        window.statusBarColor = cream
+        window.navigationBarColor = Color.WHITE
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        setContentView(content)
     }
 
     private fun page(title: String): Pair<LinearLayout, LinearLayout> {
