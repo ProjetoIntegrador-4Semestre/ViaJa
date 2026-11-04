@@ -25,6 +25,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.profile.PremiumActivity"
+            android:exported="false" />
+        <activity
             android:name="ui.profile.ProfileActivity"
             android:exported="false" />
         <activity
@@ -41,6 +44,18 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.main.ShellActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.main.HomeActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.main.SavedItemsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.main.ProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity

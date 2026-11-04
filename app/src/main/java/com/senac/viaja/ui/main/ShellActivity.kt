@@ -2,12 +2,9 @@ package com.senac.viaja.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.senac.viaja.R
 import com.senac.viaja.ui.places.PlaceListActivity
@@ -19,7 +16,6 @@ class ShellActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_shell)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -30,21 +26,19 @@ class ShellActivity : AppCompatActivity() {
         nav = findViewById(R.id.bottom_nav)
         setupBottomNav()
 
-        if (savedInstanceState == null) {
-            val tab = intent.getStringExtra("tab")
-            when (tab) {
-                "saved" -> {
-                    nav.selectedItemId = R.id.nav_saved
-                    navigateToGroup("saved", ::SavedItemsFragment)
-                }
-                "profile" -> {
-                    nav.selectedItemId = R.id.nav_profile
-                    navigateToGroup("profile", ::ProfileFragment)
-                }
-                else -> {
-                    nav.selectedItemId = R.id.nav_home
-                    navigateToGroup("home", ::HomeFragment)
-                }
+        val tab = intent.getStringExtra("tab")
+        when (tab) {
+            "saved" -> {
+                nav.selectedItemId = R.id.nav_saved
+                openSavedItems()
+            }
+            "profile" -> {
+                nav.selectedItemId = R.id.nav_profile
+                openProfile()
+            }
+            else -> {
+                nav.selectedItemId = R.id.nav_home
+                openHome()
             }
         }
     }
@@ -57,39 +51,39 @@ class ShellActivity : AppCompatActivity() {
                     startActivity(Intent(this@ShellActivity, TripListActivity::class.java))
                     true
                 }
-                R.id.nav_home -> navigateToGroup("home", ::HomeFragment)
-                R.id.nav_explore -> {
-                    startActivity(Intent(this@ShellActivity, ExploreActivity::class.java))
+                R.id.nav_home -> {
+                    openHome()
                     true
                 }
-                R.id.nav_saved -> navigateToGroup("saved", ::SavedItemsFragment)
-                R.id.nav_profile -> navigateToGroup("profile", ::ProfileFragment)
-                else -> navigateToGroup("home", ::HomeFragment)
+                R.id.nav_explore -> {
+                    startActivity(Intent(this@ShellActivity, com.senac.viaja.ui.main.ExploreActivity::class.java))
+                    true
+                }
+                R.id.nav_saved -> {
+                    openSavedItems()
+                    true
+                }
+                R.id.nav_profile -> {
+                    openProfile()
+                    true
+                }
+                else -> {
+                    openHome()
+                    true
+                }
             }
         }
     }
 
-    private fun navigateToGroup(group: String, defaultFactory: () -> Fragment): Boolean {
-        val savedClassName = NavStateManager.getLastFragmentClassName(this, group)
-        val fragment: Fragment = if (savedClassName != null) {
-            try {
-                Class.forName(savedClassName).getDeclaredConstructor().newInstance() as Fragment
-            } catch (e: Exception) {
-                defaultFactory()
-            }
-        } else {
-            defaultFactory()
-        }
-
-        NavStateManager.saveFragment(this, group, fragment.javaClass.name)
-
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment, group)
-        transaction.commit()
-        return true
+    private fun openHome() {
+        startActivity(Intent(this@ShellActivity, HomeActivity::class.java))
     }
 
-    fun saveGroupFragment(group: String, fragmentClassName: String) {
-        NavStateManager.saveFragment(this, group, fragmentClassName)
+    private fun openSavedItems() {
+        startActivity(Intent(this@ShellActivity, SavedItemsActivity::class.java))
+    }
+
+    private fun openProfile() {
+        startActivity(Intent(this@ShellActivity, ProfileActivity::class.java))
     }
 }
