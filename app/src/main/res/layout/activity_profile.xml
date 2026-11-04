@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/viaja_cream"
+    tools:context=".ProfileActivity">
+
+    <TextView
+        android:id="@+id/tvProfileLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Viajá"
+        android:textColor="@color/viaja_green"
+        android:textSize="22sp"
+        app:fontFamily="@font/be_vietnam_pro_extrabold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/btnProfileBack"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Voltar"
+        android:gravity="center"
+        android:text="‹"
+        android:textColor="@color/viaja_text"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toBottomOf="@id/tvProfileLogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvProfileLogo" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="12dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvProfileLogo">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="14dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#DDEBE5"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <ImageView
+                        android:layout_width="68dp"
+                        android:layout_height="68dp"
+                        android:background="@drawable/bg_avatar_circle"
+                        android:clipToOutline="true"
+                        android:contentDescription="Foto de perfil de Victor D. Curtis"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/curtis" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Victor D. Curtis"
+                        android:textColor="#064B2B"
+                        android:textSize="20sp"
+                        app:fontFamily="@font/be_vietnam_pro_extrabold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_profile_chip"
+                            android:paddingStart="10dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="4dp"
+                            android:text="24 países"
+                            android:textColor="@color/viaja_green_dark"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:background="@drawable/bg_profile_chip_blue"
+                            android:paddingStart="10dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="4dp"
+                            android:text="Super-anfitriã"
+                            android:textColor="#1763A5"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="24dp"
+                        android:text="Editar perfil"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        app:backgroundTint="#00AD63"
+                        app:cornerRadius="22dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="☷  Preferências de viagem"
+                        android:textColor="#123D2B"
+                        android:textSize="14sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Alterne os modos para ajustar recomendações e a densidade da interface."
+                        android:textColor="#666B68"
+                        android:textSize="10sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_preference_track"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_preference_selected"
+                            android:gravity="center"
+                            android:text="☀  Turismo"
+                            android:textColor="#526043"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="♙  Trabalho"
+                            android:textColor="#777A74"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Interesses"
+                            android:textColor="#123D2B"
+                            android:textSize="14sp"
+                            app:fontFamily="@font/plus_jakarta_sans_bold" />
+                        <TextView
+                            android:id="@+id/btnEditInterests"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="4dp"
+                            android:text="Editar"
+                            android:textColor="@color/viaja_green"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+                        <TextView style="@style/ProfileInterestChip" android:text="🏛  Cultura" />
+                        <TextView style="@style/ProfileInterestChip" android:text="♧  Natureza e ar livre" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+                        <TextView style="@style/ProfileInterestChip" android:text="🍴  Culinária" />
+                        <TextView style="@style/ProfileInterestChip" android:text="♨  Esportes de aventura" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal">
+                        <TextView style="@style/ProfileInterestChip" android:text="✿  Bem-estar" />
+                        <TextView
+                            android:id="@+id/btnAddInterest"
+                            style="@style/ProfileInterestChip"
+                            android:text="＋  Adicionar" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="#FFF0A6"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp">
+                    <TextView
+                        android:id="@+id/tvSubscriptionLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="★  ASSINATURA"
+                        android:textColor="#C99C00"
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/tvPremiumTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="Plano Premium"
+                        android:textColor="#17472E"
+                        android:textSize="17sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvSubscriptionLabel" />
+                    <TextView
+                        android:id="@+id/tvRenewalDescription"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Renovação automática em 12 de out. de 2024."
+                        android:textColor="#656453"
+                        android:textSize="10sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPremiumTitle" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="$9,99/mês"
+                        android:textColor="#173C28"
+                        android:textSize="11sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvRenewalDescription" />
+                    <TextView
+                        android:id="@+id/btnManageSubscription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="6dp"
+                        android:text="Gerenciar"
+                        android:textColor="#755D00"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="18dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Informações da conta"
+                        android:textColor="#123D2B"
+                        android:textSize="14sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Endereço de e-mail\nuser@example.com"
+                        android:textColor="#666B68"
+                        android:textSize="11sp" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#F0F0ED" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Recuperação de conta\n+55 (11) 9****-1234"
+                        android:textColor="#666B68"
+                        android:textSize="11sp" />
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#F0F0ED" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Status da conta\n●  ATIVA E VERIFICADA"
+                        android:textColor="@color/viaja_green"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
