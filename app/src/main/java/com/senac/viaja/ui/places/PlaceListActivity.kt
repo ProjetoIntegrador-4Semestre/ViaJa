@@ -34,6 +34,10 @@ class PlaceListActivity : AppCompatActivity() {
         val searchTerm = if (city.isNotEmpty()) city else query
 
         val recycler = findViewById<RecyclerView>(R.id.recycler_places)
+        val status = findViewById<android.widget.TextView>(R.id.tvPlaceListStatus)
+        findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbarPlaceList)
+            .setNavigationOnClickListener { finish() }
+        status.setOnClickListener { viewModel.searchByCity(searchTerm) }
         recycler.layoutManager = LinearLayoutManager(this)
 
         var adapter = PlaceAdapter(emptyList()) { place ->
@@ -46,15 +50,29 @@ class PlaceListActivity : AppCompatActivity() {
                 openPlaceDetails(p.id)
             }
             recycler.adapter = adapter
+            findViewById<android.widget.TextView>(R.id.tvResultsCount).text = "${places.size} locais encontrados"
+            status.text = "Nenhum lugar encontrado."
+            status.visibility = if (places.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
         }
 
         viewModel.error.observe(this) { message ->
             if (message != null && message.isNotEmpty()) {
-                android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_LONG).show()
+                status.text = "$message Toque para tentar novamente."
+                status.visibility = android.view.View.VISIBLE
+                recycler.visibility = android.view.View.GONE
             }
         }
 
-        // Busca lugares pelo termo (cidade ou query livre)
+        viewModel.loading.observe(this) { loading ->
+            if (loading) {
+                status.text = "Carregando lugares…"
+                status.visibility = android.view.View.VISIBLE
+                recycler.visibility = android.view.View.GONE
+            } else {
+                recycler.visibility = android.view.View.VISIBLE
+            }
+        }
+
         viewModel.searchByCity(searchTerm)
     }
 

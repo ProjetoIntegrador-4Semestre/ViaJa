@@ -18,8 +18,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"${providers.gradleProperty("apiBaseUrl").getOrElse("https://viaja-api-spring.onrender.com/")}\"")
+        }
         release {
+            buildConfigField("String", "API_BASE_URL", "\"https://viaja-api-spring.onrender.com/\"")
             optimization {
                 enable = false
             }

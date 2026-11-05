@@ -1,34 +1,46 @@
 package com.senac.viaja.data.repository
 
-import android.os.Handler
-import android.os.Looper
 import com.senac.viaja.data.model.Place
-import com.senac.viaja.data.mock.MockDataSource
+import com.senac.viaja.data.remote.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PlaceRepository {
 
-    private val handler = Handler(Looper.getMainLooper())
-
     fun search(query: String, callback: PlaceCallback) {
-        handler.postDelayed({
-            val places = MockDataSource.searchPlaces(query)
-            callback.onSuccess(places)
-        }, 600)
+        ApiClient.service.searchPlaces(query.trim()).enqueue(object : Callback<List<Place>> {
+            override fun onResponse(call: Call<List<Place>>, response: Response<List<Place>>) {
+                val places = response.body()
+                if (response.isSuccessful && places != null) callback.onSuccess(places)
+                else callback.onError("Não foi possível carregar os lugares (${response.code()}).")
+            }
+
+            override fun onFailure(call: Call<List<Place>>, error: Throwable) {
+                callback.onError("Não foi possível conectar ao servidor. Tente novamente.")
+            }
+        })
     }
 
     fun getPlace(id: String, callback: PlaceCallback) {
-        handler.postDelayed({
-            MockDataSource.getPlaceById(id)?.let { callback.onPlace(it) }
-                ?: callback.onError("Lugar não encontrado")
-        }, 600)
+        if (id.toLongOrNull() == null) {
+            callback.onError("Lugar inválido.")
+            return
+        }
+        ApiClient.service.getPlace(id).enqueue(object : Callback<Place> {
+            override fun onResponse(call: Call<Place>, response: Response<Place>) {
+                val place = response.body()
+                if (response.isSuccessful && place != null) callback.onPlace(place)
+                else callback.onError(if (response.code() == 404) "Lugar não encontrado." else "Não foi possível carregar o lugar (${response.code()}).")
+            }
+
+            override fun onFailure(call: Call<Place>, error: Throwable) {
+                callback.onError("Não foi possível conectar ao servidor. Tente novamente.")
+            }
+        })
     }
 
-    fun searchByCity(city: String, callback: PlaceCallback) {
-        handler.postDelayed({
-            val places = MockDataSource.getPlacesByCity(city)
-            callback.onSuccess(places)
-        }, 600)
-    }
+    fun searchByCity(city: String, callback: PlaceCallback) = search(city, callback)
 }
 
 interface PlaceCallback {

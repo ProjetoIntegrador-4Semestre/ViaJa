@@ -78,3 +78,11 @@ Saved places and itinerary entries are separate associations. Tourism/work mode 
 - Reconcile Swagger schemas/examples with actual requests and responses.
 - Inventory each required feature as absent, simulated, partial or verified; file existence is not completion.
 - Test every completed flow on the emulator and record its evidence before expanding to the next one.
+
+## Place integration checkpoint — November 5
+
+PlaceRepository now uses typed Retrofit callbacks for search and detail. API search includes city names; list/detail share PlaceResponse, with description and integer price in cents. Detail retains HATEOAS links. Existing collection/write contracts remain unchanged. The Adapter's rating/price identifiers were corrected to match XML, fixing a reproduced RecyclerView crash. Currency formatting preserves cents. List loading, empty, error/retry and result count are visible.
+
+Validation: Maven verification, Android debug compilation and seven API smoke checks passed. On Medium_Phone, Home → Explore displayed three API places; selecting the museum opened its description, rating and BRL 150.00 price through the existing Intent. This test used `adb reverse tcp:18080 tcp:18080` and `./gradlew :app:assembleDebug -PapiBaseUrl=http://127.0.0.1:18080/`. Direct emulator-host routing did not complete in this session; the reverse route worked. UI empty/error states were implemented but not exercised manually in this checkpoint.
+
+The hosted API has not been deployed. Its update is required before using the default hosted Android URL with this new contract. Home city cards, saved actions, trip actions, partner-site action, photos and other detail decorations still include mock/illustrative behavior and remain pending. This checkpoint establishes the search-to-detail read flow only.

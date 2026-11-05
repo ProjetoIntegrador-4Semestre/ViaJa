@@ -18,11 +18,11 @@ class PlaceAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgPlace: ImageView = view.findViewById(R.id.imgPlace)
         val btnFavorite: ImageView = view.findViewById(R.id.btnFavorite)
-        val tvPlaceRating: TextView = view.findViewById(R.id.tvPlaceRating)
+        val tvPlaceRating: TextView = view.findViewById(R.id.tvRating)
         val tvPlaceType: TextView = view.findViewById(R.id.tvPlaceType)
         val tvPlaceName: TextView = view.findViewById(R.id.tvPlaceName)
         val tvPlaceLocation: TextView = view.findViewById(R.id.tvPlaceLocation)
-        val tvPlacePrice: TextView = view.findViewById(R.id.tvPlacePrice)
+        val tvPlacePrice: TextView = view.findViewById(R.id.tvPrice)
         val btnView: MaterialButton = view.findViewById(R.id.btnView)
     }
 
@@ -33,13 +33,14 @@ class PlaceAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.itemView.findViewById<View>(R.id.tvPriceOld).visibility = View.GONE
         val place = items[position]
         holder.tvPlaceName.text = place.name
         holder.tvPlaceLocation.text = place.address ?: ""
         holder.tvPlaceType.text = (place.categories?.firstOrNull() ?: "Pousada").uppercase()
         holder.tvPlaceRating.text = if (place.rating != null) "★ ${place.rating}" else "★ --"
         holder.tvPlacePrice.text = if (place.price != null) {
-            "R$ ${place.price / 100},00${place.priceHint ?: ""}"
+            java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(place.price / 100.0)
         } else {
             "Preço sob consulta"
         }

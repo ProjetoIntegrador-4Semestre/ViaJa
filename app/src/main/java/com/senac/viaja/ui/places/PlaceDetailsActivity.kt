@@ -98,7 +98,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
             chipRating.text = if (place.rating != null) "${place.rating}" else "Avaliação"
             tvPlaceDescription.text = place.description ?: ""
             tvPlacePrice.text = if (place.price != null) {
-                "R$ ${place.price / 100},00 ${place.priceHint ?: ""}"
+                java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(place.price / 100.0)
             } else {
                 "Preço sob consulta"
             }

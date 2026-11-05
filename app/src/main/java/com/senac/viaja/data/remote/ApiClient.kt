@@ -16,7 +16,7 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "https://viaja-api-spring.onrender.com/"
+    private val BASE_URL = com.senac.viaja.BuildConfig.API_BASE_URL
 
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
