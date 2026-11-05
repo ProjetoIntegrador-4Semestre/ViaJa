@@ -13,15 +13,14 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.senac.viaja.R
 import com.senac.viaja.data.model.Place
-import com.senac.viaja.data.mock.MockDataSource
+import com.senac.viaja.data.repository.AuthRepository
+import com.senac.viaja.data.repository.SavedRepository
 import com.senac.viaja.ui.main.PlaceViewModel
-import com.senac.viaja.ui.main.SavedViewModel
 import com.senac.viaja.ui.trips.TripListActivity
 
 class PlaceDetailsActivity : AppCompatActivity() {
 
     private lateinit var placeViewModel: PlaceViewModel
-    private lateinit var savedViewModel: SavedViewModel
 
     private var currentPlace: Place? = null
     private var isSaved = false
@@ -37,7 +36,6 @@ class PlaceDetailsActivity : AppCompatActivity() {
         }
 
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
-        savedViewModel = ViewModelProvider(this).get(SavedViewModel::class.java)
 
         val placeId = intent.getStringExtra("place_id") ?: ""
 
@@ -54,28 +52,39 @@ class PlaceDetailsActivity : AppCompatActivity() {
         val chipType = findViewById<Chip>(R.id.chipType)
         val chipRating = findViewById<Chip>(R.id.chipRating)
 
-        // Usuário logado (dado dinâmico do mock/API)
-        val userId = MockDataSource.currentUser.id.toString()
-
-        // Verifica se já está salvo
-        isSaved = MockDataSource.isSaved(userId, placeId)
-        updateBookmarkIcon(ivBookmark)
-
+        val user = AuthRepository(this).getUser()
+        val localId = placeId.toLongOrNull()
+        val savedRepository = SavedRepository()
+        ivBookmark.isEnabled = user == null
+        if (user != null && localId != null) {
+            savedRepository.isSaved(user.id, localId, { saved ->
+                isSaved = saved
+                updateBookmarkIcon(ivBookmark)
+                ivBookmark.isEnabled = true
+            }, { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            })
+        }
         ivBookmark.setOnClickListener {
-            isSaved = !isSaved
-            updateBookmarkIcon(ivBookmark)
-            val message = if (isSaved) "Salvo nos favoritos" else "Removido dos favoritos"
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-            // Persiste no "banco" (mock) — em produção chama a API real
-            if (isSaved) {
-                savedViewModel.save(userId.toLong(), placeId.toLong(),
-                    { }, { err -> Toast.makeText(this, err, Toast.LENGTH_SHORT).show() }
-                )
-            } else {
-                savedViewModel.unsave(userId.toLong(), placeId.toLong(),
-                    { }, { err -> Toast.makeText(this, err, Toast.LENGTH_SHORT).show() }
-                )
+            if (user == null || AuthRepository(this).getUser() == null) {
+                startActivity(Intent(this, com.senac.viaja.ui.auth.LoginActivity::class.java))
+                finish()
+                return@setOnClickListener
             }
+            if (localId == null) return@setOnClickListener
+            ivBookmark.isEnabled = false
+            val onSuccess = {
+                isSaved = !isSaved
+                updateBookmarkIcon(ivBookmark)
+                ivBookmark.isEnabled = true
+                Toast.makeText(this, if (isSaved) "Lugar salvo" else "Lugar removido dos salvos", Toast.LENGTH_SHORT).show()
+            }
+            val onError: (String) -> Unit = { message ->
+                ivBookmark.isEnabled = true
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+            if (isSaved) savedRepository.unsave(user.id, localId, onSuccess, onError)
+            else savedRepository.save(user.id, localId, onSuccess, onError)
         }
 
         btnAddToTrip.setOnClickListener {
@@ -115,6 +124,8 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
     private fun updateBookmarkIcon(ivBookmark: ImageView) {
         ivBookmark.setImageResource(if (isSaved) R.drawable.ic_bookmark else R.drawable.ic_bookmark)
-        // Em produção, usaria um drawable preenchido quando salvo
+        ivBookmark.isSelected = isSaved
+        ivBookmark.alpha = if (isSaved) 1f else 0.5f
+        ivBookmark.contentDescription = if (isSaved) "Remover dos salvos" else "Salvar lugar"
     }
 }

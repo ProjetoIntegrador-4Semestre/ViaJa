@@ -119,13 +119,16 @@ interface ApiService {
 
 
     @GET("users/{userId}/saved-locals")
-    fun getSavedLocals(@Path("userId") userId: Long): Call<Any>
+    fun getSavedLocals(@Path("userId") userId: Long, @Query("page") page: Int = 0): Call<SavedPage>
+
+    @GET("users/{userId}/saved-locals/{localId}")
+    fun getSavedLocal(@Path("userId") userId: Long, @Path("localId") localId: Long): Call<SavedItem>
 
     @POST("users/{userId}/saved-locals")
-    fun saveLocal(@Path("userId") userId: Long, @Body body: Any): Call<Any>
+    fun saveLocal(@Path("userId") userId: Long, @Body body: SavePlaceRequest): Call<Void>
 
     @DELETE("users/{userId}/saved-locals/{localId}")
-    fun unsaveLocal(@Path("userId") userId: Long, @Path("localId") localId: Long): Call<Any>
+    fun unsaveLocal(@Path("userId") userId: Long, @Path("localId") localId: Long): Call<Void>
 
 
     @GET("interests")

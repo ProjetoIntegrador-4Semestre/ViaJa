@@ -97,7 +97,8 @@ data class TripResponse(
 data class SavedItem(
     val id: String?,
     val userId: String,
-    val localId: String
+    val localId: String,
+    val place: Place? = null
 )
 
 data class SavedLocal(
@@ -186,3 +187,12 @@ data class Media(
     val type: String?
 )
 
+
+data class SavedPage(
+    @com.google.gson.annotations.SerializedName("_embedded") val embedded: SavedEmbedded?,
+    val page: SavedPageMetadata
+)
+
+data class SavedEmbedded(val savedLocals: List<SavedItem>?)
+data class SavedPageMetadata(val totalPages: Int)
+data class SavePlaceRequest(val localId: Long)

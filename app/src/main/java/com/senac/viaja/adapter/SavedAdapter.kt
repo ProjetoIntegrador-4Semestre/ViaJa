@@ -8,12 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.senac.viaja.R
-import com.senac.viaja.data.mock.MockDataSource
 import com.senac.viaja.data.model.SavedItem
 
 class SavedAdapter(
     private val items: List<SavedItem>,
-    private val userId: String,
     private val onClick: (SavedItem) -> Unit
 ) : RecyclerView.Adapter<SavedAdapter.ViewHolder>() {
 
@@ -33,10 +31,11 @@ class SavedAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        val place = MockDataSource.getPlaceById(item.localId)
+        val place = item.place
         holder.tvSavedName.text = place?.name ?: "Local ${item.localId}"
         holder.tvSavedLocation.text = place?.address ?: ""
         holder.chipSavedType.text = place?.categories?.firstOrNull() ?: "Lugar"
+        holder.btnAddTrip.text = "Ver lugar"
         holder.btnAddTrip.setOnClickListener { onClick(item) }
         holder.itemView.setOnClickListener { onClick(item) }
     }

@@ -21,6 +21,7 @@
             android:id="@+id/imgSaved"
             android:layout_width="match_parent"
             android:layout_height="130dp"
+            android:visibility="gone"
             android:contentDescription="Saved item image"
             android:scaleType="centerCrop"
             android:src="@drawable/img_hero_beach"
@@ -50,7 +51,7 @@
             app:fontFamily="@font/be_vietnam_pro_extrabold"
             app:layout_constraintTop_toBottomOf="@id/chipSavedType"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnAddTrip" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/tvSavedLocation"
