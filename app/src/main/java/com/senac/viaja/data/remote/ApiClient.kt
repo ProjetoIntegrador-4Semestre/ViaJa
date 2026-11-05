@@ -24,11 +24,13 @@ object ApiClient {
             val builder = original.newBuilder()
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
-            val token = AuthSession.token
+            val token = AuthSession.tokenProvider?.invoke()
             if (token != null && token.isNotEmpty()) {
                 builder.header("Authorization", "Bearer $token")
             }
-            chain.proceed(builder.build())
+            val response = chain.proceed(builder.build())
+            if (response.code() == 401 && token != null) AuthSession.onUnauthorized?.invoke(token)
+            response
         }
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
@@ -47,7 +49,8 @@ object ApiClient {
     }
 
     object AuthSession {
-        var token: String? = null
+        var onUnauthorized: ((String) -> Unit)? = null
+        var tokenProvider: (() -> String?)? = null
     }
 }
 

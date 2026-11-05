@@ -2,19 +2,25 @@ package com.senac.viaja.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.senac.viaja.data.model.AuthToken
-import com.senac.viaja.data.model.LoginRequest
-import com.senac.viaja.data.model.LoginResponse
-import com.senac.viaja.data.model.SignupRequest
-import com.senac.viaja.data.model.ApiResponse
-import com.senac.viaja.data.model.ViajaUser
-import com.senac.viaja.data.mock.MockDataSource
+import com.senac.viaja.data.model.*
 import com.senac.viaja.data.remote.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class AuthRepository(private val context: Context) {
+class AuthRepository(context: Context) {
+
+    private val applicationContext = context.applicationContext
 
     private val prefs: SharedPreferences by lazy {
-        context.getSharedPreferences("viaja_session", Context.MODE_PRIVATE)
+        applicationContext.getSharedPreferences("viaja_session", Context.MODE_PRIVATE)
+    }
+
+    init {
+        ApiClient.AuthSession.tokenProvider = { getToken() }
+        ApiClient.AuthSession.onUnauthorized = { rejectedToken ->
+            if (prefs.getString("auth_token", null) == rejectedToken) clearSession()
+        }
     }
 
     fun login(
@@ -23,16 +29,30 @@ class AuthRepository(private val context: Context) {
         onSuccess: (AuthToken) -> Unit,
         onError: (String) -> Unit
     ) {
-        // Simula login via API: qualquer e-mail/senha válidos entram com o usuário mock
-        if (email.isNotEmpty() && senha.length >= 6) {
-            val user = MockDataSource.currentUser.copy(email = email)
-            val token = AuthToken(token = "mock-token-${user.id}", user = user)
-            ApiClient.AuthSession.token = token.token
-            saveSession(token)
-            onSuccess(token)
-        } else {
-            onError("Credenciais inválidas")
-        }
+        ApiClient.service.login(LoginRequest(email, senha)).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()!!
+                    val user = body.user
+                    val rawToken = response.headers()["Authorization"]
+                        ?.takeIf { it.startsWith("Bearer ") }?.removePrefix("Bearer ")
+                    if (user == null || user.id <= 0 || user.email.isBlank() || !isTokenCurrent(rawToken)) {
+                        onError("Resposta de autenticação inválida. Tente novamente.")
+                        return
+                    }
+                    val token = AuthToken(token = rawToken!!, user = user)
+                    saveSession(token)
+                    onSuccess(token)
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Credenciais inválidas ou erro no servidor"
+                    onError(errorMsg)
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                onError("Falha na conexão com a API: ${t.localizedMessage}")
+            }
+        })
     }
 
     fun register(
@@ -42,33 +62,59 @@ class AuthRepository(private val context: Context) {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        if (name.isNotEmpty() && email.isNotEmpty() && senha.length >= 6) {
-            onSuccess()
-        } else {
-            onError("Preencha todos os campos corretamente")
-        }
+        ApiClient.service.signup(SignupRequest(name, email, senha)).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Erro ao registrar na API"
+                    onError(errorMsg)
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                onError("Falha na conexão com a API: ${t.localizedMessage}")
+            }
+        })
     }
 
     fun getToken(): String? {
-        return ApiClient.AuthSession.token ?: prefs.getString("auth_token", null)
+        val token = prefs.getString("auth_token", null)
+        if (!isTokenCurrent(token)) {
+            clearSession()
+            return null
+        }
+        return token
     }
 
     fun getUser(): ViajaUser? {
-        val id = prefs.getInt("user_id", -1).toLong()
+        if (getToken() == null) return null
+        val id = prefs.all["user_id"] as? Long ?: return null
         val email = prefs.getString("user_email", null)
-        val name = prefs.getString("user_name", null)
-        return if (id == -1L || email == null) null else ViajaUser(id, email, name)
+        if (id <= 0 || email.isNullOrBlank()) return null
+        return ViajaUser(id, email, prefs.getString("user_name", null), prefs.getString("user_mode", null))
     }
 
     fun clearSession() {
-        ApiClient.AuthSession.token = null
         prefs.edit().clear().apply()
     }
 
-    fun updateStoredUser(nome: String, email: String) {
-        val user = getUser() ?: return
+    private fun isTokenCurrent(token: String?): Boolean {
+        return try {
+            val parts = token?.split('.') ?: return false
+            if (parts.size != 3) return false
+            val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE), Charsets.UTF_8)
+            val claims = org.json.JSONObject(payload)
+            claims.getLong("exp") > System.currentTimeMillis() / 1000 && claims.getString("sub").isNotBlank()
+        } catch (error: Exception) {
+            false
+        }
+    }
+
+    fun updateStoredUser(name: String, email: String) {
+        getUser() ?: return
         prefs.edit()
-            .putString("user_name", nome)
+            .putString("user_name", name)
             .putString("user_email", email)
             .apply()
     }
@@ -76,7 +122,8 @@ class AuthRepository(private val context: Context) {
     private fun saveSession(token: AuthToken) {
         prefs.edit()
             .putString("auth_token", token.token)
-            .putInt("user_id", token.user.id.toInt())
+            .putLong("user_id", token.user.id)
+            .putString("user_mode", token.user.defaultMode)
             .putString("user_email", token.user.email)
             .putString("user_name", token.user.name ?: "")
             .apply()
