@@ -1,0 +1,80 @@
+# Recovery plan
+
+Updated: 2026-11-05. Delivery: 2026-12-02, confirmed by the project owner.
+
+## Constraints and scope
+
+All previously listed product features remain required. Implementation order is not a reduction in scope. Android uses Kotlin, XML Views, Retrofit, RecyclerView and explicit Intents. The API uses Java, Spring Boot, H2 and LoadDatabase. Source code and identifiers are written in English. New code contains no comments. Changes use semantic commits.
+
+Academic references:
+
+- Android: `/Users/rafa/AndroidStudioProjects/MyApplication`.
+- API: `/Users/rafa/IdeaProjects/corp-financial-api`.
+- Historical product documentation: `/Users/rafa/Library/Mobile Documents/iCloud~md~obsidian/Documents/second-brain/05_projects/active/viaja`.
+
+The Android reference demonstrates Retrofit callbacks, typed models, XML layouts, RecyclerView with Adapter/ViewHolder, and Intent extras. It is an instructional example, not a complete architecture to copy. The API reference demonstrates repositories, controllers, assemblers, paginated HATEOAS collections, HTTP responses and database seeding. Domain-specific behavior must be evaluated before reuse.
+
+## Verified baseline
+
+| Area | Evidence | Meaning |
+| --- | --- | --- |
+| Android build | `./gradlew :app:assembleDebug --offline` succeeds | Compilation alone does not establish working navigation or integration |
+| Android launch | Installed on emulator-5554; existing session redirects Welcome to Home | Home crashed while inflating its Material 3 TextInputLayout under a Material Components daytime theme |
+| Theme correction | Daytime theme aligned with existing Material 3 nighttime theme; rebuilt and launched | Home remains visible after launch; remaining screens need individual verification |
+| API package | `./mvnw verify` succeeds after fetching missing packaging dependencies | No Java automated test suite was found in the source inventory |
+| API startup | Local process on port 18080 starts H2 and completes LoadDatabase | Initial data can be exercised without an external database |
+| Pagination | `/cities?page=0&size=2` returns three total records, two pages and navigation links | Pagination and HATEOAS already exist and should be verified resource by resource |
+| API documentation | `/v3/api-docs` returns 200 | Availability does not establish accurate schemas and examples |
+| Authentication | Seeded user logs in, receives Authorization header and accesses `/trips` | Invalid password incorrectly returned 404 before the authentication-specific handler was added |
+| Android trips | TripRepository returns local mock data and simulated mutation responses | Creating or deleting through it does not demonstrate API persistence |
+| Android places | CityRepository and PlaceRepository read MockDataSource | Current displayed lists do not establish a working API-to-screen flow |
+
+The working tree already contained staged and unstaged Android changes before this audit. Preserve them and keep recovery commits limited to the files changed during recovery.
+
+Historical Obsidian documents still describe an older PHP baseline. Use them as product history, not as evidence of the current implementation.
+
+## Delivery sequence
+
+These are target checkpoints, not claims of completed work.
+
+| Target | Work | Exit condition |
+| --- | --- | --- |
+| November 5–8 | Stabilize launch/navigation, inventory actual features, define contracts and ownership rules | Reproducible execution, explicit pending-feature list, and a verified API contract for the first flow |
+| November 9–15 | Real place list/detail, authentication/session, trips, saved places and itinerary | API data reaches RecyclerView; Intent opens the selected detail; mutations survive refetch; users cannot modify each other's records |
+| November 16–22 | Notes/checklists, expenses/receipts, maps, weather, AI itinerary draft and approval | Each feature has explicit input/output, error behavior and a demonstrated Android/API flow |
+| November 23–27 | Google access, password recovery/reset, profile, simulated Premium/subscription, PDF export, offline reading and trip history | External prerequisites configured; every required feature has recorded verification |
+| November 28–December 1 | Full regression, visual review, Swagger examples, seed consistency and academic artifacts | Fresh installation and fresh API startup reproduce the demonstration using documented steps |
+| December 2 | Delivery | Verified application and API, documentation and required academic materials |
+
+External-account prerequisites must be inventoried immediately, despite the later feature checkpoints: Google OAuth configuration, AI provider credentials, email delivery for recovery, and any selected map/weather provider. Keep credentials outside source control and the APK. The owner's requirement is all functionality; do not silently substitute success messages for these integrations.
+
+## First integrated flow
+
+1. Define the list and detail payloads for a place, including consistent identifiers and price meaning.
+2. Check the existing API responses: `/places/search` maps to PlaceResponse, while `/places/{id}` exposes Local through EntityModel. Do not assume these are identical.
+3. Define city selection using city identity. Current API text search covers place name/address, so searching a city name is not a reliable city filter.
+4. Replace the mock for this flow with typed Retrofit callbacks following the classroom pattern.
+5. Show loading, empty, failure and successful states.
+6. Open details using an explicit Intent with the selected identifier.
+7. Verify against seeded data, failed requests and a missing identifier.
+
+Do not propagate the current unrestricted use of `Any` into new API consumers. Add only abstractions that serve an identified behavior. Existing ViewModels/repositories must be evaluated before either retaining or deleting them.
+
+## Product and visual rules
+
+For each flow, record purpose, inputs, visible information, actions, navigation, ownership and failure states before building the screen. Use a small shared set of colors, spacing, typography and XML components. Historical prototypes are references, not acceptance criteria.
+
+Saved places and itinerary entries are separate associations. Tourism/work mode must have one clear owner and observable behavior. Premium is simulated, without real payment processing. AI produces a draft that requires user approval before changing an itinerary. External booking opens a provider rather than processing a booking internally.
+
+## Remaining audit work
+
+- Reproduce login, registration, visitor access and each navigation destination in both display modes.
+- Audit session restoration and expiry; the existing emulator session displayed an empty greeting.
+- Resolve overlapping ProfileActivity implementations after tracing every reference.
+- Verify authorization and resource ownership for all private endpoints.
+- Replace the broad RuntimeException-to-404 policy with explicit error semantics resource by resource.
+- Verify validation, create/update/delete statuses, Location headers and invalid payloads.
+- Reconcile entity relationships, deletion behavior, price units and seed data.
+- Reconcile Swagger schemas/examples with actual requests and responses.
+- Inventory each required feature as absent, simulated, partial or verified; file existence is not completion.
+- Test every completed flow on the emulator and record its evidence before expanding to the next one.
