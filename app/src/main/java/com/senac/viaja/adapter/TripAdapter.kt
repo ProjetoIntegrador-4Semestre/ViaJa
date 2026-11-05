@@ -26,6 +26,13 @@ class TripAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = items[position]
         holder.name.text = trip.name ?: "Viagem"
+        holder.itemView.findViewById<TextView>(R.id.chipTripMode).text = if (trip.mode == "work") "Trabalho" else "Turismo"
+        holder.itemView.findViewById<TextView>(R.id.tvTripDates).text = if (trip.startDate == null) "Datas a definir" else "${trip.startDate} — ${trip.endDate ?: "Fim a definir"}"
+        holder.itemView.findViewById<TextView>(R.id.tvTripBudget).text = trip.totalBudgetCents?.let {
+            java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(it / 100.0)
+        } ?: "Orçamento a definir"
+        holder.itemView.findViewById<View>(R.id.imgTrip).visibility = View.GONE
+        holder.itemView.findViewById<View>(R.id.btnTripFavorite).visibility = View.GONE
         holder.itemView.setOnClickListener { onClick(trip) }
     }
 

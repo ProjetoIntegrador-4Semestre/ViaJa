@@ -78,7 +78,8 @@ data class TripRequest(
     val mode: String,
     val startDate: String?,
     val endDate: String?,
-    val budgetCents: Long?
+    val budgetCents: Long?,
+    val cityId: Long? = null
 )
 
 data class TripResponse(
@@ -190,9 +191,20 @@ data class Media(
 
 data class SavedPage(
     @com.google.gson.annotations.SerializedName("_embedded") val embedded: SavedEmbedded?,
-    val page: SavedPageMetadata
+    val page: PageMetadata
 )
 
 data class SavedEmbedded(val savedLocals: List<SavedItem>?)
-data class SavedPageMetadata(val totalPages: Int)
+data class PageMetadata(val totalPages: Int)
 data class SavePlaceRequest(val localId: Long)
+
+data class TripPage(
+    @com.google.gson.annotations.SerializedName("_embedded") val embedded: TripEmbedded?,
+    val page: PageMetadata
+)
+data class TripEmbedded(val trips: List<Trip>?)
+data class CityPage(
+    @com.google.gson.annotations.SerializedName("_embedded") val embedded: CityEmbedded?,
+    val page: PageMetadata
+)
+data class CityEmbedded(val cityList: List<City>?)

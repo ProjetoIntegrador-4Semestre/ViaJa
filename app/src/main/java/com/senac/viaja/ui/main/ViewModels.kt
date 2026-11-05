@@ -149,7 +149,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     fun getById(id: Long) {
         _loading.value = true
         repository.getById(id,
-            { any ->
+            { trip ->
+                _trip.value = trip
                 _loading.value = false
             },
             { message ->
@@ -159,10 +160,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    fun createTrip(userId: Long, name: String, mode: String) {
+    fun createTrip(userId: Long, name: String, mode: String, cityId: Long) {
         _loading.value = true
         repository.create(
-            com.senac.viaja.data.model.TripRequest(userId, name, mode, null, null, null),
+            com.senac.viaja.data.model.TripRequest(userId, name, mode, null, null, null, cityId),
             { trip ->
                 _loading.value = false
                 _trip.value = trip

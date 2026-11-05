@@ -1,94 +1,52 @@
 package com.senac.viaja.data.repository
 
-import android.os.Handler
-import android.os.Looper
-import com.senac.viaja.data.model.Trip
-import com.senac.viaja.data.model.TripRequest
-import com.senac.viaja.data.model.TripResponse
-import com.senac.viaja.data.mock.MockDataSource
+import com.senac.viaja.data.model.*
+import com.senac.viaja.data.remote.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class TripRepository {
+    fun list(onSuccess: (List<Trip>) -> Unit, onError: (String) -> Unit) = loadPage(null, 0, mutableListOf(), onSuccess, onError)
 
-    private val handler = Handler(Looper.getMainLooper())
+    fun listByUser(userId: Long, onSuccess: (List<Trip>) -> Unit, onError: (String) -> Unit) = loadPage(userId, 0, mutableListOf(), onSuccess, onError)
 
-    fun list(
-        onSuccess: (List<Trip>) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            onSuccess(MockDataSource.trips)
-        }, 600)
+    private fun loadPage(userId: Long?, page: Int, items: MutableList<Trip>, onSuccess: (List<Trip>) -> Unit, onError: (String) -> Unit) {
+        val call = if (userId == null) ApiClient.service.getTrips(page) else ApiClient.service.getTripsByUser(userId, page)
+        receive(call, { body ->
+            items.addAll(body.embedded?.trips.orEmpty())
+            if (page + 1 < body.page.totalPages) loadPage(userId, page + 1, items, onSuccess, onError)
+            else onSuccess(items)
+        }, onError)
     }
 
-    fun listByUser(
-        userId: Long,
-        onSuccess: (List<Trip>) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            onSuccess(MockDataSource.trips)
-        }, 600)
+    fun stops(id: Long, onSuccess: (List<TripLocal>) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.getTripLocalsByTrip(id), onSuccess, onError)
+
+    fun addStop(stop: TripLocal, onSuccess: (TripLocal) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.addTripLocal(stop), onSuccess, onError)
+
+    fun create(request: TripRequest, onSuccess: (TripResponse) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.createTrip(request), onSuccess, onError)
+
+    fun getById(id: Long, onSuccess: (TripResponse) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.getTripById(id), onSuccess, onError)
+
+    fun update(id: Long, request: TripRequest, onSuccess: (TripResponse) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.updateTrip(id, request), onSuccess, onError)
+
+    fun delete(id: Long, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        ApiClient.service.deleteTrip(id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) onSuccess() else onError("Não foi possível excluir a viagem (${response.code()}).")
+            }
+            override fun onFailure(call: Call<Void>, error: Throwable) { onError("Não foi possível conectar ao servidor.") }
+        })
     }
 
-    fun create(
-        request: TripRequest,
-        onSuccess: (TripResponse) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            val newId = "t${MockDataSource.trips.size + 1}"
-            val response = TripResponse(
-                id = newId,
-                userId = request.userId.toString(),
-                name = request.name,
-                mode = request.mode,
-                startDate = request.startDate,
-                endDate = request.endDate,
-                totalBudgetCents = request.budgetCents,
-                status = "ativa"
-            )
-            onSuccess(response)
-        }, 600)
-    }
-
-    fun getById(
-        id: Long,
-        onSuccess: (Any) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            MockDataSource.getTripById(id.toString())?.let { onSuccess(it) }
-                ?: onError("Viagem não encontrada")
-        }, 600)
-    }
-
-    fun update(
-        id: Long,
-        request: TripRequest,
-        onSuccess: (Any) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            onSuccess(TripResponse(
-                id = id.toString(),
-                userId = request.userId.toString(),
-                name = request.name,
-                mode = request.mode,
-                startDate = request.startDate,
-                endDate = request.endDate,
-                totalBudgetCents = request.budgetCents,
-                status = "atualizada"
-            ))
-        }, 600)
-    }
-
-    fun delete(
-        id: Long,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        handler.postDelayed({
-            onSuccess()
-        }, 600)
+    private fun <T> receive(call: Call<T>, onSuccess: (T) -> Unit, onError: (String) -> Unit) {
+        call.enqueue(object : Callback<T> {
+            override fun onResponse(call: Call<T>, response: Response<T>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null) onSuccess(body)
+                else onError("Não foi possível carregar ou salvar a viagem (${response.code()}).")
+            }
+            override fun onFailure(call: Call<T>, error: Throwable) { onError("Não foi possível conectar ao servidor.") }
+        })
     }
 }

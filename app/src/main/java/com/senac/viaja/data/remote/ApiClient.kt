@@ -100,22 +100,22 @@ interface ApiService {
 
 
     @GET("trips")
-    fun getTrips(): Call<Any>
+    fun getTrips(@Query("page") page: Int = 0): Call<TripPage>
 
     @GET("trips/user/{userId}")
-    fun getTripsByUser(@Path("userId") userId: Long): Call<Any>
+    fun getTripsByUser(@Path("userId") userId: Long, @Query("page") page: Int = 0): Call<TripPage>
 
     @POST("trips")
     fun createTrip(@Body request: TripRequest): Call<TripResponse>
 
     @GET("trips/{id}")
-    fun getTripById(@Path("id") id: Long): Call<Any>
+    fun getTripById(@Path("id") id: Long): Call<TripResponse>
 
     @PUT("trips/{id}")
-    fun updateTrip(@Path("id") id: Long, @Body request: TripRequest): Call<Any>
+    fun updateTrip(@Path("id") id: Long, @Body request: TripRequest): Call<TripResponse>
 
     @DELETE("trips/{id}")
-    fun deleteTrip(@Path("id") id: Long): Call<Any>
+    fun deleteTrip(@Path("id") id: Long): Call<Void>
 
 
     @GET("users/{userId}/saved-locals")
@@ -148,7 +148,7 @@ interface ApiService {
 
 
     @GET("cities")
-    fun getCities(): Call<Any>
+    fun getCities(@Query("page") page: Int = 0): Call<CityPage>
 
     @GET("cities/{id}")
     fun getCityById(@Path("id") id: Long): Call<Any>
@@ -189,8 +189,11 @@ interface ApiService {
     fun deleteSubscription(@Path("id") id: Long): Call<Any>
 
 
+    @POST("trip-locals")
+    fun addTripLocal(@Body stop: TripLocal): Call<TripLocal>
+
     @GET("trip-locals/trip/{tripId}")
-    fun getTripLocalsByTrip(@Path("tripId") tripId: Long): Call<Any>
+    fun getTripLocalsByTrip(@Path("tripId") tripId: Long): Call<List<TripLocal>>
 
     @POST("trip-locals")
     fun createTripLocal(@Body body: Any): Call<Any>
