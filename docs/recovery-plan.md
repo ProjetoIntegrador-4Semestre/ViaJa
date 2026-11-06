@@ -2,6 +2,10 @@
 
 Updated: 2026-11-05. Delivery: 2026-12-02, confirmed by the project owner.
 
+## Current product authority
+
+Read [product-baseline.md](product-baseline.md) first. The owner confirmed Stripe test Checkout plus real webhooks, APK/emulator delivery and potential Play publication later. This replaces the earlier Premium-flag simulation. Product/billing alignment, documentation and representative visual validation now precede the previous implementation order. Historical checkpoints below remain evidence of what was implemented; their pending lists and baseline rows are dated snapshots, not a current feature inventory.
+
 ## Constraints and scope
 
 All previously listed product features remain required. Implementation order is not a reduction in scope. Android uses Kotlin, XML Views, Retrofit, RecyclerView and explicit Intents. The API uses Java, Spring Boot, H2 and LoadDatabase. Source code and identifiers are written in English. New code contains no comments. Changes use semantic commits.
@@ -14,7 +18,7 @@ Academic references:
 
 The Android reference demonstrates Retrofit callbacks, typed models, XML layouts, RecyclerView with Adapter/ViewHolder, and Intent extras. It is an instructional example, not a complete architecture to copy. The API reference demonstrates repositories, controllers, assemblers, paginated HATEOAS collections, HTTP responses and database seeding. Domain-specific behavior must be evaluated before reuse.
 
-## Verified baseline
+## Initial diagnostic baseline (historical)
 
 | Area | Evidence | Meaning |
 | --- | --- | --- |
@@ -33,7 +37,7 @@ The working tree already contained staged and unstaged Android changes before th
 
 Historical Obsidian documents still describe an older PHP baseline. Use them as product history, not as evidence of the current implementation.
 
-## Delivery sequence
+## Earlier delivery sequence (superseded by product-baseline.md)
 
 These are target checkpoints, not claims of completed work.
 
@@ -64,7 +68,7 @@ Do not propagate the current unrestricted use of `Any` into new API consumers. A
 
 For each flow, record purpose, inputs, visible information, actions, navigation, ownership and failure states before building the screen. Use a small shared set of colors, spacing, typography and XML components. Historical prototypes are references, not acceptance criteria.
 
-Saved places and itinerary entries are separate associations. Tourism/work mode must have one clear owner and observable behavior. Premium is simulated, without real payment processing. AI produces a draft that requires user approval before changing an itinerary. External booking opens a provider rather than processing a booking internally.
+Saved places and itinerary entries are separate associations. Tourism/work mode must have one clear owner and observable behavior. Premium now uses Stripe test Checkout/webhooks as defined in product-baseline.md; live charges are outside the delivery. AI produces a draft that requires user approval before changing an itinerary. External booking opens a provider rather than processing a booking internally.
 
 ## Remaining audit work
 
