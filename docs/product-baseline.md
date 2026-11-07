@@ -1,116 +1,130 @@
-# Viajá: product, billing and screen baseline
+# Viajá — produto e experiência
 
-Updated 2026-11-05. This is the current product reference. Historical Obsidian specifications remain research/history; they do not override this baseline. This document defines decisions and acceptance criteria, not implemented functionality. Code status and evidence remain in recovery-plan.md.
+Referência vigente, revisada em 05/11/2026. Este documento descreve o produto desejado. Consulte [status.md](status.md) para saber o que já foi implementado.
 
-## Confirmed constraints
+## Proposta e limites
 
-- Delivery on 2026-12-02 as APK/emulator demonstration. Possible Google Play distribution next semester.
-- Kotlin/XML Views, Retrofit, RecyclerView and Intents; Java/Spring Boot, H2 and LoadDatabase.
-- All previously confirmed feature areas remain in scope. No addition of collaborators, bookings processed inside the app, or real payment collection for this delivery.
-- Stripe test environment with real Checkout Session creation and verified webhook processing replaces the previous Premium flag simulation. No real cards or charges in the presentation.
-- The owner delegated benefits/pricing decisions. The following commercial model is the working decision, not market-validated pricing.
+Organizar uma viagem da descoberta ao uso do roteiro: encontrar lugares, planejar dias, registrar informações e gastos e consultar o plano durante a viagem. Turismo e Trabalho são contextos do mesmo produto, não aplicativos diferentes.
 
-## Product promise
+A entrega de 02/12/2026 será demonstrada por APK/emulador e API própria. A possível publicação na Google Play pertence à etapa posterior. Kotlin/XML, Retrofit, RecyclerView, Intents, Java/Spring Boot, H2 e LoadDatabase são restrições confirmadas. Não substituir a integração real por mensagens de sucesso ou dados locais disfarçados.
 
-Plan and carry a trip in one place: discover places, build a day-by-day itinerary, keep notes and expenses, and use optional AI assistance. The same trip supports tourism or work priorities. Manual planning must remain useful without paying.
+Permanecem no escopo as áreas confirmadas: acesso, descoberta, lugares, viagens/roteiro, salvos, perfil/interesses, IA, notas/checklists, despesas/recibos, mapas/clima, avaliações, histórico, assinatura, PDF e leitura offline. Ordem de implementação não significa corte de escopo. Reservas são encaminhadas a serviços externos; o Viajá não emite passagem, conclui reserva ou processa pagamento de hotel.
 
-## Free and Premium
+## Jornadas e regras
 
-| Capability | Free | Premium |
+### Acesso e identidade
+
+Visitante pode consultar o catálogo e detalhes. Ações que persistem dados pessoais pedem login; não criar uma conta fictícia nem usar o ID de outra pessoa. Cadastro por e-mail cria a conta e encaminha ao login. Login Google deve autenticar uma identidade verificável no servidor, sem aceitar um e-mail enviado pelo app como prova.
+
+A sessão deve sobreviver ao reinício, expirar corretamente e ser encerrada por logout. Tela privada aberta com sessão expirada deve oferecer entrada novamente sem mostrar dados de outra conta. Recuperação usa link/token temporário e resposta que não revela se o e-mail existe; não anunciar envio sem o serviço funcionar. Mudança de e-mail precisa de tratamento da sessão, pois o JWT atual identifica o usuário pelo e-mail.
+
+### Descoberta e lugares
+
+Buscar por cidade ou texto e filtrar apenas atributos realmente disponíveis: categoria, preço com unidade, avaliação e outros campos sustentados pela fonte. Pesquisa deve tratar espaços e acentos de forma coerente. Não prometer disponibilidade de hospedagem ou abertura em tempo real sem fonte que as sustente.
+
+Lugar exibe nome, endereço, categoria, descrição e, quando existentes, fotos, coordenadas, horários, comodidades, preço e avaliações. Ausência de dado não vira valor inventado. Sem foto, usar estado neutro; sem nota, “Sem avaliações”. Preço nulo significa desconhecido; zero pode significar gratuito. Não apresentar ingresso, diária e gasto estimado como o mesmo preço.
+
+Salvar e adicionar ao roteiro são ações independentes. Abrir site ou navegação exige destino válido. O catálogo curado do servidor é válido para a demonstração se seus dados forem identificados como demonstrativos; consumir esse catálogo por Retrofit é integração real, não informação comercial em tempo real. Provedor externo e catálogo precisam de procedência/licença e revisão de dados.
+
+### Viagens, dias e paradas
+
+Uma viagem tem nome, uma cidade, modo, datas opcionais, orçamento opcional e proprietário autenticado. Datas são de calendário; fim não antecede início. Datas ausentes não autorizam a IA a inventar duração: o usuário informa quantos dias quer planejar. Valores em BRL são armazenados em centavos.
+
+O modo pertence à viagem. A preferência do perfil apenas preenche o modo inicial de novas viagens. Turismo prioriza atrações e ritmo escolhido; Trabalho destaca compromissos, praticidade e despesas reembolsáveis. Isso deve produzir comportamento observável sem duplicar telas.
+
+Roteiro mostra todos os dias e paradas, permite adicionar/remover, escolher dia/horário e alterar ordem. A inclusão atual no primeiro dia é um passo parcial, não a regra final. Reordenar precisa persistir. Atualizar cidade/datas deve resolver paradas incompatíveis antes de salvar. Excluir viagem/parada exige confirmação e tratamento dos vínculos existentes.
+
+“Próxima parada” precisa considerar o dia/horário e conclusão/visita, não simplesmente o primeiro registro. Sem datas, mostrar “Primeira parada do roteiro”. Histórico mantém viagens concluídas, lugares e resumo de gastos. Status canônicos adotados para a entrega: `planned`, `active`, `completed`, `cancelled`; migrar o termo histórico `ongoing` na documentação, não alterar silenciosamente dados.
+
+A repetição do mesmo lugar em diferentes paradas é uma limitação do modelo composto atual, a resolver com o editor. Ainda não foi aprovada uma migração de chave apenas por antecipação.
+
+### Notas, checklists, gastos e avaliações
+
+Notas gerais pertencem à viagem. Notas de parada pertencem à associação daquela viagem com o lugar, nunca ao catálogo global. Checklists precisam de itens e estado de conclusão; um campo de texto não implementa checklist.
+
+Despesas têm categoria, valor em centavos, data e viagem. Recibo é anexo privado opcional. Resumo soma despesas e compara com o orçamento informado; reembolso tem estado próprio, sem fingir integração com uma empresa. BRL é a moeda inicial; conversão cambial não está confirmada.
+
+Avaliações de lugar permanecem sem autor público e com nota de 1 a 5. A regra de repetição/moderação e a atualização de média/contagem precisam ser definidas antes de expor a escrita. Não transformar essa decisão em avaliação de viagem automaticamente. Estatísticas e badges só aparecem quando calculados de dados reais.
+
+### IA, PDF e offline
+
+A Vi gera ou revisa um rascunho usando contexto da viagem, interesses e lugares disponíveis. Deve validar IDs e estrutura da resposta, guardar a proposta e solicitar aprovação antes de inserir paradas. Não inventar reservas, horários ou preços. Falha deve preservar o pedido; nenhuma resposta fixa é apresentada como chamada real ao provedor.
+
+A quota conta uma geração ou revisão substancial concluída, não cada mensagem. Falhas do provedor não consomem cota. Limitar entrada/saída e duração do roteiro; modelo e preços precisam de verificação na integração, sem versões herdadas de prompts antigos. Histórico bruto de conversa e personalização automática por viagens antigas não estão confirmados para a entrega.
+
+PDF básico contém o itinerário. O pacote completo inclui roteiro, notas/checklists e resumo de gastos. Offline é leitura de uma viagem baixada explicitamente; não inclui sincronização colaborativa, mapas offline, IA ou clima sem conexão. Arquivos já exportados/baixados não são apagados por cancelamento; produzir/atualizar novos pacotes Premium exige acesso vigente.
+
+## Gratuito e Premium
+
+| Recurso | Gratuito | Premium |
 | --- | --- | --- |
-| Explore, place details, favorites, manual trips and itineraries | Included without artificial quantity limits | Included |
-| Notes/checklists and basic expense recording/totals | Included | Included |
-| Maps, available weather, account and trip history | Included | Included |
-| AI itinerary generation or substantial revision | 2 successful requests per calendar month | 20 successful requests per monthly billing period |
-| Basic itinerary PDF | Included | Included |
-| Complete travel pack PDF: itinerary, notes/checklists and expense summary | Not included | Included |
-| Explicitly downloaded trip for offline reading | Not included | Included |
+| Explorar, detalhes, salvos e planejamento manual | Incluído, sem limites artificiais de quantidade | Incluído |
+| Notas/checklists e gastos básicos | Incluído | Incluído |
+| Mapas, clima disponível, perfil e histórico | Incluído | Incluído |
+| Pedidos de geração/revisão à Vi | 2 concluídos por mês de calendário | 20 concluídos por ciclo mensal da assinatura |
+| PDF básico do itinerário | Incluído | Incluído |
+| PDF completo da viagem | Não | Incluído |
+| Viagem baixada para leitura offline | Não | Incluído |
 
-One Premium plan at BRL 19.90/month is the initial commercial hypothesis and Stripe test price. No annual plan, trial that converts into a charge, paid quota top-ups, ads, commissions or invented discounts in this delivery. Revisit price only after measuring demand and costs. Offline is read-only, not collaborative synchronization or offline maps/weather/AI. Previously downloaded/exported information is not deleted on cancellation; creation/refresh of Premium packs requires current access.
+Decisão de trabalho delegada pelo responsável: um plano Premium de R$ 19,90/mês. É preço inicial de demonstração e hipótese comercial, não preço validado por pesquisa. Sem plano anual, teste que vira cobrança, recargas de quota, anúncios ou descontos inventados nesta entrega. Limites e data de renovação da quota devem ser visíveis. Quota esgotada não bloqueia consulta nem edição manual.
 
-AI limits are visible before subscribing and while using the assistant. A request means generating a draft or materially revising one, not each chat message. Failed provider calls do not consume the allowance. No unlimited-AI promise. Bound input/output size, duration of suggested itineraries and provider usage; show remaining requests and reset date. Preserve drafts and manual editing after the allowance is reached or a subscription expires. The assistant uses available places and must not invent reservations, live availability or opening hours. User approval is required to apply a draft.
+A justificativa comercial é cobrar conveniência, portabilidade e trabalho poupado, preservando um produto gratuito útil. A viabilidade depende de receita menos processamento/Billing, IA, tributos aplicáveis, reembolsos e infraestrutura/suporte. Medir consumo médio e uso máximo da quota, além do custo dos usuários gratuitos. Não afirmar lucro com base apenas na mensalidade ou em cota gratuita de um provedor. Tarifas externas devem ser verificadas quando forem usadas; números antigos não são orçamento.
 
-### Commercial rationale
+## Stripe: compra, retorno e acesso
 
-Free solves the main problem and lets a traveler trust the product before paying. Premium charges for saved planning effort and portability, rather than restricting access to the user's own trip. AI quotas place a measurable ceiling on variable costs; complete PDFs and offline trip reading add value without another paid provider for each use.
+Confirmado: Stripe em testes, com Checkout e webhook reais; não haverá cobrança real na banca. A decisão substitui a flag Premium simulada. Abrir Checkout hospedado em Android Custom Tabs, com navegador como alternativa. Não reconstruir campos de cartão em XML ou WebView. Usar Customer Portal para cobrança, método de pagamento e cancelamento.
 
-This is not a profitability claim. Measure net contribution as subscription revenue minus payment processing, Billing charges, AI usage, applicable taxes, refunds and the allocated hosting/support cost. Stripe's current Brazil pricing page lists 3.99% + BRL 0.39 for domestic card transactions: at BRL 19.90 that alone is about BRL 1.18. It excludes Billing and all other costs. A target variable AI budget of at most BRL 3 per fully used Premium cycle is an internal design target to validate, not an observed cost or a model-price quote. Measure both average and maximum-quota consumption before live launch. Track aggregate margin including the cost of free users; do not claim that a positive per-subscriber contribution alone proves overall profit.
+1. Usuário autenticado escolhe o plano e vê preço, limites e cancelamento.
+2. A API cria a sessão para o cliente Stripe associado ao usuário e um Price ID autorizado no servidor. App não define valor, dono ou URL arbitrária.
+3. Android abre a URL do Checkout. Stripe coleta dados e conduz autenticações do pagamento.
+4. A volta passa por uma URL controlada e abre o app. Preferir HTTPS App Links quando houver domínio; prever retorno explícito na demonstração. Não transportar JWT/segredos na URL.
+5. App consulta a própria assinatura na API. O redirecionamento não libera Premium.
+6. Webhook assinado confirma e atualiza estado, inclusive se o usuário não retornar.
 
-## Payment experience
+Confirmar assinatura pode demorar. Mostrar “Confirmando sua assinatura”, opção de atualizar e continuar no gratuito. Fechar Checkout não significa falha de pagamento. Pagamento pendente não concede acesso. Renovação confirmada estende o período; falha não estende além do que já foi pago. Cancelamento é agendado para o fim do período e informa a data de encerramento.
 
-Use Stripe-hosted Checkout launched with Android Custom Tabs, with external browser fallback. The tab uses the user's browser engine and can be visually integrated with the app; it is not a WebView containing a homemade checkout. Preserve XML for Viajá screens. Use Stripe Customer Portal for payment details, invoices and cancellation. This replaces the existing pretend card-management screens.
+O servidor aplica benefícios; CRUD genérico de assinatura não pode concedê-los. Distinguir status Stripe, período pago e cancelamento do acesso efetivo. Evitar compras ativas duplicadas. Verificar assinatura do webhook com corpo original, persistir IDs de eventos e aplicar atualização transacional; reentregas e eventos fora de ordem não duplicam benefícios. Reconciliar estado com o provedor. Sem fila, microsserviço ou framework de eventos para esse fluxo.
 
-Flow:
+H2 em memória/create-drop não preserva clientes, assinaturas e eventos ao reiniciar. Manter H2 conforme a disciplina, preparando persistência em arquivo e carga inicial controlada para a demonstração de cobrança. Isso é requisito pendente, não configuração já aplicada. Chaves de teste/segredo do webhook permanecem no servidor; usar Stripe CLI no desenvolvimento. Não semear um usuário pago fictício como se tivesse assinatura verificada.
 
-1. Logged-in user opens Premium and sees benefits, limits, BRL/month and cancellation terms.
-2. Authenticated API creates a subscription Checkout Session for the user's Stripe Customer and a server-approved Price ID. Never accept an amount, owner or arbitrary redirect URL from the Android client.
-3. Android opens the returned Checkout URL. Stripe handles payment fields and payment authentication.
-4. Success/cancel URL leads to a controlled return page and then the app. Use verified HTTPS App Links when a domain is available; provide an explicit return link/fallback for the academic environment. URLs carry no JWT or payment secrets.
-5. Android refreshes its own subscription through the authenticated API. Returning to the app does not grant Premium.
-6. A signed webhook updates the local subscription record. Account activation, renewal, failed invoices and cancellation must work even if the user closes the browser and never returns.
+Publicação futura na Play exige revisar as regras de benefícios digitais e os programas aplicáveis ao mercado. Usar Stripe ou uma aba de navegador não resolve essa elegibilidade por si só.
 
-If the webhook is late, show “Confirmando sua assinatura” with refresh and the option to continue using Free. Closing Checkout is not a failed payment. Never display “Pagamento aprovado” merely because a URL was opened.
+## Direção visual e contrato das telas
 
-### Subscription policy
+Uma família tipográfica, componentes Material com cores explícitas, rótulos em português e uma única marcação de seleção. Paleta clara inicial: verde `#087A49`, creme `#F7F5EF`, superfície `#FFFFFF`, texto `#19382A`, secundário `#53675A`. Contrastes calculados: branco/verde 5,40:1; texto/creme 11,74:1; secundário/branco 6,08:1. Isso não é certificação integral de acessibilidade.
 
-- Successful, verified initial payment grants access through its paid period. No trial for this delivery.
-- User cancellation is scheduled for the period end; explain the exact access-end date.
-- Failed renewal displays an action to resolve payment and does not extend access beyond the already paid period. Pending payment is not active access.
-- Keep Stripe status, paid-through date and cancellation flag distinct from the app's effective access decision.
-- The backend checks Premium privileges. A screen flag or a general subscription CRUD update cannot grant paid access.
-- Use one customer/subscription association per user; reuse an open session where appropriate and prevent duplicate active purchases.
-- Verify the webhook signature against the raw body, persist processed event IDs and apply updates transactionally. Repeated/concurrent deliveries must not grant duplicated benefits. Reconcile current provider state when events arrive out of order. Do not introduce a queue, microservice or event framework for this project.
-- Current H2 in-memory/create-drop setup cannot reliably retain Stripe customer, subscription, paid-period and event records across restarts. Keep H2 for the course, but use persistent file storage for the billing demonstration and controlled seed behavior. Do not seed fake paid subscribers as verified Stripe subscriptions.
-- Secrets remain server environment variables. Use test keys, test Price IDs and Stripe CLI forwarding for local webhooks. Live charging is outside this delivery.
+Espaçamento 8/16/24dp, margem de tela 16dp, alvo de toque mínimo 48dp, título de tela aproximadamente 24sp, seção 18sp, corpo 16sp e secundário 14sp. Altura acompanha conteúdo; suportar fonte ampliada, teclado, tela menor e modo escuro. Sem coordenadas absolutas copiadas de capturas. A família final e os tokens escuros serão validados na implementação, aproveitando as fontes já existentes.
 
-### Future Google Play gate
-
-APK/emulator demonstration does not settle Play distribution eligibility. Premium contains digital in-app benefits. Before publishing through Play, check the applicable billing requirements and alternative-billing/external-link programs for the target market. Do not promise that a Stripe web page or Custom Tab by itself makes the app compliant.
-
-## Screen direction
-
-Retain green/cream identity but replace inconsistent component behavior. One typography family, explicit Material theme colors, dark readable text on pale surfaces, one selection treatment, conventional icons and consistent Portuguese labels. Initial light palette: green #087A49, cream #F7F5EF, surface #FFFFFF, text #19382A and secondary text #53675A. Calculated contrast is 5.40:1 for white on green, 11.74:1 for main text on cream and 6.08:1 for secondary text on white. These pair checks are not a full accessibility audit. Base spacing 8/16/24dp, screen margins 16dp, touch targets at least 48dp. Screen titles around 24sp, section titles 18sp, body 16sp and secondary labels 14sp. Use content-driven heights, scrolling and font scaling; do not copy a screenshot with absolute placement.
-
-The November 5 emulator review found: white greeting text on a pale lavender card; purple defaults in buttons/chips; duplicate active-state treatment in bottom navigation; a clipped destination chip; excessive card height; fictional profile name/country count and placeholder avatar. These are direct observations, not a full accessibility certification.
-
-| Screen | Primary content and action | Required behavior |
+| Área | Ação principal e conteúdo | Estados e restrições |
 | --- | --- | --- |
-| Home | Greeting, next trip or create-trip empty state; secondary destination search | No giant empty greeting card; show loading/error when destinations cannot load |
-| Explore | City/place search and explicit filters, followed by actual results | Filters really filter; unavailable photos do not become unrelated beach images |
-| Place | Name, verified description/location, price meaning, favorite and add-to-trip | No invented amenities/gallery count; maps/site actions use actual data |
-| Trips | User's trips and create action; name, destination, dates/mode | Create/edit requires a city; optional dates are clearly optional |
-| Trip | Itinerary by day, then notes and expenses | List all stops; allow deliberate editing/removal/order; weather never fabricated |
-| Saved | Real saved places, empty state leading to Explore | Saving stays separate from adding to a trip |
-| Profile | Real account, interests, subscription entry and sign out | No fake travel statistics; trip mode belongs to each trip, profile preference only supplies a default |
-| Premium | One plan, three clear benefits, Free comparison, price and limits | Primary “Continuar no Stripe”; visible test-environment notice for the demonstration |
-| Checkout | Stripe-hosted payment page | Stripe owns payment forms; do not rebuild them in XML or WebView |
-| Return | Confirming, active, needs action or no completed purchase | Backend-verified state; no optimistic activation |
-| Subscription | Current access, allowance/reset date, renewal/end date, manage action | Customer Portal handles billing actions; no fake card numbers |
-| AI | Context, remaining allowance, draft, approval and edit action | No automatic itinerary mutation; errors retain the user's input |
-| Recovery | Email input, neutral submission result, token-based reset | Do not claim email was sent without provider confirmation |
+| Entrada e acesso | Entrar, cadastrar ou visitar | Validação, envio, falha; Google/reset só anunciam sucesso real |
+| Home | Próxima viagem ou criar primeira; busca secundária | Sem cartão gigante de saudação, estatísticas fictícias ou catálogo silenciosamente vazio |
+| Explorar/lista | Pesquisa, filtros explícitos, resultados | Carregando, vazio, erro com tentativa; imagem ausente neutra |
+| Lugar | Detalhe, favorito, adicionar à viagem, mapa/site | Sem galeria, comodidades ou disponibilidade inventadas |
+| Viagens | Lista e formulário de criação/edição | Cidade obrigatória; datas/orçamento opcionais; confirmação ao excluir |
+| Viagem/roteiro | Dias, paradas, notas e gastos | Edição deliberada; conflitos tratados; próxima parada real |
+| Salvos | Lugares reais e acesso ao detalhe | Vazio leva à exploração; salvar não inclui no roteiro |
+| Perfil | Identidade real, interesses, assinatura e sair | Sem pessoa fictícia, países inventados ou cartões de pagamento falsos |
+| Vi | Contexto, quota, pedido, rascunho e aprovação | Limite, falha recuperável, revisão e aplicação explícita |
+| Premium | Um plano, comparação com gratuito e preço | “Continuar no Stripe”; aviso de testes na demonstração |
+| Retorno | Confirmando, ativo, pendência ou compra não concluída | Estado do servidor; não ativar por URL |
+| Assinatura | Acesso, quota, renovação/fim e gestão | Portal Stripe; não duplicar telas de cartão/cobrança |
+| Notas/gastos | Entrada simples no contexto da viagem/parada | Salvar real, falha sem apagar edição, confirmação de exclusão |
 
-An interactive reference for Home/Premium/return/subscription was prepared in the conversation. It is a design proposal with illustrative data, not an Android implementation or a real payment session. It demonstrates readable hierarchy, a single green selection treatment and explicit return states.
+A revisão do emulador encontrou texto branco em fundo claro, roxo herdado do tema, seleção duplicada no menu, chips cortados, cartões muito altos e identidade fictícia. A prévia apresentada na conversa é uma proposta ilustrativa, não uma tela implementada. Protótipos antigos podem ajudar a entender intenções, mas não decidem regras nem sustentam contagens de páginas.
 
-Do not design separate pages for every possible subscription action. Premium, subscription and a reusable return/status view are enough alongside Stripe Checkout/Portal. Resolve overlapping Premium/Profile implementations after the screen flow is validated.
+## Pontos que não devem ser inventados na implementação
 
-## Implementation order replacing the old feature-first sequence
+- Escolha e condições de uso do mapa/clima; Open-Meteo é candidato histórico, não integração comprovada.
+- Modelo Gemini, custos, limites e políticas atuais do provedor.
+- Repetição/moderação de avaliações e retenção de rascunhos da IA.
+- Anexos de notas, lembretes, cartões de embarque, agenda de reuniões e lugares personalizados: aparecem nas fontes antigas e precisam de escopo/aceitação antes de gerar tabelas ou páginas. Não estão sendo declarados concluídos nem descartados.
+- Garantia de disponibilidade/preços de hospedagem, personalização automática de perfil e múltiplos destinos por viagem não foram aprovados para esta entrega.
 
-1. Adopt this product/billing baseline, correct conflicting documentation and validate representative Home/Profile/Premium/return layouts.
-2. Define screen states and data requirements for remaining flows. Reuse existing colors/styles/layout components; no speculative class inventory.
-3. Close authorization, password-field exposure and session errors before exposing billing or connecting a publicly reachable webhook.
-4. Implement one test Checkout → webhook → access → return → cancellation flow with persistent records and regression tests.
-5. Apply the visual system to the main journeys, then finish itinerary, profile, notes, expenses and external integrations with each screen's contract.
-6. Complete offline/PDF/AI entitlements, clean checkout validation, hosted demonstration and academic artifacts.
+## Referências de integração
 
-Acceptance of the baseline does not mean features are implemented. Present to the faculty the distinction between observed working flows, remaining features, pricing hypotheses and measured costs.
+Consultadas em 05/11/2026; verificar novamente quando da implementação/publicação:
 
-## Sources consulted on November 5, 2026
-
-- Stripe Checkout: https://docs.stripe.com/payments/checkout
-- Fulfillment and return/webhook distinction: https://docs.stripe.com/checkout/fulfillment?ui=full-page
-- Subscription events: https://docs.stripe.com/billing/subscriptions/webhooks
-- Signature verification, repeated delivery and local forwarding: https://docs.stripe.com/webhooks
-- Customer Portal: https://docs.stripe.com/customer-management
-- Brazil processing pricing: https://stripe.com/br/pricing
-- Android Custom Tabs: https://developer.chrome.com/docs/android/custom-tabs
-- Play payments policy: https://support.google.com/googleplay/android-developer/answer/9858738
+- [Stripe Checkout](https://docs.stripe.com/payments/checkout), [confirmação e retorno](https://docs.stripe.com/checkout/fulfillment?ui=full-page), [eventos de assinatura](https://docs.stripe.com/billing/subscriptions/webhooks), [webhooks](https://docs.stripe.com/webhooks), [portal](https://docs.stripe.com/customer-management).
+- [Android Custom Tabs](https://developer.chrome.com/docs/android/custom-tabs).
+- [Política de pagamentos da Play](https://support.google.com/googleplay/android-developer/answer/9858738).
