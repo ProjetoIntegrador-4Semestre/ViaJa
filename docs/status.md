@@ -18,7 +18,7 @@ Revisado em 05/11/2026 a partir do código local e das verificações da sessão
 | Salvos | Salvar/remover/lista/retorno vazio verificados | Proprietário e mutações testados | Falhas de consulta/retentativa no favorito, paginação Android em volume e visita sem sessão |
 | Viagens | Criar/listar e abrir detalhe verificados | CRUD e proprietário testados | Edição/exclusão na UI, conflitos de cidade/datas, finalização/histórico completo |
 | Roteiro | Adiciona ao dia 1 e mostra primeira parada | CRUD/ordenação por dia e acesso testados | Editor completo, horários, dia escolhido, ordem sem colisões e memos na exclusão |
-| Perfil/interesses | Usuário simulado e sucesso apenas local | CRUD sem proteção suficiente | Identidade correta, gravação real, campos e sessão após edição |
+| Perfil/interesses | Leitura do perfil pela API; nome da conta verificado no emulador; edição ainda local | Conta com leitura/mutação restritas ao proprietário; interesses ainda pendentes | Gravação real na edição, validação de campos, interesses e sessão após alterar e-mail |
 | Notas/checklists | Sem fluxo | Texto de viagem/parada parcial | Autorização, telas e itens de checklist |
 | Despesas/recibos | Ausente | Ausente | Registro, totais, anexos privados, orçamento/reembolso |
 | Mapas/localização | Imagem ilustrativa | Coordenadas no catálogo | Mapa/renderização, permissões e navegação real |
@@ -32,21 +32,21 @@ Revisado em 05/11/2026 a partir do código local e das verificações da sessão
 
 ## Falhas prioritárias confirmadas na auditoria
 
-1. Com a conta Rafael, `GET /users/2` retornou 200 com `passwordHash`; os controladores de usuários não conferem proprietário nas mutações.
+1. A conta própria ainda precisa de validação uniforme, tratamento da sessão após mudança de e-mail e exclusão de vínculos. Exposição do hash e acesso cruzado em UserController foram corrigidos e verificados nesta rodada.
 2. `GET /trips/2/notes`, `/trip-memos` e `/users/2/interests` retornaram 200 com a mesma conta. A proteção de TripController não protege esses caminhos automaticamente.
 3. Regras públicas de places/cities/interests/medias abrangem métodos de escrita, não só leitura.
 4. JWT padrão no código, filtro sem tratamento explícito de falhas e RuntimeException → 404. Sem token, recurso privado retornou 403; JWT malformado prejudicou consulta pública com 403.
-5. Editar perfil anuncia sucesso sem gravar na API; UserRepository pode substituir a identidade da sessão por dados do mock.
+5. Editar perfil ainda anuncia sucesso sem gravar na API. A consulta de UserRepository agora é real e não substitui o usuário pelo mock; sua operação de edição não implementada passa a retornar erro explícito.
 6. Busca local confirmou “São Paulo” com zero resultados e “Sao Paulo” com um.
 7. Falta tratar memos na remoção de uma parada. Como existe FK composta, isso pode impedir a exclusão; não é correto afirmar que sempre produz órfãos.
 8. Há alterações Android pré-existentes, inclusive arquivos fora do versionamento. Compilar o diretório atual não prova compilação e execução de um checkout limpo.
 
-Não foram feitas alterações de produção durante a revisão documental. As falhas acima não foram corrigidas só por serem descritas aqui.
+A revisão documental não corrigiu código. A rodada posterior de conta/perfil corrigiu os pontos indicados acima: leitura/listagem sem hash, rejeição de GET/PUT/DELETE de outra conta e retirada do POST genérico de usuários, com 405. Restantes continuam abertos.
 
 ## Evidência disponível e seus limites
 
 - Compilação Android debug e Maven verify passaram nas rodadas de implementação anteriores.
-- `scripts/smoke_test.py` da API possui nove grupos de verificações: catálogo/paginação, erros, contratos, login, salvos, viagens e paradas. Esses grupos contêm várias assertivas, não equivalem a nove funcionalidades completas nem a uma suíte integral.
+- `scripts/smoke_test.py` da API possui dez grupos de verificações: catálogo/paginação, erros, contratos, login, salvos, viagens, paradas e privacidade da conta. Esses grupos contêm várias assertivas, não equivalem a dez funcionalidades completas nem a uma suíte integral.
 - `AuthRepositoryTest` passou diretamente com AndroidJUnitRunner: sessão simulada/expirada, restauração, IDs longos e rejeição do token correspondente. O launcher de testes Gradle offline não tinha uma dependência no cache.
 - Emulador: login/restauração, busca→detalhe, ciclo de salvos, criar viagem e incluir lugar na viagem foram demonstrados. Não houve regressão de todas as telas, modo escuro, rotação, rede lenta ou troca de conta.
 - Capturas atuais de Home/Perfil mostram contraste ruim, roxo herdado, seleção duplicada, chips cortados e persona fictícia. A prévia visual da conversa não foi implementada no APK.

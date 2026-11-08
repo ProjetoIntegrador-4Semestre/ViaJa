@@ -68,10 +68,7 @@ interface ApiService {
     fun getUsers(): Call<Any>
 
     @GET("users/{id}")
-    fun getUserById(@Path("id") id: Long): Call<Any>
-
-    @POST("users")
-    fun createUser(@Body body: Any): Call<Any>
+    fun getUserById(@Path("id") id: Long): Call<ViajaUser>
 
     @PUT("users/{id}")
     fun updateUser(@Path("id") id: Long, @Body body: Any): Call<Any>
