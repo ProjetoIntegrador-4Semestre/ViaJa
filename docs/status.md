@@ -8,7 +8,7 @@ Revisado em 05/11/2026 a partir do código local e das verificações da sessão
 
 | Área | Android | API/dados | O que falta para concluir |
 | --- | --- | --- | --- |
-| Login/sessão | Login real, token persistido e retorno à Home verificados | JWT/login funcionam no teste local | Logout na UI, expiração em tela aberta, armazenamento protegido, JWT inválido tratado corretamente |
+| Login/sessão | Login real, token persistido e retorno à Home verificados em rodada anterior | Login de demonstração, 401 sem sessão válida e consulta pública com token inválido verificados na API local | Logout na UI, expiração em tela aberta, armazenamento protegido e verificação do login hospedado |
 | Cadastro | Callback real; não reexecutado integralmente na última rodada | Rota existente | Validação de campos/senha, duplicidade e regressão ponta a ponta |
 | Google | Botão “em breve” | Ausente | OAuth/configuração e verificação da identidade |
 | Recuperar/redefinir | Telas sem ação | Ausente | E-mail, token temporário, submissão e links |
@@ -35,18 +35,18 @@ Revisado em 05/11/2026 a partir do código local e das verificações da sessão
 1. A conta própria ainda precisa de validação uniforme, tratamento da sessão após mudança de e-mail e exclusão de vínculos. Exposição do hash e acesso cruzado em UserController foram corrigidos e verificados nesta rodada.
 2. `GET /trips/2/notes`, `/trip-memos` e `/users/2/interests` retornaram 200 com a mesma conta. A proteção de TripController não protege esses caminhos automaticamente.
 3. Regras públicas de places/cities/interests/medias abrangem métodos de escrita, não só leitura.
-4. JWT padrão no código, filtro sem tratamento explícito de falhas e RuntimeException → 404. Sem token, recurso privado retornou 403; JWT malformado prejudicou consulta pública com 403.
+4. A API local corrigiu o 403 sem sessão válida, o bloqueio de consultas públicas por token inválido e o tratamento genérico de falhas como 404. Ainda há uma chave JWT padrão no código. No Render, `GET /trips` sem token retornou 403 e `POST /auth/login` com corpo vazio retornou 404.
 5. Editar perfil ainda anuncia sucesso sem gravar na API. A consulta de UserRepository agora é real e não substitui o usuário pelo mock; sua operação de edição não implementada passa a retornar erro explícito.
 6. Busca local confirmou “São Paulo” com zero resultados e “Sao Paulo” com um.
 7. Falta tratar memos na remoção de uma parada. Como existe FK composta, isso pode impedir a exclusão; não é correto afirmar que sempre produz órfãos.
 8. Há alterações Android pré-existentes, inclusive arquivos fora do versionamento. Compilar o diretório atual não prova compilação e execução de um checkout limpo.
 
-A revisão documental não corrigiu código. A rodada posterior de conta/perfil corrigiu os pontos indicados acima: leitura/listagem sem hash, rejeição de GET/PUT/DELETE de outra conta e retirada do POST genérico de usuários, com 405. Restantes continuam abertos.
+A rodada de conta/perfil corrigiu localmente a leitura e listagem com hash, o acesso cruzado à conta e removeu o `POST /users`. A API publicada ainda lista `POST /users` no OpenAPI e carece de verificação após a publicação das correções.
 
 ## Evidência disponível e seus limites
 
 - Compilação Android debug e Maven verify passaram nas rodadas de implementação anteriores.
-- `scripts/smoke_test.py` da API possui dez grupos de verificações: catálogo/paginação, erros, contratos, login, salvos, viagens, paradas e privacidade da conta. Esses grupos contêm várias assertivas, não equivalem a dez funcionalidades completas nem a uma suíte integral.
+- Os 11 grupos de verificações do `scripts/smoke_test.py` da API passaram na instância local, incluindo os códigos de autenticação e roteamento, catálogo, login, salvos, viagens, paradas e privacidade da conta.
 - `AuthRepositoryTest` passou diretamente com AndroidJUnitRunner: sessão simulada/expirada, restauração, IDs longos e rejeição do token correspondente. O launcher de testes Gradle offline não tinha uma dependência no cache.
 - Emulador: login/restauração, busca→detalhe, ciclo de salvos, criar viagem e incluir lugar na viagem foram demonstrados. Não houve regressão de todas as telas, modo escuro, rotação, rede lenta ou troca de conta.
 - Capturas atuais de Home/Perfil mostram contraste ruim, roxo herdado, seleção duplicada, chips cortados e persona fictícia. A prévia visual da conversa não foi implementada no APK.

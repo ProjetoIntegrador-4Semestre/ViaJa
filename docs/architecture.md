@@ -76,9 +76,9 @@ Muitos vínculos são apenas campos de ID; não assumir FK/cascade em todos. Tri
 
 ## Autorização e erros
 
-JWT autentica a identidade; cada operação privada também confere o proprietário. Isso está aplicado a salvos, viagens, paradas e conta própria, não ao sistema inteiro. A exposição de hash e o acesso cruzado de UserController foram corrigidos; o cadastro fica em /auth/signup, sem POST genérico /users. Ainda há leitura cruzada de notas/interesses, catálogo com escrita pública e tratamento deficiente de JWT inválido. São falhas abertas, não decisões aceitas.
+JWT autentica a identidade. Salvos, viagens, paradas e conta própria também conferem o proprietário. O código local protege o hash de senha e restringe UserController à conta autenticada. O cadastro fica em `POST /auth/signup`. Ainda há leitura cruzada de notas, memos e interesses e escrita pública no catálogo.
 
-O contrato desejado distingue 401, 403, 404, 400 e conflitos. Criação usa 201 com Location; exclusão usa 204 sem corpo. A aplicação ainda transforma RuntimeException em 404, além de expor mensagens internas. Revisar recurso por recurso e verificar Swagger/resposta real; não reescrever todos os controladores apenas para padronizar aparência.
+A API local distingue 401 para credenciais incorretas ou sessão inválida em rota privada, 403 para acesso proibido a recurso de outra conta e 404 para recurso inexistente. Um token inválido permite que a requisição prossiga como anônima em rotas públicas. Erros internos deixam de ser tratados como 404. Criação usa 201 com Location e exclusão usa 204 sem corpo nos fluxos de viagens e salvos.
 
 ## Desenvolvimento e configuração
 

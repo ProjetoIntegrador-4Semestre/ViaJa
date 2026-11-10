@@ -19,6 +19,8 @@ A API está no repositório `api-viaja`; seu README descreve a inicialização c
 adb reverse tcp:18080 tcp:18080
 ```
 
+No app apontado para a API local, entre com `rafael@email.com` e senha `senha123`. A conta é recriada pela carga inicial quando a API local reinicia.
+
 O modo offline do Gradle exige dependências previamente presentes no cache; ele não implementa o modo offline do produto. Instalar o APK gerado pelo Android Studio ou ferramenta Android. A configuração hospedada é distinta e seus contratos ainda precisam de deploy/verificação.
 
 Existem mudanças locais anteriores à recuperação. Não descartá-las nem assumir que o diretório testado equivale a um checkout limpo. Requisitos e evidências devem acompanhar cada alteração.
