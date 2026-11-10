@@ -1,21 +1,29 @@
 package com.senac.viaja.ui.trips
 
-import androidx.activity.enableEdgeToEdge
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PAGE_TAB_EXTRA
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.data.repository.TripRepository
 import com.senac.viaja.data.repository.PlaceRepository
-import com.senac.viaja.data.repository.PlaceCallback
-import com.senac.viaja.data.model.Place
 import com.senac.viaja.ui.places.AiTripChatActivity
 
 class TripDashboardActivity : AppCompatActivity() {
+    private val trips = TripRepository()
+    private val places = PlaceRepository()
+    private var refreshStop: (() -> Unit)? = null
+    private val itineraryResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        refreshStop?.invoke()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (AuthRepository(this).getUser() == null) {
@@ -23,13 +31,7 @@ class TripDashboardActivity : AppCompatActivity() {
             finish()
             return
         }
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_trip_dashboard)
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
-        }
+        val headerTitle = setPageContent(R.layout.activity_trip_dashboard, "Viagem", PageTab.TRIPS) { finish() }
         val tripId = intent.getStringExtra("trip_id")?.toLongOrNull()
         if (tripId == null) {
             finish()
@@ -40,40 +42,54 @@ class TripDashboardActivity : AppCompatActivity() {
         val mode = findViewById<TextView>(R.id.tvTripMode)
         val stopName = findViewById<TextView>(R.id.tvNextStopName)
         val stopTime = findViewById<TextView>(R.id.tvNextStopTime)
-        val chat = findViewById<MaterialButton>(R.id.btnChatVi)
-        chat.isEnabled = false
+        val itinerary = findViewById<MaterialButton>(R.id.btnOpenTripItinerary)
+        itinerary.isEnabled = false
         title.text = "Carregando viagem…"
         stopName.text = "Carregando roteiro…"
         stopTime.text = ""
-        findViewById<TextView>(R.id.tvWeatherTemp).text = "—"
-        findViewById<TextView>(R.id.tvWeatherDesc).text = "Clima indisponível"
-        val repository = TripRepository()
         val onError: (String) -> Unit = { message ->
             title.text = "Não foi possível carregar a viagem"
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
-        repository.getById(tripId, { trip ->
+        trips.getById(tripId, { trip ->
+            headerTitle.text = trip.name
             title.text = trip.name
             dates.text = if (trip.startDate == null) "Datas a definir" else "${trip.startDate} — ${trip.endDate ?: "Fim a definir"}"
             mode.text = if (trip.mode == "work") "Trabalho" else "Turismo"
-            chat.isEnabled = true
-            chat.setOnClickListener {
+            itinerary.isEnabled = true
+            val openChat = {
                 startActivity(Intent(this, AiTripChatActivity::class.java)
-                    .putExtra("trip_id", trip.id).putExtra("trip_name", trip.name).putExtra("trip_mode", trip.mode))
+                    .putExtra(PAGE_TAB_EXTRA, R.id.nav_trips)
+                    .putExtra("trip_name", trip.name)
+                    .putExtra("trip_mode", trip.mode))
             }
-            repository.stops(tripId, { stops ->
-                val stop = stops.firstOrNull()
-                if (stop?.localId == null) {
-                    stopName.text = "Nenhum lugar no roteiro"
-                    return@stops
-                }
-                stopTime.text = "Dia ${stop.day} • Parada ${stop.orderIndex}"
-                PlaceRepository().getPlace(stop.localId.toString(), object : PlaceCallback {
-                    override fun onSuccess(places: List<Place>) {}
-                    override fun onPlace(place: Place) { stopName.text = place.name }
-                    override fun onError(message: String) { stopName.text = message }
-                })
-            }, { message -> stopName.text = message })
+            itinerary.setOnClickListener {
+                itineraryResult.launch(Intent(this, TripItineraryActivity::class.java)
+                    .putExtra(TripItineraryActivity.TRIP_ID, tripId))
+            }
+            findViewById<android.view.View>(R.id.pageAi).setOnClickListener { openChat() }
+            val refresh = { loadStop(tripId, trip.startDate) }
+            refreshStop = refresh
+            refresh()
         }, onError)
+    }
+
+    private fun loadStop(tripId: Long, startDate: String?) {
+        val name = findViewById<TextView>(R.id.tvNextStopName)
+        val time = findViewById<TextView>(R.id.tvNextStopTime)
+        name.text = "Carregando roteiro…"
+        time.text = ""
+        trips.stops(tripId, { stops ->
+            val preview = previewStop(stops, startDate)
+            val stop = preview.stop
+            findViewById<TextView>(R.id.tvNextStop).text = if (stop == null) "Roteiro" else preview.title
+            val placeId = stop?.localId
+            if (stop == null || placeId == null) {
+                name.text = if (stop == null) preview.title else "Lugar indisponível"
+            } else {
+                time.text = "Dia ${stop.day ?: 1} · ${stop.displayTime ?: "Horário a definir"}"
+                places.getPlace(placeId.toString(), { name.text = it.name }, { name.text = it })
+            }
+        }, { name.text = it })
     }
 }

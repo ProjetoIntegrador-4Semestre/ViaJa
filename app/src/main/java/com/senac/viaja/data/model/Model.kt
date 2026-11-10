@@ -69,7 +69,8 @@ data class Trip(
     val startDate: String?,
     val endDate: String?,
     val totalBudgetCents: Long?,
-    val status: String?
+    val status: String?,
+    val cityId: Long? = null
 )
 
 data class TripRequest(
@@ -156,8 +157,12 @@ data class TripLocal(
     val localId: Long?,
     val day: Int?,
     val orderIndex: Int?,
-    val note: String?
+    val note: String?,
+    val scheduledTime: String? = null,
+    val completed: Boolean = false
 )
+
+data class StopSchedule(val scheduledTime: String?, val completed: Boolean)
 
 
 
@@ -208,3 +213,19 @@ data class CityPage(
     val page: PageMetadata
 )
 data class CityEmbedded(val cityList: List<City>?)
+
+data class TripNotesPage(val _embedded: TripNotesEmbedded?)
+
+data class TripNotesEmbedded(
+    @com.google.gson.annotations.SerializedName(value = "tripNoteList", alternate = ["tripNotes"])
+    val notes: List<TripNote>?
+)
+
+data class CatalogPlace(val id: String, val name: String, val lat: Double?, val lng: Double?)
+
+data class CatalogPlacePage(
+    @com.google.gson.annotations.SerializedName("_embedded")
+    val embedded: CatalogPlaceEmbedded?
+)
+
+data class CatalogPlaceEmbedded(val localList: List<CatalogPlace>?)

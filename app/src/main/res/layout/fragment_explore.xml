@@ -19,15 +19,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <ImageView
         android:id="@+id/tvExploreBrand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Viajá"
-        android:textColor="@color/viaja_green"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:fontFamily="@font/be_vietnam_pro_extrabold"
+        android:layout_width="100dp"
+        android:layout_height="38dp"
+        android:contentDescription="Viajá"
+        android:scaleType="fitCenter"
+        android:src="@drawable/viaja_badge"
         app:layout_constraintBottom_toBottomOf="@id/ivExploreAvatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

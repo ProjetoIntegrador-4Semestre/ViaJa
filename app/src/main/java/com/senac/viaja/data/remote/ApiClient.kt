@@ -81,7 +81,7 @@ interface ApiService {
     fun searchPlaces(@Query("q") q: String?): Call<List<Place>>
 
     @GET("places")
-    fun getPlaces(): Call<Any>
+    fun getPlaces(@Query("size") size: Int): Call<CatalogPlacePage>
 
     @GET("places/{id}")
     fun getPlace(@Path("id") id: String): Call<Place>
@@ -116,7 +116,12 @@ interface ApiService {
 
 
     @GET("users/{userId}/saved-locals")
-    fun getSavedLocals(@Path("userId") userId: Long, @Query("page") page: Int = 0): Call<SavedPage>
+    fun getSavedLocals(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int? = null,
+        @Query("sort") sort: String? = null
+    ): Call<SavedPage>
 
     @GET("users/{userId}/saved-locals/{localId}")
     fun getSavedLocal(@Path("userId") userId: Long, @Path("localId") localId: Long): Call<SavedItem>
@@ -148,7 +153,7 @@ interface ApiService {
     fun getCities(@Query("page") page: Int = 0): Call<CityPage>
 
     @GET("cities/{id}")
-    fun getCityById(@Path("id") id: Long): Call<Any>
+    fun getCityById(@Path("id") id: Long): Call<City>
 
     @POST("cities")
     fun createCity(@Body body: Any): Call<Any>
@@ -198,12 +203,15 @@ interface ApiService {
     @PUT("trip-locals/{tripId}/{localId}")
     fun updateTripLocal(@Path("tripId") tripId: Long, @Path("localId") localId: Long, @Body body: Any): Call<Any>
 
+    @PUT("trip-locals/{tripId}/{localId}/schedule")
+    fun updateStopSchedule(@Path("tripId") tripId: Long, @Path("localId") localId: Long, @Body schedule: StopSchedule): Call<TripLocal>
+
     @DELETE("trip-locals/{tripId}/{localId}")
     fun deleteTripLocal(@Path("tripId") tripId: Long, @Path("localId") localId: Long): Call<Any>
 
 
     @GET("trips/{tripId}/notes")
-    fun getTripNotes(@Path("tripId") tripId: Long): Call<Any>
+    fun getTripNotes(@Path("tripId") tripId: Long, @Query("sort") sort: String = "id,desc"): Call<TripNotesPage>
 
     @POST("trips/{tripId}/notes")
     fun createTripNote(@Path("tripId") tripId: Long, @Body body: Any): Call<Any>
@@ -216,7 +224,7 @@ interface ApiService {
 
 
     @GET("trip-memos/trip-locals/{tripId}/{localId}/memos")
-    fun getTripMemos(@Path("tripId") tripId: Long, @Path("localId") localId: Long): Call<Any>
+    fun getTripMemos(@Path("tripId") tripId: Long, @Path("localId") localId: Long): Call<List<TripMemo>>
 
     @POST("trip-memos")
     fun createTripMemo(@Body body: Any): Call<Any>

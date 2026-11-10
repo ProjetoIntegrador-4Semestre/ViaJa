@@ -3,7 +3,6 @@ package com.senac.viaja.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -16,7 +15,6 @@ class SavedAdapter(
 ) : RecyclerView.Adapter<SavedAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgSaved: ImageView = view.findViewById(R.id.imgSaved)
         val chipSavedType: TextView = view.findViewById(R.id.chipSavedType)
         val tvSavedName: TextView = view.findViewById(R.id.tvSavedName)
         val tvSavedLocation: TextView = view.findViewById(R.id.tvSavedLocation)
@@ -32,8 +30,8 @@ class SavedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         val place = item.place
-        holder.tvSavedName.text = place?.name ?: "Local ${item.localId}"
-        holder.tvSavedLocation.text = place?.address ?: ""
+        holder.tvSavedName.text = place?.name ?: "Lugar salvo"
+        holder.tvSavedLocation.text = if (place == null) "Detalhes indisponíveis" else place.address.orEmpty()
         holder.chipSavedType.text = place?.categories?.firstOrNull() ?: "Lugar"
         holder.btnAddTrip.text = "Ver lugar"
         holder.btnAddTrip.setOnClickListener { onClick(item) }

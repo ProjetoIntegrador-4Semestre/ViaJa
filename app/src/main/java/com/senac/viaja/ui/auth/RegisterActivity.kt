@@ -50,11 +50,11 @@ class RegisterActivity : AppCompatActivity() {
         btnVoltar = findViewById(R.id.btnVoltar)
         tvEntrarLink = findViewById(R.id.tvEntrarLink)
 
-        viewModel.user.observe(this) { user ->
-            if (user != null) {
-                Toast.makeText(this@RegisterActivity, "Conta criada! Faça login.", Toast.LENGTH_LONG).show()
+        viewModel.registerSuccess.observe(this) { success ->
+            if (success == true) {
+                Toast.makeText(this@RegisterActivity, "Conta criada com sucesso! Faça login.", Toast.LENGTH_LONG).show()
                 val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-                intent.putExtra("email", user.email)
+                intent.putExtra("email", etEmailReg.text.toString().trim())
                 startActivity(intent)
                 finish()
             }

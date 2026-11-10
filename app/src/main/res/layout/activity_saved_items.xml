@@ -18,19 +18,6 @@
         app:layout_constraintTop_toBottomOf="@id/chipSavedContainer" />
 
     <TextView
-        android:id="@+id/tv_saved_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Itens Salvos"
-        android:textColor="@color/viaja_text"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -39,7 +26,7 @@
         android:textColor="@color/viaja_gray"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_saved_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/chipSavedContainer"
@@ -49,7 +36,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tv_saved_title">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.chip.Chip
             style="@style/Widget.Viaja.Chip.Selected"
@@ -86,14 +73,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chipSavedContainer" />
-
-    <include
-        android:id="@+id/bottom_nav_bar"
-        layout="@layout/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

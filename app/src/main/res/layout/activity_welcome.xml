@@ -27,15 +27,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/ivViajaBadge"
+        android:layout_width="218dp"
+        android:layout_height="86dp"
+        android:background="@drawable/bg_brand_badge"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:contentDescription="Viajá"
+        android:scaleType="fitCenter"
+        android:src="@drawable/viaja_badge"
         android:layout_marginTop="64dp"
-        android:text="Viajá"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        app:fontFamily="@font/be_vietnam_pro_extrabold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +55,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLogo" />
+        app:layout_constraintTop_toBottomOf="@id/ivViajaBadge" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEntrar"

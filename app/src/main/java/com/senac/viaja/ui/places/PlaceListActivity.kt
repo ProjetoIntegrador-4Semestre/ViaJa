@@ -2,14 +2,13 @@ package com.senac.viaja.ui.places
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.adapter.PlaceAdapter
 import com.senac.viaja.ui.main.PlaceViewModel
 
@@ -19,24 +18,17 @@ class PlaceListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_place_list)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val headerTitle = setPageContent(R.layout.activity_place_list, "Lugares", PageTab.EXPLORE) { finish() }
 
         viewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
 
         val query = intent.getStringExtra("q") ?: ""
         val city = intent.getStringExtra("city") ?: ""
-        val searchTerm = if (city.isNotEmpty()) city else query
+        val searchTerm = city.ifBlank { query }
+        if (city.isNotBlank()) headerTitle.text = city
 
         val recycler = findViewById<RecyclerView>(R.id.recycler_places)
         val status = findViewById<android.widget.TextView>(R.id.tvPlaceListStatus)
-        findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbarPlaceList)
-            .setNavigationOnClickListener { finish() }
         status.setOnClickListener { viewModel.searchByCity(searchTerm) }
         recycler.layoutManager = LinearLayoutManager(this)
 

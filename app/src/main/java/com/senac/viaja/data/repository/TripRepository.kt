@@ -22,6 +22,16 @@ class TripRepository {
 
     fun stops(id: Long, onSuccess: (List<TripLocal>) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.getTripLocalsByTrip(id), onSuccess, onError)
 
+    fun updateStopSchedule(tripId: Long, localId: Long, schedule: StopSchedule,
+                           onSuccess: (TripLocal) -> Unit, onError: (String) -> Unit) =
+        receive(ApiClient.service.updateStopSchedule(tripId, localId, schedule), onSuccess, onError)
+
+    fun notes(tripId: Long, onSuccess: (List<TripNote>) -> Unit, onError: (String) -> Unit) =
+        receive(ApiClient.service.getTripNotes(tripId), { onSuccess(it._embedded?.notes.orEmpty()) }, onError)
+
+    fun memos(tripId: Long, localId: Long, onSuccess: (List<TripMemo>) -> Unit, onError: (String) -> Unit) =
+        receive(ApiClient.service.getTripMemos(tripId, localId), onSuccess, onError)
+
     fun addStop(stop: TripLocal, onSuccess: (TripLocal) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.addTripLocal(stop), onSuccess, onError)
 
     fun create(request: TripRequest, onSuccess: (TripResponse) -> Unit, onError: (String) -> Unit) = receive(ApiClient.service.createTrip(request), onSuccess, onError)

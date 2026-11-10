@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:focusable="true"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/viaja_surface">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <TextView android:id="@+id/itineraryPlaceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Carregando lugar…"
+            android:textColor="#07563A"
+            android:textSize="16sp"
+            app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+        <TextView
+            android:id="@+id/itineraryPlaceTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Horário a definir"
+            android:textColor="#53675A"
+            android:textSize="14sp" />
+
+        <TextView android:id="@+id/itineraryPlaceNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#53675A"
+            android:textSize="15sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itinerarySchedule"
+            style="@style/Widget.Viaja.Button.Outline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Horário e conclusão"
+            android:textAllCaps="false" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

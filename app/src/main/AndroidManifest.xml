@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -16,14 +17,8 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.main.MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.profile.PremiumActivity"
             android:exported="false" />
@@ -37,12 +32,15 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.auth.WelcomeActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.main.ShellActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.main.HomeActivity"
             android:exported="false"
@@ -71,6 +69,9 @@
             android:name=".ui.trips.TripListActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.trips.TripItineraryActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.trips.TripDashboardActivity"
             android:exported="false"

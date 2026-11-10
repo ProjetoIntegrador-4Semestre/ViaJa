@@ -3,7 +3,6 @@ package com.senac.viaja.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.senac.viaja.R
@@ -15,7 +14,6 @@ class CityAdapter(
 ) : RecyclerView.Adapter<CityAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgCity: ImageView = view.findViewById(R.id.imgCity)
         val tvCityName: TextView = view.findViewById(R.id.tvCityName)
         val tvCityState: TextView = view.findViewById(R.id.tvCityState)
     }
@@ -29,7 +27,7 @@ class CityAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val city = items[position]
         holder.tvCityName.text = city.name ?: "Cidade"
-        holder.tvCityState.text = "${city.state ?: ""}, ${city.country ?: ""}"
+        holder.tvCityState.text = listOfNotNull(city.state, city.country).joinToString(", ")
         holder.itemView.setOnClickListener { onClick(city) }
     }
 

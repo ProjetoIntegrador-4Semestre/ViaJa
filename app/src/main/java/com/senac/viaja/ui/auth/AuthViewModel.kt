@@ -21,6 +21,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _user = MutableLiveData<ViajaUser>()
     val user: LiveData<ViajaUser> = _user
 
+    private val _registerSuccess = MutableLiveData<Boolean>()
+    val registerSuccess: LiveData<Boolean> = _registerSuccess
+
     fun login(email: String, password: String) {
         _loading.value = true
         _error.value = null
@@ -42,6 +45,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         repository.register(name, email, password,
             {
                 _loading.value = false
+                _registerSuccess.value = true
             },
             { message ->
                 _loading.value = false

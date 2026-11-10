@@ -6,25 +6,18 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.adapter.TripAdapter
 import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.data.repository.CityRepository
 import com.senac.viaja.data.repository.TripRepository
-import com.senac.viaja.ui.main.ExploreActivity
-import com.senac.viaja.ui.main.HomeActivity
-import com.senac.viaja.ui.main.ProfileActivity
-import com.senac.viaja.ui.main.SavedItemsActivity
 import com.senac.viaja.ui.main.TripViewModel
 
 class TripListActivity : AppCompatActivity() {
@@ -33,13 +26,7 @@ class TripListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_trip_list)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setPageContent(R.layout.activity_trip_list, "Minhas viagens", PageTab.TRIPS, topLevel = true)
 
         viewModel = ViewModelProvider(this).get(TripViewModel::class.java)
 
@@ -79,8 +66,6 @@ class TripListActivity : AppCompatActivity() {
         }
         viewModel.listByUser(userId)
 
-        setupBottomNav()
-
         val btnAddTrip: MaterialButton = findViewById(R.id.btnAddTrip)
         viewModel.loading.observe(this) { loading ->
             btnAddTrip.isEnabled = !loading
@@ -89,37 +74,6 @@ class TripListActivity : AppCompatActivity() {
         }
         btnAddTrip.setOnClickListener {
             showCreateTripDialog()
-        }
-    }
-
-    private fun setupBottomNav() {
-        val nav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        nav?.selectedItemId = R.id.nav_trips
-        nav?.setOnItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_trips) return@setOnItemSelectedListener true
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_explore -> {
-                    startActivity(Intent(this, ExploreActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_saved -> {
-                    startActivity(Intent(this, SavedItemsActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    finish()
-                    true
-                }
-                else -> false
-            }
         }
     }
 

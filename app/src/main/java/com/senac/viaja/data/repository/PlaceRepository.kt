@@ -1,5 +1,7 @@
 package com.senac.viaja.data.repository
 
+import com.senac.viaja.data.model.CatalogPlace
+import com.senac.viaja.data.model.CatalogPlacePage
 import com.senac.viaja.data.model.Place
 import com.senac.viaja.data.remote.ApiClient
 import retrofit2.Call
@@ -7,6 +9,18 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class PlaceRepository {
+
+    fun nearbyCandidates(onSuccess: (List<CatalogPlace>) -> Unit, onError: () -> Unit) {
+        ApiClient.service.getPlaces(size = 50).enqueue(object : Callback<CatalogPlacePage> {
+            override fun onResponse(call: Call<CatalogPlacePage>, response: Response<CatalogPlacePage>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null) onSuccess(body.embedded?.localList.orEmpty())
+                else onError()
+            }
+
+            override fun onFailure(call: Call<CatalogPlacePage>, error: Throwable) = onError()
+        })
+    }
 
     fun search(query: String, callback: PlaceCallback) {
         ApiClient.service.searchPlaces(query.trim()).enqueue(object : Callback<List<Place>> {
@@ -22,20 +36,22 @@ class PlaceRepository {
         })
     }
 
-    fun getPlace(id: String, callback: PlaceCallback) {
+    fun getPlace(id: String, callback: PlaceCallback) = getPlace(id, callback::onPlace, callback::onError)
+
+    fun getPlace(id: String, onSuccess: (Place) -> Unit, onError: (String) -> Unit) {
         if (id.toLongOrNull() == null) {
-            callback.onError("Lugar inválido.")
+            onError("Lugar inválido.")
             return
         }
         ApiClient.service.getPlace(id).enqueue(object : Callback<Place> {
             override fun onResponse(call: Call<Place>, response: Response<Place>) {
                 val place = response.body()
-                if (response.isSuccessful && place != null) callback.onPlace(place)
-                else callback.onError(if (response.code() == 404) "Lugar não encontrado." else "Não foi possível carregar o lugar (${response.code()}).")
+                if (response.isSuccessful && place != null) onSuccess(place)
+                else onError(if (response.code() == 404) "Lugar não encontrado." else "Não foi possível carregar o lugar (${response.code()}).")
             }
 
             override fun onFailure(call: Call<Place>, error: Throwable) {
-                callback.onError("Não foi possível conectar ao servidor. Tente novamente.")
+                onError("Não foi possível conectar ao servidor. Tente novamente.")
             }
         })
     }

@@ -3,13 +3,12 @@ package com.senac.viaja.ui.profile
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.ui.auth.AuthViewModel
 import com.senac.viaja.ui.main.UserViewModel
 
@@ -21,13 +20,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_edit_profile)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setPageContent(R.layout.activity_edit_profile, "Editar perfil", PageTab.PROFILE) { finish() }
 
         etName = findViewById(R.id.etEditName)
         etEmail = findViewById(R.id.etEditEmail)

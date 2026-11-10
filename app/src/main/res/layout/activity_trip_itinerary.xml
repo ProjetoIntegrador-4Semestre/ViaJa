@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/viaja_cream"
+    android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Roteiro completo"
+            android:textColor="#07563A"
+            android:textSize="24sp"
+            app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+        <TextView android:id="@+id/itineraryTripName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:textColor="#53675A"
+            android:textSize="15sp" />
+
+        <ProgressBar android:id="@+id/itineraryLoading"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone" />
+
+        <TextView android:id="@+id/itineraryStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#53675A"
+            android:textSize="15sp" />
+
+        <com.google.android.material.button.MaterialButton android:id="@+id/itineraryRetry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Tentar novamente"
+            style="@style/Widget.Viaja.Button.Outline"
+            android:visibility="gone" />
+
+        <LinearLayout android:id="@+id/itineraryDays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

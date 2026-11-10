@@ -3,19 +3,16 @@ package com.senac.viaja.ui.places
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PAGE_TAB_EXTRA
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.adapter.ChatMessageAdapter
 import com.senac.viaja.data.model.ChatMessage
-import com.senac.viaja.data.mock.MockDataSource
 
 class AiTripChatActivity : AppCompatActivity() {
 
@@ -29,13 +26,9 @@ class AiTripChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_ai_trip_chat)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val tabId = intent.getIntExtra(PAGE_TAB_EXTRA, R.id.nav_explore)
+        val tab = PageTab.entries.firstOrNull { it.menuId == tabId } ?: PageTab.EXPLORE
+        setPageContent(R.layout.activity_ai_trip_chat, "Conversa com a Vi", tab) { finish() }
 
         etInput = findViewById(R.id.etAiInput)
         btnSend = findViewById(R.id.btnAiSend)
@@ -45,12 +38,20 @@ class AiTripChatActivity : AppCompatActivity() {
         adapter = ChatMessageAdapter(messages)
         recycler.adapter = adapter
 
-        val tripId = intent.getStringExtra("trip_id") ?: ""
-        val tripName = intent.getStringExtra("trip_name") ?: ""
-        val tripMode = intent.getStringExtra("trip_mode") ?: ""
-
-        // Mensagem de boas-vindas da IA (dado dinâmico do contexto da viagem)
-        addMessage("Vi", "Oi! Sou a Vi, sua assistente de viagem. Estou pronta para ajudar a planejar sua viagem a $tripName ($tripMode). O que você gostaria de incluir no roteiro?", isUser = false)
+        val tripName = intent.getStringExtra("trip_name").orEmpty()
+        val tripMode = when (intent.getStringExtra("trip_mode")) {
+            "work" -> "Trabalho"
+            "tourism" -> "Turismo"
+            else -> ""
+        }
+        val context = listOf(tripName, tripMode).filter { it.isNotBlank() }.joinToString(" · ")
+        findViewById<android.widget.TextView>(R.id.tvAiContext).text = context.ifBlank { "Planejamento de viagem" }
+        val greeting = if (tripName.isBlank()) {
+            "Oi! Sou a Vi, sua assistente de viagem. O que você gostaria de planejar?"
+        } else {
+            "Oi! Sou a Vi, sua assistente de viagem. Como posso ajudar com $tripName?"
+        }
+        addMessage("Vi", greeting, isUser = false)
 
         btnSend.setOnClickListener {
             val text = etInput.text.toString().trim()
@@ -62,7 +63,7 @@ class AiTripChatActivity : AppCompatActivity() {
 
             // Resposta simulada da IA (viria da API real)
             handler.postDelayed({
-                val resposta = gerarRespostaIA(text, tripName, tripMode)
+                val resposta = gerarRespostaIA(text, tripName.ifBlank { "sua viagem" }, tripMode.ifBlank { "planejamento livre" })
                 addMessage("Vi", resposta, isUser = false)
                 recycler.scrollToPosition(messages.lastIndex)
             }, 1000)

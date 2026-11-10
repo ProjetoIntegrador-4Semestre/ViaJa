@@ -11,6 +11,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.card.MaterialCardView
 import com.senac.viaja.R
+import com.senac.viaja.data.repository.AuthRepository
+import com.senac.viaja.ui.main.HomeActivity
 import com.senac.viaja.ui.main.MainActivity
 
 class WelcomeActivity : AppCompatActivity() {
@@ -22,6 +24,15 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Auto-login se já houver sessão salva
+        val authRepo = AuthRepository(this)
+        if (authRepo.getUser() != null) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+            return
+        }
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_welcome)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -52,7 +63,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         tvVisitante.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             intent.putExtra("modo", "visitante")
             startActivity(intent)
             finish()

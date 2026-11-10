@@ -6,12 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.senac.viaja.R
 import com.senac.viaja.adapter.SavedAdapter
 import com.senac.viaja.ui.auth.AuthViewModel
 import com.senac.viaja.ui.places.PlaceDetailsActivity
-import com.senac.viaja.ui.trips.TripListActivity
 
 class SavedItemsActivity : AppCompatActivity() {
 
@@ -20,7 +18,7 @@ class SavedItemsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_saved_items)
+        setPageContent(R.layout.activity_saved_items, "Salvos", PageTab.SAVED, topLevel = true)
 
         viewModel = ViewModelProvider(this).get(SavedViewModel::class.java)
         authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
@@ -67,7 +65,6 @@ class SavedItemsActivity : AppCompatActivity() {
                 recycler.visibility = android.view.View.GONE
             } else recycler.visibility = android.view.View.VISIBLE
         }
-        setupBottomNav()
     }
 
     override fun onResume() {
@@ -75,40 +72,10 @@ class SavedItemsActivity : AppCompatActivity() {
         authViewModel.getStoredUser()?.let { viewModel.list(it.id) }
     }
 
-    private fun setupBottomNav() {
-        val nav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        nav?.selectedItemId = R.id.nav_saved
-        nav?.setOnItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_saved) return@setOnItemSelectedListener true
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_explore -> {
-                    startActivity(Intent(this, ExploreActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_trips -> {
-                    startActivity(Intent(this, TripListActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    finish()
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
     private fun openPlaceDetails(placeId: String) {
         val intent = Intent(this, PlaceDetailsActivity::class.java)
         intent.putExtra("place_id", placeId)
+        intent.putExtra(PAGE_TAB_EXTRA, R.id.nav_saved)
         startActivity(intent)
     }
 }

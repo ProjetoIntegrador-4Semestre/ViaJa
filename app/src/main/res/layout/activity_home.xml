@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/viaja_cream"
+    android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <com.google.android.material.card.MaterialCardView android:id="@+id/homeState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/viaja_surface">
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <ProgressBar android:id="@+id/homeLoading"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone" />
+
+                <TextView android:id="@+id/homeStateTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#07563A"
+                    android:textSize="24sp"
+                    app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                <TextView android:id="@+id/homeStateDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="#53675A"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/homeExplore"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Explorar destinos"
+                    style="@style/Widget.Viaja.Button.Primary"
+                    app:backgroundTint="#07563A"
+                    android:textColor="@color/white"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/homeLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Entrar"
+                    style="@style/Widget.Viaja.Button.Outline"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton android:id="@+id/homeRetry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Tentar novamente"
+                    style="@style/Widget.Viaja.Button.Outline"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout android:id="@+id/homeTrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/viaja_surface">
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView android:id="@+id/homeTripStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#07563A"
+                        android:textSize="14sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                    <TextView android:id="@+id/homeTripName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#07563A"
+                        android:textSize="25sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                    <TextView android:id="@+id/homeTripCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#53675A"
+                        android:textSize="15sp" />
+
+                    <TextView android:id="@+id/homeTripDates"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#53675A"
+                        android:textSize="15sp" />
+
+                    <com.google.android.material.button.MaterialButton android:id="@+id/homeOpenItinerary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Ver roteiro"
+                        style="@style/Widget.Viaja.Button.Primary"
+                        app:backgroundTint="#07563A"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/viaja_surface"
+                android:layout_marginTop="12dp">
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/homeStopTitle"
+                        android:text="Roteiro"
+                        android:textColor="#07563A"
+                        android:textSize="17sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                    <TextView android:id="@+id/homeStopName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/viaja_text"
+                        android:textSize="16sp" />
+
+                    <TextView android:id="@+id/homeStopDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#53675A"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/homeStopMemo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#53675A"
+                        android:textSize="15sp"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton android:id="@+id/homeRetryStop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Tentar novamente"
+                        style="@style/Widget.Viaja.Button.Outline"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/viaja_surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nota da viagem"
+                        android:textColor="#07563A"
+                        android:textSize="17sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                    <TextView
+                        android:id="@+id/homeTripNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="#53675A"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/homeSavedCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/viaja_surface"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Salvos recentes"
+                    android:textColor="#07563A"
+                    android:textSize="17sp"
+                    app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                <TextView
+                    android:id="@+id/homeSavedStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Carregando seus salvos…"
+                    android:textColor="#53675A"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/homeSavedRows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/homeOpenSaved"
+                    style="@style/Widget.Viaja.Button.Outline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ver todos os salvos"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/homeNearbyCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/viaja_surface"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Lugares próximos"
+                    android:textColor="#07563A"
+                    android:textSize="17sp"
+                    app:fontFamily="@font/plus_jakarta_sans_bold" />
+
+                <TextView
+                    android:id="@+id/homeNearbyStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Use sua localização aproximada para encontrar lugares do catálogo."
+                    android:textColor="#53675A"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/homeNearbyRows"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/homeLocate"
+                    style="@style/Widget.Viaja.Button.Outline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Usar minha localização"
+                    android:textAllCaps="false" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/homeNearbyExplore"
+                    style="@style/Widget.Viaja.Button.Outline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Abrir Explorar"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

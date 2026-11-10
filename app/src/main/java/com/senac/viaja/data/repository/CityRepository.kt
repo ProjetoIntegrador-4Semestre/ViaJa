@@ -8,6 +8,19 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class CityRepository {
+    fun getById(id: Long, onSuccess: (City) -> Unit, onError: () -> Unit) {
+        ApiClient.service.getCityById(id).enqueue(object : Callback<City> {
+            override fun onResponse(call: Call<City>, response: Response<City>) {
+                val city = response.body()
+                if (response.isSuccessful && city != null) onSuccess(city) else onError()
+            }
+
+            override fun onFailure(call: Call<City>, error: Throwable) {
+                onError()
+            }
+        })
+    }
+
     fun list(onSuccess: (List<City>) -> Unit, onError: (String) -> Unit) = loadPage(0, mutableListOf(), onSuccess, onError)
 
     private fun loadPage(page: Int, items: MutableList<City>, onSuccess: (List<City>) -> Unit, onError: (String) -> Unit) {

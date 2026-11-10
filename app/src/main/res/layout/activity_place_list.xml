@@ -17,27 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chipFilterContainer" />
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarPlaceList"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/viaja_cream"
-        android:title="Explorar"
-        android:titleTextColor="@color/viaja_green"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/ivSettings"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="Configurações"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <LinearLayout
         android:id="@+id/chipFilterContainer"
         android:layout_width="match_parent"
@@ -46,7 +25,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/toolbarPlaceList">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.chip.Chip
             style="@style/Widget.Viaja.Chip.Filter"
@@ -98,13 +77,6 @@
         android:layout_marginTop="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/tvResultsCount"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar" />
-
-    <include
-        android:id="@+id/bottom_nav_bar"
-        layout="@layout/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

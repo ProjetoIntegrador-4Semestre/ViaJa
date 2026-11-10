@@ -20,34 +20,6 @@ import com.senac.viaja.data.repository.TripRepository
 import com.senac.viaja.data.repository.UserRepository
 import com.senac.viaja.data.remote.ApiClient
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = TripRepository()
-
-    private val _trips = MutableLiveData<List<Trip>>()
-    val trips: LiveData<List<Trip>> = _trips
-
-    private val _loading = MutableLiveData<Boolean>(false)
-    val loading: LiveData<Boolean> = _loading
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
-
-    fun loadTrips() {
-        _loading.value = true
-        repository.list(
-            { trips ->
-                _loading.value = false
-                _trips.value = trips
-            },
-            { message ->
-                _loading.value = false
-                _error.value = message
-            }
-        )
-    }
-}
-
 class PlaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = PlaceRepository()
@@ -295,12 +267,13 @@ class CityViewModel(application: Application) : AndroidViewModel(application) {
         _loading.value = true
         repository.list(
             { cities ->
-                _loading.value = false
+                _error.value = null
                 _cities.value = cities
+                _loading.value = false
             },
             { message ->
-                _loading.value = false
                 _error.value = message
+                _loading.value = false
             }
         )
     }

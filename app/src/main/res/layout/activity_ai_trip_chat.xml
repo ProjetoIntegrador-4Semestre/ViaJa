@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/viaja_cream">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbarAiChat"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/viaja_cream"
-        android:title="Vi — Assistente Viaja"
-        android:titleTextColor="@color/viaja_text"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/tvAiContext"
         android:layout_width="match_parent"
@@ -23,11 +13,11 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
-        android:text="Rio de Janeiro, BR · 3 dias ativos"
+        android:text="Planejamento de viagem"
         android:textColor="@color/viaja_gray"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbarAiChat" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -80,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
@@ -107,12 +97,5 @@
             app:iconSize="20sp" />
 
     </LinearLayout>
-
-    <include
-        android:id="@+id/bottom_nav_bar"
-        layout="@layout/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

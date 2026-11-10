@@ -32,14 +32,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/ivViajaBadge"
+        android:layout_width="182dp"
+        android:layout_height="72dp"
+        android:background="@drawable/bg_brand_badge"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:contentDescription="Viajá"
+        android:scaleType="fitCenter"
+        android:src="@drawable/viaja_badge"
         android:layout_marginTop="48dp"
-        android:text="Viajá"
-        android:textColor="@color/white"
-        android:textSize="28sp"
-        app:fontFamily="@font/be_vietnam_pro_extrabold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

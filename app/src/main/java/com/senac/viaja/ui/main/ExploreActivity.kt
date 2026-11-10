@@ -3,108 +3,61 @@ package com.senac.viaja.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.button.MaterialButton
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
-import com.senac.viaja.ui.places.AiTripChatActivity
+import com.senac.viaja.adapter.CityAdapter
 import com.senac.viaja.ui.places.PlaceListActivity
-import com.senac.viaja.ui.profile.EditProfileActivity
-import com.senac.viaja.ui.trips.TripListActivity
 
 class ExploreActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_explore)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        setPageContent(R.layout.activity_explore, "Explorar", PageTab.EXPLORE, topLevel = true)
+
+        val search = findViewById<TextInputEditText>(R.id.etExploreSearch)
+        findViewById<View>(R.id.btnExploreSearch).setOnClickListener {
+            openPlaces("q", search.text?.toString().orEmpty().trim())
         }
 
-        setupBottomNav()
-        setupListeners()
-    }
+        val viewModel = ViewModelProvider(this)[CityViewModel::class.java]
+        val list = findViewById<RecyclerView>(R.id.exploreCities)
+        val status = findViewById<TextView>(R.id.exploreCityStatus)
+        val retry = findViewById<View>(R.id.exploreRetry)
+        list.layoutManager = LinearLayoutManager(this)
+        retry.setOnClickListener { viewModel.list() }
 
-    private fun setupBottomNav() {
-        val nav = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        nav?.selectedItemId = R.id.nav_explore
-        nav?.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, ShellActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_explore -> true
-                R.id.nav_trips -> {
-                    startActivity(Intent(this, TripListActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_saved -> {
-                    startActivity(Intent(this, ShellActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ShellActivity::class.java))
-                    finish()
-                    true
-                }
-                else -> false
+        fun render() {
+            val cities = viewModel.cities.value.orEmpty()
+            val loading = viewModel.loading.value == true
+            val error = viewModel.error.value
+            list.isVisible = !loading && error == null && cities.isNotEmpty()
+            retry.isVisible = !loading && error != null
+            status.isVisible = !list.isVisible
+            status.text = when {
+                loading -> "Carregando destinos…"
+                error != null -> error
+                else -> "Nenhum destino disponível."
             }
         }
+
+        viewModel.cities.observe(this) { cities ->
+            list.adapter = CityAdapter(cities) { city ->
+                city.name?.let { openPlaces("city", it) }
+            }
+            render()
+        }
+        viewModel.loading.observe(this) { render() }
+        viewModel.error.observe(this) { render() }
+        if (viewModel.cities.value == null && viewModel.loading.value != true) viewModel.list()
     }
 
-    private fun setupListeners() {
-        val btnSettings = findViewById<View>(R.id.btnExploreSettings)
-        val btnAiChat = findViewById<MaterialButton>(R.id.btnExploreAiChat)
-        val etSearch = findViewById<TextInputEditText>(R.id.etExploreSearch)
-        val btnFilter = findViewById<MaterialButton>(R.id.btnExploreFilter)
-
-        val cardRio = findViewById<View>(R.id.cardExploreRio)
-        val btnRioAction = findViewById<MaterialButton>(R.id.btnExploreRioAction)
-        val cardSp = findViewById<View>(R.id.cardExploreSp)
-        val cardAmazonas = findViewById<View>(R.id.cardExploreAmazonas)
-        val cardMinas = findViewById<View>(R.id.cardExploreMinas)
-
-        btnSettings.setOnClickListener {
-            startActivity(Intent(this, EditProfileActivity::class.java))
-        }
-
-        btnAiChat.setOnClickListener {
-            val intent = Intent(this, AiTripChatActivity::class.java)
-            intent.putExtra("trip_name", "Exploração")
-            intent.putExtra("trip_mode", "Turismo")
-            startActivity(intent)
-        }
-
-        val performSearch = {
-            val q = etSearch.text?.toString()?.trim() ?: ""
-            val intent = Intent(this, PlaceListActivity::class.java)
-            intent.putExtra("q", q)
-            startActivity(intent)
-        }
-
-        btnFilter.setOnClickListener { performSearch() }
-
-        val openCity = { cityName: String ->
-            val intent = Intent(this, PlaceListActivity::class.java)
-            intent.putExtra("q", cityName)
-            startActivity(intent)
-        }
-
-        cardRio.setOnClickListener { openCity("Rio de Janeiro") }
-        btnRioAction.setOnClickListener { openCity("Rio de Janeiro") }
-        cardSp.setOnClickListener { openCity("São Paulo") }
-        cardAmazonas.setOnClickListener { openCity("Amazonas") }
-        cardMinas.setOnClickListener { openCity("Minas Gerais") }
+    private fun openPlaces(key: String, value: String) {
+        startActivity(Intent(this, PlaceListActivity::class.java).putExtra(key, value))
     }
 }

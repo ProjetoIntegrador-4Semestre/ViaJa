@@ -15,7 +15,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
 import com.senac.viaja.data.model.ViajaUser
 import com.senac.viaja.ui.auth.AuthViewModel
-import com.senac.viaja.ui.main.ShellActivity
+import com.senac.viaja.ui.main.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -52,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.user.observe(this) { user ->
             if (user != null) {
-                val intent = Intent(this@LoginActivity, ShellActivity::class.java)
+                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                 intent.putExtra("email", user.email)
                 intent.putExtra("origem", "login")
                 startActivity(intent)

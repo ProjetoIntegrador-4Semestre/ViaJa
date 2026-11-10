@@ -6,8 +6,8 @@
         android:top="6dp"
         android:bottom="6dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/viaja_green" />
-            <corners android:radius="16dp" />
+            <solid android:color="@color/viaja_green_light" />
+            <corners android:radius="10dp" />
         </shape>
     </item>
 </layer-list>

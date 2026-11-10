@@ -4,14 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.senac.viaja.R
+import com.senac.viaja.ui.main.PAGE_TAB_EXTRA
+import com.senac.viaja.ui.main.PageTab
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.data.model.Place
 import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.data.repository.SavedRepository
@@ -27,13 +27,9 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_place_details)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val tabId = intent.getIntExtra(PAGE_TAB_EXTRA, R.id.nav_explore)
+        val tab = PageTab.entries.firstOrNull { it.menuId == tabId } ?: PageTab.EXPLORE
+        val headerTitle = setPageContent(R.layout.activity_place_details, "Lugar", tab) { finish() }
 
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
 
@@ -99,6 +95,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
         placeViewModel.place.observe(this) { place ->
             currentPlace = place
+            headerTitle.text = place.name
             tvPlaceName.text = place.name
             tvPlaceRating.text = if (place.rating != null) "${place.rating}" else "0.0"
             tvPlaceRatingCount.text = if (place.ratingCount != null) "(${place.ratingCount})" else "(0)"
