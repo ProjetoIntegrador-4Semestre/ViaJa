@@ -1,25 +1,22 @@
 package com.senac.viaja.ui.profile
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
-import com.senac.viaja.data.mock.MockDataSource
 import com.senac.viaja.ui.auth.AuthViewModel
+import com.senac.viaja.ui.main.UserViewModel
 
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var etName: TextInputEditText
     private lateinit var etEmail: TextInputEditText
-    private lateinit var etPhone: TextInputEditText
-    private lateinit var etBio: TextInputEditText
     private lateinit var btnSave: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,35 +31,28 @@ class EditProfileActivity : AppCompatActivity() {
 
         etName = findViewById(R.id.etEditName)
         etEmail = findViewById(R.id.etEditEmail)
-        etPhone = findViewById(R.id.etEditPhone)
-        etBio = findViewById(R.id.etEditBio)
         btnSave = findViewById(R.id.btnSaveProfile)
 
-        // Preenche com dados do usuário logado (vem da API/mock)
-        val user = MockDataSource.currentUser
-        etName.setText(user.name ?: "")
-        etEmail.setText(user.email ?: "")
-        etPhone.setText("(11) 98765-4321")
-        etBio.setText("")
+        val authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+        val user = authViewModel.getStoredUser()
+        if (user == null) {
+            finish()
+            return
+        }
+        etName.setText(user.name)
+        etEmail.setText(user.email)
 
-        val authViewModel = AuthViewModel(application)
-
+        val userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         btnSave.setOnClickListener {
-            val nome = etName.text.toString().trim()
+            val name = etName.text.toString().trim()
             val email = etEmail.text.toString().trim()
-            if (nome.isEmpty() || email.isEmpty()) {
+            if (name.isEmpty() || email.isEmpty()) {
                 Toast.makeText(this, "Preencha nome e e-mail", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // Simula atualização via API
-            Toast.makeText(this, "Perfil atualizado com sucesso", Toast.LENGTH_SHORT).show()
-            // Atualiza o usuário salvo na sessão
-            authViewModel.updateStoredUser(nome, email)
-            val intent = Intent()
-            intent.putExtra("nome", nome)
-            intent.putExtra("email", email)
-            setResult(RESULT_OK, intent)
-            finish()
+            userViewModel.update(user.id, name, email, { finish() }) { message ->
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

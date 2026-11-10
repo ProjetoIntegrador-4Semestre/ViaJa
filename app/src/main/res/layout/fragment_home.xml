@@ -19,6 +19,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/btnOpenProfile"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Abrir perfil"
+        android:gravity="center"
+        android:text="⚙"
+        android:textColor="@color/viaja_green_dark"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_profile_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_profile_title" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -27,6 +27,10 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_home)
 
+        findViewById<TextView>(R.id.btnOpenProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
         viewModel = ViewModelProvider(this).get(CityViewModel::class.java)
         authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 

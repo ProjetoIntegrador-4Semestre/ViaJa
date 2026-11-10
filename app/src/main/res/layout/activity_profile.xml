@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/viaja_cream"
-    tools:context=".ui.profile.ProfileActivity">
+    android:id="@+id/profileRoot"
+    tools:context=".ui.main.ProfileActivity">
 
     <TextView
         android:id="@+id/tvProfileLogo"
@@ -42,7 +43,7 @@
         android:fillViewport="true"
         android:paddingBottom="12dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/profileBottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProfileLogo">
@@ -76,15 +77,17 @@
                         android:layout_height="68dp"
                         android:background="@drawable/bg_avatar_circle"
                         android:clipToOutline="true"
-                        android:contentDescription="Foto de perfil de Victor D. Curtis"
+                        android:contentDescription="Foto ilustrativa do perfil"
                         android:scaleType="centerCrop"
                         android:src="@drawable/curtis" />
 
                     <TextView
+                        android:id="@+id/tvProfileName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Victor D. Curtis"
+                        android:text="Viajante"
+                        tools:text="Victor D. Curtis"
                         android:textColor="#064B2B"
                         android:textSize="20sp"
                         app:fontFamily="@font/be_vietnam_pro_extrabold" />
@@ -102,7 +105,7 @@
                             android:paddingTop="4dp"
                             android:paddingEnd="10dp"
                             android:paddingBottom="4dp"
-                            android:text="24 países"
+                            android:text="Viajante"
                             android:textColor="@color/viaja_green_dark"
                             android:textSize="10sp" />
                         <TextView
@@ -114,7 +117,7 @@
                             android:paddingTop="4dp"
                             android:paddingEnd="10dp"
                             android:paddingBottom="4dp"
-                            android:text="Super-anfitriã"
+                            android:text="Perfil de viagem"
                             android:textColor="#1763A5"
                             android:textSize="10sp" />
                     </LinearLayout>
@@ -207,7 +210,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Interesses"
+                            android:text="Exemplos de interesses"
                             android:textColor="#123D2B"
                             android:textSize="14sp"
                             app:fontFamily="@font/plus_jakarta_sans_bold" />
@@ -287,7 +290,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Renovação automática em 12 de out. de 2024."
+                        android:text="Conheça os planos na demonstração."
                         android:textColor="#656453"
                         android:textSize="10sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -297,7 +300,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="$9,99/mês"
+                        android:text="Demonstração"
                         android:textColor="#173C28"
                         android:textSize="11sp"
                         app:fontFamily="@font/plus_jakarta_sans_bold"
@@ -314,7 +317,7 @@
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -341,7 +344,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Endereço de e-mail\nuser@example.com"
+                        android:id="@+id/tvProfileEmail"
+                        android:text="Endereço de e-mail\nNão informado"
                         android:textColor="#666B68"
                         android:textSize="11sp" />
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#F0F0ED" />
@@ -349,7 +353,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Recuperação de conta\n+55 (11) 9****-1234"
+                        android:text="Recuperação de conta\nNão configurada"
                         android:textColor="#666B68"
                         android:textSize="11sp" />
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#F0F0ED" />
@@ -357,11 +361,79 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Status da conta\n●  ATIVA E VERIFICADA"
+                        android:id="@+id/tvProfileStatus"
+                        android:text="Status da conta\nVisitante"
                         android:textColor="@color/viaja_green"
                         android:textSize="10sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
+    <LinearLayout
+        android:id="@+id/profileBottomNav"
+        android:layout_width="0dp"
+        android:layout_height="82dp"
+        android:background="#FBFAF5"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⌂" android:textColor="#45534B" android:textSize="27sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Home" android:textColor="#45534B" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navExplore"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="◎" android:textColor="#45534B" android:textSize="27sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Explore" android:textColor="#45534B" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navTrips"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="◉" android:textColor="#45534B" android:textSize="27sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trips" android:textColor="#45534B" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navSaved"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="♡" android:textColor="#45534B" android:textSize="27sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Saved" android:textColor="#45534B" android:textSize="13sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="62dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_profile_nav_selected"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:contentDescription="Perfil selecionado">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="♟" android:textColor="@color/viaja_green" android:textSize="25sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="@color/viaja_green" android:textSize="13sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
