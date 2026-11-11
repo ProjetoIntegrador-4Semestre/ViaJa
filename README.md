@@ -1,26 +1,29 @@
 # Viajá
 
-Aplicativo Android de planejamento de viagens de turismo e trabalho, com Kotlin/XML e API própria em Java/Spring Boot. Projeto Integrador do SENAC; entrega confirmada em 02/12/2026. O desenvolvimento Android desta recuperação permanece na branch `expansion`.
+O Viajá é um aplicativo Android para planejar viagens de lazer ou trabalho. Você pode pesquisar o que visitar em uma cidade, guardar os lugares que mais interessam e organizar as visitas no roteiro.
 
-## Documentação
+O app foi desenvolvido como Projeto Integrador do Senac. O app é escrito em Kotlin, com telas em XML. O catálogo, os lugares salvos e as viagens ficam na [API do Viajá](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring).
 
-Comece pelo [índice](docs/README.md). Ele separa [produto](docs/product-baseline.md), [arquitetura/dados](docs/architecture.md), [estado real](docs/status.md), [plano](docs/recovery-plan.md) e [entrega acadêmica](docs/academic.md). A [revisão documental](docs/documentation-audit.md) explica o destino das especificações e relatórios anteriores.
+## O que dá para fazer no app
 
-O app tem fluxos reais de login/sessão, busca/detalhe, salvos e criação/listagem de viagens com inclusão inicial de lugares no roteiro. Isso não significa que todo o produto esteja pronto. Perfil, integrações, editor completo, cobrança e demais lacunas estão descritos no estado da implementação.
+- **Explorar destinos.** Consulte as cidades do catálogo, pesquise lugares por nome, endereço ou cidade e abra a ficha de cada local para ver mais detalhes.
+- **Guardar lugares.** Salve locais de interesse para voltar a eles quando estiver planejando uma viagem.
+- **Montar um roteiro.** Crie uma viagem, adicione lugares ao roteiro e acompanhe as paradas por dia. Em cada parada, você pode definir um horário e marcar a visita como concluída.
+- **Acessar sua conta.** Cadastre-se ou entre para consultar seus lugares salvos e retomar suas viagens ao reabrir o app.
 
-Stripe em testes com Checkout/webhook reais é a direção confirmada, ainda não implementada. As telas precisam de revisão visual. Protótipos e documentos antigos não são prova de funcionamento.
+O app também tem um fluxo de assinatura Premium para testes. Ele abre o pagamento e o gerenciamento da assinatura no navegador e consulta a API para atualizar o status da conta.
 
-## Execução local
+## Como rodar no Android Studio
 
-A API está no repositório `api-viaja`; seu README descreve a inicialização com H2/LoadDatabase e as verificações locais. Com a API na porta 18080 e um emulador Android conectado:
+Abra este repositório no Android Studio, instale o SDK do Android 37 e aguarde a sincronização do Gradle. O app roda em dispositivos com Android 7.0 (API 24) ou superior.
+
+A configuração padrão usa a API hospedada. Para testar o app com o backend da sua máquina, siga o [README da API](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring) e deixe o servidor rodando na porta 18080. Com o emulador iniciado, execute na raiz deste repositório:
 
 ```sh
-./gradlew :app:assembleDebug -PapiBaseUrl=http://127.0.0.1:18080/ --offline
 adb reverse tcp:18080 tcp:18080
+./gradlew :app:installDebug -PapiBaseUrl=http://127.0.0.1:18080/
 ```
 
-No app apontado para a API local, entre com `rafael@email.com` e senha `senha123`. A conta é recriada pela carga inicial quando a API local reinicia.
+Abra o app no emulador e entre com a conta de demonstração local, `rafael@email.com`, e a senha `senha123`.
 
-O modo offline do Gradle exige dependências previamente presentes no cache; ele não implementa o modo offline do produto. Instalar o APK gerado pelo Android Studio ou ferramenta Android. A configuração hospedada é distinta e seus contratos ainda precisam de deploy/verificação.
-
-Existem mudanças locais anteriores à recuperação. Não descartá-las nem assumir que o diretório testado equivale a um checkout limpo. Requisitos e evidências devem acompanhar cada alteração.
+O [índice da documentação](docs/README.md) reúne a proposta do produto, a arquitetura e o material da entrega acadêmica.
