@@ -11,7 +11,7 @@ import retrofit2.Response
 class PlaceRepository {
 
     fun nearbyCandidates(onSuccess: (List<CatalogPlace>) -> Unit, onError: () -> Unit) {
-        ApiClient.service.getPlaces(size = 50).enqueue(object : Callback<CatalogPlacePage> {
+        ApiClient.service.getPlaces(size = 100).enqueue(object : Callback<CatalogPlacePage> {
             override fun onResponse(call: Call<CatalogPlacePage>, response: Response<CatalogPlacePage>) {
                 val body = response.body()
                 if (response.isSuccessful && body != null) onSuccess(body.embedded?.localList.orEmpty())

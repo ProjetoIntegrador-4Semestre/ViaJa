@@ -56,7 +56,8 @@ data class Place(
     val photoUrl: String?,
     val openNow: Boolean?,
     val tags: List<String>?,
-    val description: String?
+    val description: String?,
+    val website: String? = null
 )
 
 
@@ -229,3 +230,13 @@ data class CatalogPlacePage(
 )
 
 data class CatalogPlaceEmbedded(val localList: List<CatalogPlace>?)
+
+data class StripeHostedUrl(val url: String)
+
+data class StripeSubscription(
+    val status: String,
+    val premiumActive: Boolean,
+    val paidUntil: String?,
+    val cancelAtPeriodEnd: Boolean,
+    val canManage: Boolean
+)

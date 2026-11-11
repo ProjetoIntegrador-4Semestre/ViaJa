@@ -2,6 +2,7 @@ package com.senac.viaja.ui.places
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -89,12 +90,20 @@ class PlaceDetailsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        btnConsultSite.visibility = View.GONE
         btnConsultSite.setOnClickListener {
-            Toast.makeText(this, "Abrindo site do parceiro (simulado)", Toast.LENGTH_SHORT).show()
+            val url = currentPlace?.website ?: return@setOnClickListener
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+            } catch (_: android.content.ActivityNotFoundException) {
+                Toast.makeText(this, "Nenhum navegador disponível.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         placeViewModel.place.observe(this) { place ->
             currentPlace = place
+            val website = place.website?.let(android.net.Uri::parse)
+            btnConsultSite.visibility = if (website?.scheme == "https" && !website.host.isNullOrBlank()) View.VISIBLE else View.GONE
             headerTitle.text = place.name
             tvPlaceName.text = place.name
             tvPlaceRating.text = if (place.rating != null) "${place.rating}" else "0.0"

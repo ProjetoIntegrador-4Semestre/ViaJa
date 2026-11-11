@@ -178,6 +178,15 @@ interface ApiService {
     fun deleteReview(@Path("localId") localId: Long, @Path("id") id: Long): Call<Any>
 
 
+    @GET("billing/stripe/subscription")
+    fun getStripeSubscription(): Call<StripeSubscription>
+
+    @POST("billing/stripe/checkout")
+    fun startStripeCheckout(): Call<StripeHostedUrl>
+
+    @POST("billing/stripe/portal")
+    fun openStripePortal(): Call<StripeHostedUrl>
+
     @GET("subscriptions/users/{userId}")
     fun getSubscriptionByUser(@Path("userId") userId: Long): Call<Any>
 

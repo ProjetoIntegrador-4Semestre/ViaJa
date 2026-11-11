@@ -182,7 +182,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Exemplos de interesses"
+                            android:text="Sugestões de interesses"
                             android:textColor="#123D2B"
                             android:textSize="14sp"
                             app:fontFamily="@font/plus_jakarta_sans_bold" />
@@ -262,7 +262,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Conheça os planos na demonstração."
+                        android:text="Consulte seu plano e gerencie a assinatura."
                         android:textColor="#656453"
                         android:textSize="10sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -272,7 +272,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Demonstração"
+                        android:text="Mensal"
                         android:textColor="#173C28"
                         android:textSize="11sp"
                         app:fontFamily="@font/plus_jakarta_sans_bold"
@@ -337,6 +337,16 @@
                         android:text="Status da conta\nVisitante"
                         android:textColor="@color/viaja_green"
                         android:textSize="10sp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnProfileLogout"
+                        style="@style/Widget.Viaja.Button.Outline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Sair da conta"
+                        android:textAllCaps="false"
+                        android:textColor="#07563A"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
