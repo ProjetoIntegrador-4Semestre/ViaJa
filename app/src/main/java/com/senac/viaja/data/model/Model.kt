@@ -81,7 +81,8 @@ data class TripRequest(
     val startDate: String?,
     val endDate: String?,
     val budgetCents: Long?,
-    val cityId: Long? = null
+    val cityId: Long? = null,
+    val status: String? = null
 )
 
 data class TripResponse(
@@ -92,7 +93,8 @@ data class TripResponse(
     val startDate: String?,
     val endDate: String?,
     val totalBudgetCents: Long?,
-    val status: String
+    val status: String,
+    val cityId: Long? = null
 )
 
 
@@ -215,7 +217,7 @@ data class CityPage(
 )
 data class CityEmbedded(val cityList: List<City>?)
 
-data class TripNotesPage(val _embedded: TripNotesEmbedded?)
+data class TripNotesPage(val _embedded: TripNotesEmbedded?, val page: PageMetadata? = null)
 
 data class TripNotesEmbedded(
     @com.google.gson.annotations.SerializedName(value = "tripNoteList", alternate = ["tripNotes"])
@@ -239,4 +241,54 @@ data class StripeSubscription(
     val paidUntil: String?,
     val cancelAtPeriodEnd: Boolean,
     val canManage: Boolean
+)
+
+data class ItineraryEntry(
+    val localId: Long,
+    val day: Int,
+    val orderIndex: Int,
+    val note: String?,
+    val scheduledTime: String?,
+    val completed: Boolean
+)
+
+data class ItinerarySaveRequest(val expected: List<ItineraryEntry>, val stops: List<ItineraryEntry>)
+
+data class ItineraryPlace(val id: Long, val name: String)
+
+data class NotebookNote(val id: Long, val note: String?, val requestId: String? = null)
+data class NoteWrite(val note: String, val requestId: String? = null)
+data class MemoWrite(val tripId: Long, val localId: Long, val note: String, val requestId: String? = null)
+data class ChecklistItem(val id: String, val tripId: Long, val label: String, val completed: Boolean)
+data class ChecklistWrite(val label: String, val completed: Boolean)
+
+data class TripExpense(
+    val id: String,
+    val tripId: Long,
+    val description: String,
+    val amountCents: Long,
+    val expenseDate: String,
+    val category: String,
+    val reimbursement: String,
+    val version: Long,
+    val hasReceipt: Boolean = false
+)
+
+data class ExpenseWrite(
+    val description: String,
+    val amountCents: Long,
+    val expenseDate: String,
+    val category: String,
+    val reimbursement: String,
+    val version: Long?
+)
+
+data class ExpenseReport(
+    val expenses: List<TripExpense>,
+    val totalCents: Long,
+    val budgetCents: Long?,
+    val remainingCents: Long?,
+    val categoryTotals: Map<String, Long>,
+    val reimbursableCents: Long,
+    val reimbursedCents: Long
 )

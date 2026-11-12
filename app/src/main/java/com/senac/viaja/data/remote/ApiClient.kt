@@ -6,6 +6,9 @@ import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Headers
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -21,14 +24,8 @@ object ApiClient {
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val original = chain.request()
-            val builder = original.newBuilder()
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/json")
             val token = AuthSession.tokenProvider?.invoke()
-            if (token != null && token.isNotEmpty()) {
-                builder.header("Authorization", "Bearer $token")
-            }
-            val response = chain.proceed(builder.build())
+            val response = chain.proceed(apiRequestWithHeaders(original, token))
             if (response.code() == 401 && token != null) AuthSession.onUnauthorized?.invoke(token)
             response
         }
@@ -55,6 +52,27 @@ object ApiClient {
 }
 
 interface ApiService {
+    @GET("account/profile") fun account(): Call<AccountProfile>
+    @PUT("account/profile") fun saveAccount(@Body body: ProfileWrite): Call<ProfileSession>
+    @GET("discovery/options") fun discoveryOptions(): Call<DiscoveryOptions>
+    @GET("discovery/places") fun discover(@Query("q") query: String,@Query("cityId") city: Long?,@Query("type") type: String?,@Query("maxPrice") maxPrice: Long?,@Query("minRating") rating: Float?,@Query("sort") sort: String,@Query("page") page: Int): Call<DiscoveryPage>
+    @PUT("discovery/places/{id}/rating") fun rate(@Path("id") id: String,@Body body: RatingWrite): Call<RatingResult>
+    @GET("trips/{id}/map") fun tripMap(@Path("id") id: Long): Call<List<MapStop>>
+    @GET("trips/{id}/weather") fun tripWeather(@Path("id") id: Long): Call<WeatherView>
+    @GET("trips/{id}/export") fun tripExport(@Path("id") id: Long,@Query("full") full: Boolean): Call<TripBundle>
+    @GET("trips/{id}/offline") fun tripOffline(@Path("id") id: Long): Call<TripBundle>
+    @GET("ai/quota") fun aiQuota(): Call<AiQuota>
+    @GET("ai/sessions") fun aiSessions(): Call<List<RemoteAiSession>>
+    @PUT("ai/sessions/{id}") fun aiCreate(@Path("id") id: String,@Body body: AiSessionWrite): Call<RemoteAiSession>
+    @GET("ai/sessions/{id}") fun aiHistory(@Path("id") id: String): Call<List<AiTurn>>
+    @DELETE("ai/sessions/{id}") fun aiDelete(@Path("id") id: String): Call<Void>
+    @POST("ai/sessions/{id}/messages") fun aiSend(@Path("id") id: String,@Body body: AiMessageWrite): Call<AiTurn>
+    @POST("ai/sessions/{id}/messages/{requestId}/apply") fun aiApply(@Path("id") id: String,@Path("requestId") requestId: String): Call<AiTurn>
+    @POST("auth/recovery") fun recovery(@Body body: RecoveryWrite): Call<ApiResponse>
+    @POST("auth/reset") fun reset(@Body body: ResetWrite): Call<ApiResponse>
+    @POST("auth/google/start") fun googleStart(): Call<GoogleStart>
+    @POST("auth/google/result") fun googleResult(@Body body: GooglePoll): Call<GoogleSession>
+
 
 
     @POST("auth/login")
@@ -203,6 +221,15 @@ interface ApiService {
     @POST("trip-locals")
     fun addTripLocal(@Body stop: TripLocal): Call<TripLocal>
 
+    @GET("trips/{tripId}/itinerary")
+    fun getEditableItinerary(@Path("tripId") tripId: Long): Call<List<TripLocal>>
+
+    @GET("trips/{tripId}/itinerary/places")
+    fun getItineraryPlaces(@Path("tripId") tripId: Long): Call<List<ItineraryPlace>>
+
+    @PUT("trips/{tripId}/itinerary")
+    fun saveItinerary(@Path("tripId") tripId: Long, @Body body: ItinerarySaveRequest): Call<List<TripLocal>>
+
     @GET("trip-locals/trip/{tripId}")
     fun getTripLocalsByTrip(@Path("tripId") tripId: Long): Call<List<TripLocal>>
 
@@ -220,29 +247,59 @@ interface ApiService {
 
 
     @GET("trips/{tripId}/notes")
-    fun getTripNotes(@Path("tripId") tripId: Long, @Query("sort") sort: String = "id,desc"): Call<TripNotesPage>
+    fun getTripNotes(@Path("tripId") tripId: Long, @Query("sort") sort: String = "id,desc", @Query("page") page: Int = 0): Call<TripNotesPage>
 
     @POST("trips/{tripId}/notes")
-    fun createTripNote(@Path("tripId") tripId: Long, @Body body: Any): Call<Any>
+    fun createTripNote(@Path("tripId") tripId: Long, @Body body: NoteWrite): Call<NotebookNote>
 
     @PUT("trips/{tripId}/notes/{id}")
-    fun updateTripNote(@Path("tripId") tripId: Long, @Path("id") id: Long, @Body body: Any): Call<Any>
+    fun updateTripNote(@Path("tripId") tripId: Long, @Path("id") id: Long, @Body body: NoteWrite): Call<NotebookNote>
 
     @DELETE("trips/{tripId}/notes/{id}")
-    fun deleteTripNote(@Path("tripId") tripId: Long, @Path("id") id: Long): Call<Any>
+    fun deleteTripNote(@Path("tripId") tripId: Long, @Path("id") id: Long): Call<Void>
 
+
+    @GET("trips/{tripId}/expenses")
+    fun getExpenses(@Path("tripId") tripId: Long): Call<ExpenseReport>
+
+    @PUT("trips/{tripId}/expenses/{id}")
+    fun saveExpense(@Path("tripId") tripId: Long, @Path("id") id: String, @Body body: ExpenseWrite): Call<TripExpense>
+
+    @DELETE("trips/{tripId}/expenses/{id}")
+    fun deleteExpense(@Path("tripId") tripId: Long, @Path("id") id: String, @Query("version") version: Long): Call<Void>
+
+    @GET("trips/{tripId}/expenses/{id}/receipt")
+    @Headers("Accept: */*")
+    fun getReceipt(@Path("tripId") tripId: Long, @Path("id") id: String): Call<okhttp3.ResponseBody>
+
+    @Multipart
+    @PUT("trips/{tripId}/expenses/{id}/receipt")
+    fun uploadReceipt(@Path("tripId") tripId: Long, @Path("id") id: String, @Query("version") version: Long,
+                      @Part file: okhttp3.MultipartBody.Part): Call<TripExpense>
+
+    @DELETE("trips/{tripId}/expenses/{id}/receipt")
+    fun removeReceipt(@Path("tripId") tripId: Long, @Path("id") id: String, @Query("version") version: Long): Call<TripExpense>
+
+    @GET("trips/{tripId}/checklist")
+    fun getChecklist(@Path("tripId") tripId: Long): Call<List<ChecklistItem>>
+
+    @PUT("trips/{tripId}/checklist/{id}")
+    fun saveChecklistItem(@Path("tripId") tripId: Long, @Path("id") id: String, @Body body: ChecklistWrite): Call<ChecklistItem>
+
+    @DELETE("trips/{tripId}/checklist/{id}")
+    fun deleteChecklistItem(@Path("tripId") tripId: Long, @Path("id") id: String): Call<Void>
 
     @GET("trip-memos/trip-locals/{tripId}/{localId}/memos")
     fun getTripMemos(@Path("tripId") tripId: Long, @Path("localId") localId: Long): Call<List<TripMemo>>
 
     @POST("trip-memos")
-    fun createTripMemo(@Body body: Any): Call<Any>
+    fun createTripMemo(@Body body: MemoWrite): Call<NotebookNote>
 
     @PUT("trip-memos/{id}")
-    fun updateTripMemo(@Path("id") id: Long, @Body body: Any): Call<Any>
+    fun updateTripMemo(@Path("id") id: Long, @Body body: NoteWrite): Call<NotebookNote>
 
     @DELETE("trip-memos/{id}")
-    fun deleteTripMemo(@Path("id") id: Long): Call<Any>
+    fun deleteTripMemo(@Path("id") id: Long): Call<Void>
 
 
     @GET("medias")
@@ -276,4 +333,14 @@ interface ApiService {
 
     @DELETE("locals/{localId}/interests/{interestId}")
     fun removeLocalInterest(@Path("localId") localId: Long, @Path("interestId") interestId: Long): Call<Any>
+}
+
+internal fun apiRequestWithHeaders(request: Request, token: String?): Request {
+    val builder = request.newBuilder()
+    if (request.header("Accept") == null) builder.header("Accept", "application/json")
+    val contentType = request.body()?.contentType()?.toString()
+    if (contentType != null) builder.header("Content-Type", contentType)
+    else if (request.header("Content-Type") == null) builder.header("Content-Type", "application/json")
+    if (!token.isNullOrBlank()) builder.header("Authorization", "Bearer $token")
+    return builder.build()
 }
