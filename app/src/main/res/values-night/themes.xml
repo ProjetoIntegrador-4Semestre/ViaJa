@@ -1,7 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Viaja" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Viaja" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="colorPrimary">@color/vi_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/vi_canvas</item>
+        <item name="colorOnSurface">@color/vi_ink</item>
+        <item name="colorOnSurfaceVariant">@color/vi_muted</item>
+        <item name="colorOutline">@color/vi_border</item>
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- <item name="android:fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 </resources>

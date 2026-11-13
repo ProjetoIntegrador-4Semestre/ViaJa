@@ -2,15 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="viaja_green">#0CA15F</color>
-    <color name="viaja_green_dark">#07854E</color>
-    <color name="viaja_cream">#F7F4ED</color>
-    <color name="viaja_text">#1C1C1E</color>
-    <color name="viaja_gray">#8E8E93</color>
-    <color name="viaja_field_border">#D9D9D9</color>
+    <color name="viaja_green">#176B54</color>
+    <color name="viaja_green_dark">#125742</color>
+    <color name="viaja_cream">#F6F7F3</color>
+    <color name="viaja_text">#183C34</color>
+    <color name="viaja_gray">#576B63</color>
+    <color name="viaja_field_border">#D6E1D8</color>
     <color name="viaja_green_light">#E8F5EE</color>
     <color name="viaja_surface">#FFFFFF</color>
-    <color name="viaja_chip_selected">#0CA15F</color>
+    <color name="viaja_chip_selected">#176B54</color>
     <color name="viaja_chip_unselected">#F2F2F2</color>
     <color name="viaja_overlay_dark">#80000000</color>
+    <color name="vi_canvas">#F6F7F3</color>
+    <color name="vi_ink">#183C34</color>
+    <color name="vi_primary">#176B54</color>
+    <color name="vi_muted">#576B63</color>
+    <color name="vi_sage">#E7EFE8</color>
+    <color name="vi_border">#D6E1D8</color>
+    <color name="vi_warning">#805520</color>
 </resources>

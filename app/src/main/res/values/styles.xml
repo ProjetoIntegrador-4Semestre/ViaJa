@@ -12,4 +12,30 @@
         <item name="android:textColor">#536157</item>
         <item name="android:textSize">9sp</item>
     </style>
+    <style name="Theme.Viaja.Vi" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="fontFamily">@font/plus_jakarta_sans_regular</item>
+        <item name="colorPrimary">@color/vi_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/vi_primary</item>
+        <item name="colorSurface">@color/vi_canvas</item>
+        <item name="colorOnSurface">@color/vi_ink</item>
+        <item name="colorOnSurfaceVariant">@color/vi_muted</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@color/vi_canvas</item>
+    </style>
+    <style name="Theme.Viaja.Journey" parent="Theme.Viaja.Vi" />
+    <style name="Widget.Viaja.Journey.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/vi_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:minHeight">52dp</item>
+    </style>
+    <style name="Widget.Viaja.Journey.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/vi_primary</item>
+        <item name="strokeColor">@color/vi_border</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
 </resources>

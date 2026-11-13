@@ -10,6 +10,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -51,7 +52,16 @@ internal fun AppCompatActivity.setPageContent(
     val body = root.findViewById<FrameLayout>(R.id.pageBody)
     val footer = root.findViewById<View>(R.id.pageFooter)
     val titleView = root.findViewById<TextView>(R.id.pageTitle)
-    titleView.text = title
+    if (tab == PageTab.HOME && topLevel) {
+        titleView.setText(R.string.viaja_brand_name)
+        val symbol = AppCompatResources.getDrawable(this, R.drawable.viaja_circle)?.apply {
+            setBounds(0, 0, 24.dp, 24.dp)
+        }
+        titleView.compoundDrawablePadding = 8.dp
+        titleView.setCompoundDrawablesRelative(symbol, null, null, null)
+    } else {
+        titleView.text = title
+    }
     body.addView(content, FrameLayout.LayoutParams(-1, -1))
 
     val back = root.findViewById<ImageButton>(R.id.pageBack)
