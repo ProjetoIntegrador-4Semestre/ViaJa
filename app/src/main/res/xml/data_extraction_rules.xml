@@ -2,8 +2,14 @@
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="sharedpref" path="viaja_session.xml" />
+        <exclude domain="sharedpref" path="viaja_offline_access.xml" />
+        <exclude domain="file" path="offline_trips/" />
+        <exclude domain="sharedpref" path="vi_conversations.xml" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="viaja_session.xml" />
+        <exclude domain="sharedpref" path="viaja_offline_access.xml" />
+        <exclude domain="file" path="offline_trips/" />
+        <exclude domain="sharedpref" path="vi_conversations.xml" />
     </device-transfer>
 </data-extraction-rules>

@@ -19,7 +19,8 @@ class AuthRepository(context: Context) {
     init {
         ApiClient.AuthSession.tokenProvider = { getToken() }
         ApiClient.AuthSession.onUnauthorized = { rejectedToken ->
-            if (prefs.getString("auth_token", null) == rejectedToken) clearSession()
+            val current = prefs.getString("auth_token", null)?.let { runCatching { SessionCipher.decrypt(it) }.getOrNull() }
+            if (current == rejectedToken) clearSession()
         }
     }
 
@@ -41,8 +42,7 @@ class AuthRepository(context: Context) {
                         return
                     }
                     val token = AuthToken(token = rawToken!!, user = user)
-                    saveSession(token)
-                    onSuccess(token)
+                    try { saveSession(token); onSuccess(token) } catch(error:Exception) { onError("Não foi possível proteger a sessão neste dispositivo.") }
                 } else {
                     val errorMsg = response.errorBody()?.string() ?: "Credenciais inválidas ou erro no servidor"
                     onError(errorMsg)
@@ -79,11 +79,13 @@ class AuthRepository(context: Context) {
     }
 
     fun getToken(): String? {
-        val token = prefs.getString("auth_token", null)
+        val stored = prefs.getString("auth_token", null)
+        val token = stored?.let { runCatching { SessionCipher.decrypt(it) }.getOrNull() }
         if (!isTokenCurrent(token)) {
-            clearSession()
+            clearSession(false)
             return null
         }
+        if(stored!=null&&!stored.startsWith("enc:"))runCatching{prefs.edit().putString("auth_token",SessionCipher.encrypt(token!!)).apply()}
         return token
     }
 
@@ -95,8 +97,14 @@ class AuthRepository(context: Context) {
         return ViajaUser(id, email, prefs.getString("user_name", null), prefs.getString("user_mode", null))
     }
 
-    fun clearSession() {
+    fun clearSession(revokeOffline: Boolean = true) {
         prefs.edit().clear().apply()
+        if(revokeOffline) applicationContext.getSharedPreferences("viaja_offline_access",Context.MODE_PRIVATE).edit().clear().apply()
+    }
+    fun offlineOwner(): Long? = applicationContext.getSharedPreferences("viaja_offline_access",Context.MODE_PRIVATE).getLong("owner",0).takeIf { it>0 }
+    fun install(token: String,user: ViajaUser): Boolean {
+        if(!isTokenCurrent(token)||user.id<=0||user.email.isBlank())return false
+        return runCatching { saveSession(AuthToken(token,user)); true }.getOrDefault(false)
     }
 
     private fun isTokenCurrent(token: String?): Boolean {
@@ -120,12 +128,14 @@ class AuthRepository(context: Context) {
     }
 
     private fun saveSession(token: AuthToken) {
+        val encrypted = SessionCipher.encrypt(token.token)
         prefs.edit()
-            .putString("auth_token", token.token)
+            .putString("auth_token", encrypted)
             .putLong("user_id", token.user.id)
             .putString("user_mode", token.user.defaultMode)
             .putString("user_email", token.user.email)
             .putString("user_name", token.user.name ?: "")
             .apply()
+        applicationContext.getSharedPreferences("viaja_offline_access",Context.MODE_PRIVATE).edit().putLong("owner",token.user.id).apply()
     }
 }

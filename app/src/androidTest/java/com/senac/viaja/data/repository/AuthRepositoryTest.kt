@@ -40,6 +40,7 @@ class AuthRepositoryTest {
             assertEquals("work", repository.getUser()?.defaultMode)
             assertEquals(token, AuthRepository(context).getToken())
             assertEquals(token, ApiClient.AuthSession.tokenProvider?.invoke())
+            assertTrue(prefs.getString("auth_token", "")!!.startsWith("enc:"))
             ApiClient.AuthSession.onUnauthorized?.invoke("previous-token")
             assertEquals(token, repository.getToken())
             ApiClient.AuthSession.onUnauthorized?.invoke(token)

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <exclude domain="sharedpref" path="viaja_session.xml" />
+        <exclude domain="sharedpref" path="viaja_offline_access.xml" />
+        <exclude domain="file" path="offline_trips/" />
+    <exclude domain="sharedpref" path="vi_conversations.xml" />
 </full-backup-content>
