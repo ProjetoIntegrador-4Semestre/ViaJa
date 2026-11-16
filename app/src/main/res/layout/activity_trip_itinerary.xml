@@ -1,53 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/viaja_cream"
+    android:background="@color/vi_canvas"
     android:fillViewport="true">
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Roteiro completo"
-            android:textColor="#07563A"
-            android:textSize="24sp"
-            app:fontFamily="@font/plus_jakarta_sans_bold" />
-
-        <TextView android:id="@+id/itineraryTripName"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/itineraryTripName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="12dp"
-            android:textColor="#53675A"
-            android:textSize="15sp" />
-
-        <ProgressBar android:id="@+id/itineraryLoading"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="@color/vi_ink"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/itineraryAvailability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="@color/vi_muted"
+            android:textSize="14sp" />
+        <ProgressBar
+            android:id="@+id/itineraryLoading"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone" />
-
-        <TextView android:id="@+id/itineraryStatus"
+            android:layout_marginTop="12dp" />
+        <TextView
+            android:id="@+id/itineraryStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#53675A"
-            android:textSize="15sp" />
-
-        <com.google.android.material.button.MaterialButton android:id="@+id/itineraryRetry"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="@color/vi_warning"
+            android:textSize="14sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itineraryRetry"
+            style="@style/Widget.Viaja.Journey.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Tentar novamente"
-            style="@style/Widget.Viaja.Button.Outline"
-            android:visibility="gone" />
-
-        <LinearLayout android:id="@+id/itineraryDays"
+            android:layout_marginTop="8dp"
+            android:text="Recarregar roteiro" />
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/itineraryPrevious"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="‹"
+                android:textColor="@color/vi_primary"
+                android:contentDescription="Dia anterior" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/itinerarySelectDay"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="Dia 1"
+                android:textColor="@color/vi_primary"
+                android:layout_weight="1"
+                android:contentDescription="Escolher dia do roteiro" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/itineraryNext"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="48dp"
+                android:layout_height="52dp"
+                android:minWidth="0dp"
+                android:padding="0dp"
+                android:text="›"
+                android:textColor="@color/vi_primary"
+                android:contentDescription="Próximo dia" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/itineraryDays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itineraryAdd"
+            style="@style/Widget.Viaja.Journey.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Adicionar lugar neste dia" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/itinerarySave"
+            style="@style/Widget.Viaja.Journey.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Salvar roteiro" />
     </LinearLayout>
 </ScrollView>

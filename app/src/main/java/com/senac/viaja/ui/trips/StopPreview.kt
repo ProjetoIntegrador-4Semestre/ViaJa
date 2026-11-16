@@ -14,7 +14,6 @@ internal val TripLocal.displayTime: String?
     get() = scheduledTime?.takeIf { clockPattern.matches(it) }
 
 internal val itineraryOrder = compareBy<TripLocal> { it.day ?: 1 }
-    .thenBy { it.displayTime ?: "24:00" }
     .thenBy { it.orderIndex ?: Int.MAX_VALUE }
     .thenBy { it.localId }
 
@@ -35,7 +34,8 @@ internal fun previewStop(stops: List<TripLocal>, startDate: String?, now: Date =
         }
         stop to dateFormat.format(date.time)
     }
-    val next = byDate.firstOrNull { (stop, date) ->
+    val next = byDate.sortedWith(compareBy<Pair<TripLocal, String>> { it.second }
+        .thenBy { it.first.displayTime ?: "24:00" }.thenBy { it.first.orderIndex }).firstOrNull { (stop, date) ->
         stop.displayTime?.let { date > today || (date == today && it >= currentTime) } == true
     }
     if (next != null) return StopPreview("Próxima parada", next.first)

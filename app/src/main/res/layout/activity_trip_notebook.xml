@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/vi_canvas">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/notebookSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/vi_muted" />
+        <TextView
+            android:id="@+id/notebookStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="@color/vi_warning" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/notebookReload"
+            style="@style/Widget.Viaja.Journey.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Atualizar informações" />
+        <LinearLayout
+            android:id="@+id/notebookEditor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:id="@+id/notebookEditorTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textSize="20sp"
+                android:textColor="@color/vi_ink" />
+            <EditText
+                android:id="@+id/notebookInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="120dp"
+                android:maxHeight="240dp"
+                android:gravity="top"
+                android:inputType="textCapSentences|textMultiLine"
+                android:importantForAutofill="no"
+                android:hint="Escreva aqui"
+                android:textSize="16sp"
+                android:textColor="@color/vi_ink"
+                android:textColorHint="@color/vi_muted" />
+            <TextView
+                android:id="@+id/notebookCounter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/vi_muted" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notebookSave"
+                style="@style/Widget.Viaja.Journey.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Salvar" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notebookCancel"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Cancelar edição" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:id="@+id/notebookNotesTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Anotações"
+                android:textSize="20sp"
+                android:textColor="@color/vi_ink" />
+            <TextView
+                android:id="@+id/notebookNotesState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/vi_muted" />
+            <LinearLayout
+                android:id="@+id/notebookNotesRows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notebookAddNote"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Nova anotação" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:id="@+id/notebookChecklistTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Checklist da viagem"
+                android:textSize="20sp"
+                android:textColor="@color/vi_ink" />
+            <TextView
+                android:id="@+id/notebookChecklistState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/vi_muted" />
+            <LinearLayout
+                android:id="@+id/notebookChecklistRows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/notebookAddItem"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Adicionar item" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

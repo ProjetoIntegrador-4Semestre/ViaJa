@@ -1,11 +1,7 @@
 package com.senac.viaja.ui.trips
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +12,6 @@ import com.senac.viaja.ui.main.PageTab
 import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.adapter.TripAdapter
 import com.senac.viaja.data.repository.AuthRepository
-import com.senac.viaja.data.repository.CityRepository
-import com.senac.viaja.data.repository.TripRepository
 import com.senac.viaja.ui.main.TripViewModel
 
 class TripListActivity : AppCompatActivity() {
@@ -25,6 +19,7 @@ class TripListActivity : AppCompatActivity() {
     private lateinit var viewModel: TripViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Viaja_Journey)
         super.onCreate(savedInstanceState)
         setPageContent(R.layout.activity_trip_list, "Minhas viagens", PageTab.TRIPS, topLevel = true)
 
@@ -60,12 +55,6 @@ class TripListActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.trip.observe(this) { trip ->
-            Toast.makeText(this, "Viagem criada", Toast.LENGTH_SHORT).show()
-            viewModel.listByUser(userId)
-        }
-        viewModel.listByUser(userId)
-
         val btnAddTrip: MaterialButton = findViewById(R.id.btnAddTrip)
         viewModel.loading.observe(this) { loading ->
             btnAddTrip.isEnabled = !loading
@@ -73,62 +62,34 @@ class TripListActivity : AppCompatActivity() {
             if (loading) status.text = "Carregando viagens…"
         }
         btnAddTrip.setOnClickListener {
-            showCreateTripDialog()
+            openTripEditor()
         }
     }
 
-    private fun showCreateTripDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_create_trip, null)
-        val etName: EditText = dialogView.findViewById(R.id.etTripName)
-        val citySpinner = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerTripCity)
-        val modeSpinner = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerTripMode)
-        modeSpinner.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("Turismo", "Trabalho"))
-        var cities = emptyList<com.senac.viaja.data.model.City>()
-        val btnConfirm: Button = dialogView.findViewById(R.id.btnConfirmCreateTrip)
-        val btnCancel: Button = dialogView.findViewById(R.id.btnCancelCreateTrip)
-
-        val alert = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        btnConfirm.isEnabled = false
-        CityRepository().list({ loaded ->
-            cities = loaded
-            citySpinner.adapter = android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, cities.map { "${it.name}, ${it.state}" })
-            btnConfirm.isEnabled = cities.isNotEmpty()
-        }, { message -> Toast.makeText(this, message, Toast.LENGTH_LONG).show() })
-        btnConfirm.setOnClickListener {
-            val name = etName.text.toString().trim()
-            val mode = if (modeSpinner.selectedItemPosition == 0) "tourism" else "work"
-            if (name.isEmpty() || mode.isEmpty()) {
-                Toast.makeText(this, "Informe nome e modo da viagem", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val userId = AuthRepository(this).getUser()?.id ?: return@setOnClickListener
-            val cityId = cities.getOrNull(citySpinner.selectedItemPosition)?.id ?: return@setOnClickListener
-            viewModel.createTrip(userId, name, mode, cityId)
-            alert.dismiss()
+    private val editorResult = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val id = result.data?.getLongExtra(TripEditorActivity.TRIP_ID, -1L) ?: -1L
+            if (id > 0) openTripDashboard(id.toString())
         }
+    }
 
-        btnCancel.setOnClickListener { alert.dismiss() }
+    private fun openTripEditor() {
+        editorResult.launch(Intent(this, TripEditorActivity::class.java))
+    }
 
-        alert.show()
+    override fun onResume() {
+        super.onResume()
+        val userId = AuthRepository(this).getUser()?.id ?: run { finish(); return }
+        if (::viewModel.isInitialized) viewModel.listByUser(userId)
     }
 
     private fun openTripDashboard(tripId: String) {
         val placeId = intent.getStringExtra("add_place_id")?.toLongOrNull()
         val selectedTripId = tripId.toLongOrNull() ?: return
         if (placeId != null) {
-            val repository = TripRepository()
-            val onError: (String) -> Unit = { message -> Toast.makeText(this, message, Toast.LENGTH_LONG).show() }
-            repository.stops(selectedTripId, { stops ->
-                val order = (stops.filter { it.day == 1 }.mapNotNull { it.orderIndex }.maxOrNull() ?: 0) + 1
-                repository.addStop(com.senac.viaja.data.model.TripLocal(selectedTripId, placeId, 1, order, null), {
-                    intent.removeExtra("add_place_id")
-                    Toast.makeText(this, "Lugar adicionado ao primeiro dia", Toast.LENGTH_SHORT).show()
-                    openTripDashboard(tripId)
-                }, onError)
-            }, onError)
+            startActivity(Intent(this, TripItineraryActivity::class.java)
+                .putExtra(TripItineraryActivity.TRIP_ID, selectedTripId)
+                .putExtra(TripItineraryActivity.ADD_PLACE_ID, placeId))
             return
         }
         val intent = Intent(this@TripListActivity, TripDashboardActivity::class.java)

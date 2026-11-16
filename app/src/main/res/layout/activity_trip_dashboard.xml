@@ -1,109 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/viaja_cream"
-    android:fillViewport="true">
-
+    android:fillViewport="true"
+    android:background="@color/vi_canvas">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
-
-        <com.google.android.material.card.MaterialCardView
+        android:padding="20dp">
+        <TextView
+            android:id="@+id/tripDashboardError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/viaja_surface"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:id="@+id/tvTripDestination"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#07563A"
-                    android:textSize="24sp"
-                    app:fontFamily="@font/plus_jakarta_sans_bold" />
-
-                <TextView
-                    android:id="@+id/tvTripDates"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="#53675A"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/tvTripMode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="#53675A"
-                    android:textSize="15sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnOpenTripItinerary"
-                    style="@style/Widget.Viaja.Button.Primary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Ver roteiro"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="@color/vi_warning"
+            android:textSize="14sp"
+            android:accessibilityLiveRegion="polite" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tripDashboardRetry"
+            style="@style/Widget.Viaja.Journey.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/viaja_surface"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
+            android:text="Tentar carregar novamente" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:id="@+id/tvTripMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <TextView
-                    android:id="@+id/tvNextStop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Roteiro"
-                    android:textColor="#07563A"
-                    android:textSize="17sp"
-                    app:fontFamily="@font/plus_jakarta_sans_bold" />
-
-                <TextView
-                    android:id="@+id/tvNextStopName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/viaja_text"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvNextStopTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textColor="#53675A"
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_primary"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tvTripDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Carregando viagem…"
+                android:textColor="@color/vi_ink"
+                android:textSize="26sp"
+                android:fontFamily="@font/plus_jakarta_sans_bold" />
+            <TextView
+                android:id="@+id/tripDashboardCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_muted"
+                android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tvTripDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_muted"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tripDashboardBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_ink"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/tripDashboardState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_muted"
+                android:textSize="12sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tripDashboardEdit"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Editar detalhes" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tripDashboardStatus"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Alterar estado da viagem" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:id="@+id/tvNextStop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Roteiro"
+                android:textColor="@color/vi_ink"
+                android:textSize="18sp"
+                android:fontFamily="@font/plus_jakarta_sans_bold" />
+            <TextView
+                android:id="@+id/tvNextStopName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Carregando paradas…"
+                android:textColor="@color/vi_ink"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/tvNextStopTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_muted"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tripDashboardProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="@color/vi_muted"
+                android:textSize="14sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tripDashboardStopRetry"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Atualizar roteiro" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenTripItinerary"
+                style="@style/Widget.Viaja.Journey.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Abrir roteiro" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/vi_surface">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Planeje com a Vi"
+                android:textColor="@color/vi_ink"
+                android:textSize="18sp"
+                android:fontFamily="@font/plus_jakarta_sans_bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Prepare ideias e pedidos em uma conversa vinculada a esta viagem."
+                android:textColor="@color/vi_muted"
+                android:textSize="14sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tripDashboardChat"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Conversar com a Vi" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/vi_surface"
+            android:orientation="vertical"
+            android:padding="20dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gastos da viagem"
+                android:textColor="@color/vi_ink"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/tripDashboardExpenseSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/vi_muted"
+                android:textSize="14sp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tripDashboardExpenses"
+                style="@style/Widget.Viaja.Journey.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Gerenciar gastos" />
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tripDashboardResources"
+            style="@style/Widget.Viaja.Journey.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mapa, clima, PDF e offline" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tripDashboardNotebook"
+            style="@style/Widget.Viaja.Journey.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Anotações e checklist" />
+        <TextView
+            android:id="@+id/tripDashboardPending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text=""
+            android:textColor="@color/vi_muted"
+            android:textSize="14sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tripDashboardDelete"
+            style="@style/Widget.Viaja.Journey.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Excluir viagem" />
     </LinearLayout>
 </ScrollView>

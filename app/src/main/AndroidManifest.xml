@@ -15,6 +15,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Viaja"
         android:usesCleartextTraffic="true">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.receipts"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/receipt_paths" />
+        </provider>
+        <activity android:name=".ui.trips.TripResourcesActivity" android:exported="false" />
+        <activity android:name=".ui.trips.OfflineTripsActivity" android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="false"
@@ -80,6 +91,18 @@
         <activity
             android:name=".ui.trips.TripItineraryActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.trips.TripExpensesActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.trips.TripNotebookActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.trips.TripEditorActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.trips.TripDashboardActivity"
             android:exported="false"

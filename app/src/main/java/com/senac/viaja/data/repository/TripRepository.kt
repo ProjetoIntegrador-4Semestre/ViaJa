@@ -26,6 +26,41 @@ class TripRepository {
                            onSuccess: (TripLocal) -> Unit, onError: (String) -> Unit) =
         receive(ApiClient.service.updateStopSchedule(tripId, localId, schedule), onSuccess, onError)
 
+    fun itineraryPlaces(id: Long, onSuccess: (List<ItineraryPlace>) -> Unit, onError: (String) -> Unit) =
+        receive(ApiClient.service.getItineraryPlaces(id), onSuccess, onError)
+
+    fun editableItinerary(id: Long, onSuccess: (List<TripLocal>, Boolean) -> Unit, onError: (String) -> Unit) {
+        ApiClient.service.getEditableItinerary(id).enqueue(object : Callback<List<TripLocal>> {
+            override fun onResponse(call: Call<List<TripLocal>>, response: Response<List<TripLocal>>) {
+                val body = response.body()
+                when {
+                    response.isSuccessful && body != null -> onSuccess(body, true)
+                    response.code() == 404 || response.code() == 405 -> stops(id, { onSuccess(it, false) }, onError)
+                    else -> onError("Não foi possível carregar o roteiro (${response.code()}).")
+                }
+            }
+            override fun onFailure(call: Call<List<TripLocal>>, error: Throwable) { onError("Não foi possível conectar ao servidor.") }
+        })
+    }
+
+    fun saveItinerary(id: Long, request: ItinerarySaveRequest, onSuccess: (List<TripLocal>) -> Unit, onError: (String) -> Unit) {
+        ApiClient.service.saveItinerary(id, request).enqueue(object : Callback<List<TripLocal>> {
+            override fun onResponse(call: Call<List<TripLocal>>, response: Response<List<TripLocal>>) {
+                val body = response.body()
+                if (response.isSuccessful && body != null) onSuccess(body)
+                else onError(when (response.code()) {
+                    409 -> "O roteiro mudou em outra sessão. Recarregue antes de continuar; suas alterações ainda estão nesta tela."
+                    404, 405 -> "A edição completa está indisponível no momento. Seus pedidos de alteração foram mantidos."
+                    401 -> "Sua sessão expirou. Entre novamente para salvar."
+                    else -> "Não foi possível salvar (${response.code()}). Seus ajustes foram mantidos."
+                })
+            }
+            override fun onFailure(call: Call<List<TripLocal>>, error: Throwable) {
+                onError("Não foi possível confirmar o salvamento. Tente salvar novamente: repetir o mesmo roteiro não duplica paradas.")
+            }
+        })
+    }
+
     fun notes(tripId: Long, onSuccess: (List<TripNote>) -> Unit, onError: (String) -> Unit) =
         receive(ApiClient.service.getTripNotes(tripId), { onSuccess(it._embedded?.notes.orEmpty()) }, onError)
 
