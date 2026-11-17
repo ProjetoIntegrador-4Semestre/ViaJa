@@ -105,6 +105,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     val error: LiveData<String> = _error
 
     fun listByUser(userId: Long) {
+        if (_loading.value == true) return
+        _error.value = ""
         _loading.value = true
         repository.listByUser(userId,
             { trips ->
@@ -210,31 +212,40 @@ class SubscriptionViewModel(application: Application) : AndroidViewModel(applica
     }
 }
 
-class SavedViewModel(application: Application) : AndroidViewModel(application) {
+internal data class SavedUiState(
+    val userId: Long? = null,
+    val items: List<SavedItem> = emptyList(),
+    val loading: Boolean = false,
+    val error: String? = null
+)
 
+internal class SavedViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = SavedRepository()
+    private val changes = MutableLiveData(SavedUiState())
+    val ui: LiveData<SavedUiState> = changes
+    private var requestVersion = 0
 
-    private val _saved = MutableLiveData<List<SavedItem>>()
-    val saved: LiveData<List<SavedItem>> = _saved
+    fun list(userId: Long?) {
+        val previous = checkNotNull(changes.value)
+        if (previous.userId == userId && previous.loading) return
 
-    private val _loading = MutableLiveData<Boolean>(false)
-    val loading: LiveData<Boolean> = _loading
+        val version = ++requestVersion
+        if (userId == null) {
+            changes.value = SavedUiState()
+            return
+        }
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
-
-    fun list(userId: Long) {
-        _loading.value = true
-        repository.list(userId,
-            { items ->
-                _loading.value = false
-                _saved.value = items
-            },
-            { message ->
-                _loading.value = false
-                _error.value = message
-            }
+        val pending = SavedUiState(
+            userId = userId,
+            items = if (previous.userId == userId) previous.items else emptyList(),
+            loading = true
         )
+        changes.value = pending
+        repository.list(userId, { items ->
+            if (version == requestVersion) changes.value = pending.copy(items = items, loading = false)
+        }, { message ->
+            if (version == requestVersion) changes.value = pending.copy(loading = false, error = message)
+        })
     }
 
     fun save(userId: Long, localId: Long,

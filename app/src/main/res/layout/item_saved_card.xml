@@ -3,79 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/viaja_radius_card"
-    app:cardElevation="2dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
     app:cardBackgroundColor="@color/white"
-    android:layout_marginStart="20dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="20dp"
-    android:layout_marginBottom="12dp">
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/vi_border"
+    app:strokeWidth="1dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="64dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/imgSaved"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:visibility="gone"
-            android:contentDescription="Saved item image"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_hero_beach"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <com.google.android.material.chip.Chip
+        <TextView
             android:id="@+id/chipSavedType"
-            style="@style/Widget.Viaja.Chip.Filter"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Acomodação"
-            app:layout_constraintTop_toBottomOf="@id/imgSaved"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:textColor="@color/vi_primary"
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvSavedName"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Casa Sol Nascente"
-            android:textColor="@color/viaja_text"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:fontFamily="@font/be_vietnam_pro_extrabold"
-            app:layout_constraintTop_toBottomOf="@id/chipSavedType"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:fontFamily="@font/plus_jakarta_sans_bold"
+            android:textColor="@color/vi_ink"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/tvSavedLocation"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Trancoso, Bahia"
-            android:textColor="@color/viaja_gray"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/tvSavedName"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAddTrip"
-            style="@style/Widget.Viaja.Button.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
             android:layout_marginTop="4dp"
-            android:text="+ Adicionar à Viagem"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/tvSavedLocation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:textColor="@color/vi_muted"
+            android:textSize="14sp" />
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

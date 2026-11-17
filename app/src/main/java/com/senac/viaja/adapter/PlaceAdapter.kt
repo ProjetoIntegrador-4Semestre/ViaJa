@@ -5,48 +5,59 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.senac.viaja.R
 import com.senac.viaja.data.model.Place
+import com.senac.viaja.ui.places.CatalogImages
+import java.text.NumberFormat
+import java.util.Locale
 
 class PlaceAdapter(
-    private val items: List<Place>,
+    items: List<Place>,
     private val onClick: (Place) -> Unit
-) : RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
+) : ListAdapter<Place, PlaceAdapter.ViewHolder>(PlaceDiff) {
+    private val currency = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"))
+
+    init {
+        submitList(items)
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgPlace: ImageView = view.findViewById(R.id.imgPlace)
-        val btnFavorite: ImageView = view.findViewById(R.id.btnFavorite)
-        val tvPlaceRating: TextView = view.findViewById(R.id.tvRating)
-        val tvPlaceType: TextView = view.findViewById(R.id.tvPlaceType)
-        val tvPlaceName: TextView = view.findViewById(R.id.tvPlaceName)
-        val tvPlaceLocation: TextView = view.findViewById(R.id.tvPlaceLocation)
-        val tvPlacePrice: TextView = view.findViewById(R.id.tvPrice)
-        val btnView: MaterialButton = view.findViewById(R.id.btnView)
+        val image: ImageView = view.findViewById(R.id.imgPlace)
+        val rating: TextView = view.findViewById(R.id.tvRating)
+        val category: TextView = view.findViewById(R.id.tvPlaceType)
+        val name: TextView = view.findViewById(R.id.tvPlaceName)
+        val address: TextView = view.findViewById(R.id.tvPlaceLocation)
+        val price: TextView = view.findViewById(R.id.tvPrice)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_place_card, parent, false)
-        return ViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_place_card, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.findViewById<View>(R.id.tvPriceOld).visibility = View.GONE
-        val place = items[position]
-        holder.tvPlaceName.text = place.name
-        holder.tvPlaceLocation.text = place.address ?: ""
-        holder.tvPlaceType.text = (place.categories?.firstOrNull() ?: "Pousada").uppercase()
-        holder.tvPlaceRating.text = if (place.rating != null) "★ ${place.rating}" else "★ --"
-        holder.tvPlacePrice.text = if (place.price != null) {
-            java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(place.price / 100.0)
-        } else {
-            "Preço sob consulta"
+        val place = getItem(position)
+        val context = holder.itemView.context
+        CatalogImages.show(holder.image, place.photoUrl)
+        holder.name.text = place.name
+        holder.address.text = place.address
+        holder.address.isVisible = !place.address.isNullOrBlank()
+        val category = place.categories?.firstOrNull { it.isNotBlank() }
+        holder.category.text = category
+        holder.category.isVisible = category != null
+        holder.rating.text = place.rating?.let { "★ " + it.toString().replace('.', ',') }
+            ?: context.getString(R.string.catalog_no_ratings)
+        holder.price.text = place.price?.let {
+            context.getString(R.string.catalog_price, currency.format(it / 100.0))
         }
-        holder.btnView.setOnClickListener { onClick(place) }
+        holder.price.isVisible = place.price != null
         holder.itemView.setOnClickListener { onClick(place) }
     }
 
-    override fun getItemCount(): Int = items.size
+    private object PlaceDiff : DiffUtil.ItemCallback<Place>() {
+        override fun areItemsTheSame(oldItem: Place, newItem: Place) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Place, newItem: Place) = oldItem == newItem
+    }
 }

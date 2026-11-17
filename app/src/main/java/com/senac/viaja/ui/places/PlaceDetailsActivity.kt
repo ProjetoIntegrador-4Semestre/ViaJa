@@ -100,18 +100,22 @@ class PlaceDetailsActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<View>(R.id.imgPlaceMap).visibility=View.GONE
+        findViewById<View>(R.id.imgHero).visibility=View.GONE
         placeViewModel.place.observe(this) { place ->
+            CatalogImages.show(findViewById(R.id.imgHero),place.photoUrl)
+            chipRating.text="Avaliar"
             currentPlace = place
+            tvPlaceDescription.text = place.description.orEmpty()+"\n\nFonte: "+when(place.source){"mock","demo"->"catálogo demonstrativo; confirme os dados antes de viajar";null->"catálogo do Viajá";else->place.source}
             val website = place.website?.let(android.net.Uri::parse)
             btnConsultSite.visibility = if (website?.scheme == "https" && !website.host.isNullOrBlank()) View.VISIBLE else View.GONE
             headerTitle.text = place.name
             tvPlaceName.text = place.name
-            tvPlaceRating.text = if (place.rating != null) "${place.rating}" else "0.0"
+            tvPlaceRating.text = place.rating?.toString() ?: "Sem avaliações"
             tvPlaceRatingCount.text = if (place.ratingCount != null) "(${place.ratingCount})" else "(0)"
             tvPlaceCity.text = place.address ?: ""
-            chipType.text = place.categories?.firstOrNull() ?: "Tipo"
-            chipRating.text = if (place.rating != null) "${place.rating}" else "Avaliação"
-            tvPlaceDescription.text = place.description ?: ""
+            chipType.text = place.categories?.firstOrNull() ?: "Local"
+            chipRating.text = "Avaliar"
             tvPlacePrice.text = if (place.price != null) {
                 java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(place.price / 100.0)
             } else {
@@ -125,6 +129,22 @@ class PlaceDetailsActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<View>(R.id.tvPlaceName).setOnLongClickListener {
+            if(AuthRepository(this).getUser()==null){startActivity(Intent(this,com.senac.viaja.ui.auth.LoginActivity::class.java))}
+            else com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("Avaliar este lugar")
+                .setItems(arrayOf("1 estrela","2 estrelas","3 estrelas","4 estrelas","5 estrelas")){_,index->
+                    com.senac.viaja.data.remote.ApiClient.service.rate(placeId,com.senac.viaja.data.model.RatingWrite(index+1)).enqueue(object:retrofit2.Callback<com.senac.viaja.data.model.RatingResult>{
+                        override fun onResponse(call:retrofit2.Call<com.senac.viaja.data.model.RatingResult>,response:retrofit2.Response<com.senac.viaja.data.model.RatingResult>){Toast.makeText(this@PlaceDetailsActivity,if(response.isSuccessful)"Avaliação salva" else "Não foi possível salvar a avaliação",Toast.LENGTH_SHORT).show();if(response.isSuccessful)placeViewModel.getPlace(placeId)}
+                        override fun onFailure(call:retrofit2.Call<com.senac.viaja.data.model.RatingResult>,failure:Throwable){Toast.makeText(this@PlaceDetailsActivity,"Não foi possível confirmar a avaliação",Toast.LENGTH_SHORT).show()}
+                    })
+                }.show()
+            true
+        }
+        chipRating.text="Avaliar"
+        chipRating.setOnClickListener {findViewById<View>(R.id.tvPlaceName).performLongClick()}
+        listOf(R.id.tvAmenitiesTitle,R.id.amenitiesRow1,R.id.amenitiesRow2).forEach{findViewById<View>(it).visibility=View.GONE}
+        findViewById<android.widget.TextView>(R.id.tvPriceLabel).text="Valor do catálogo · confira a unidade"
+        findViewById<android.widget.TextView>(R.id.tvPlaceRatingCount).apply{contentDescription="Segure o nome do lugar para avaliar"}
         placeViewModel.getPlace(placeId)
     }
 

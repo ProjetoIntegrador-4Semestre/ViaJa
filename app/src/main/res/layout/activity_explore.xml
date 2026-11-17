@@ -3,63 +3,87 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/viaja_cream"
-    android:orientation="vertical"
-    android:padding="16dp">
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Encontre seu próximo destino"
-        android:textColor="#07563A"
-        android:textSize="23sp"
-        app:fontFamily="@font/plus_jakarta_sans_bold" />
+    android:background="@color/vi_canvas"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/exploreSearchField"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.Viaja.Input.Outlined"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
-        android:hint="Buscar cidade ou lugar">
-        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etExploreSearch"
+        android:hint="@string/explore_search_hint"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/exploreQuery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton android:id="@+id/btnExploreSearch"
+    <com.google.android.material.chip.ChipGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Buscar lugares"
-        style="@style/Widget.Viaja.Button.Primary"
-        app:backgroundTint="#07563A"
-        android:textColor="@color/white" />
+        android:paddingHorizontal="16dp"
+        app:chipSpacingHorizontal="8dp">
 
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="8dp"
-        android:text="Destinos"
-        android:textColor="#07563A"
-        android:textSize="18sp"
-        app:fontFamily="@font/plus_jakarta_sans_bold" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/exploreSearch"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explore_search" />
 
-    <TextView android:id="@+id/exploreCityStatus"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/exploreFilters"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explore_filters"
+            android:visibility="gone"
+            app:chipIcon="@drawable/ic_filter" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/exploreProgress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Carregando destinos…"
-        android:textColor="#53675A"
-        android:textSize="15sp" />
-
-    <com.google.android.material.button.MaterialButton android:id="@+id/exploreRetry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Tentar novamente"
-        style="@style/Widget.Viaja.Button.Outline"
+        android:indeterminate="true"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/exploreCities"
+    <TextView
+        android:id="@+id/exploreStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityLiveRegion="polite"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:textColor="@color/vi_muted"
+        android:textSize="14sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exploreResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/exploreResultsAction"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:minHeight="48dp"
         android:visibility="gone" />
+
 </LinearLayout>

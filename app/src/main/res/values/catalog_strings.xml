@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_retry">Tentar novamente</string>
+    <string name="explore_title">Explorar</string>
+    <string name="explore_search_hint">Cidade, lugar ou endereço</string>
+    <string name="explore_search">Buscar</string>
+    <string name="explore_filters">Filtros</string>
+    <string name="explore_filters_active">Filtros (%1$d)</string>
+    <string name="explore_loading">Consultando lugares…</string>
+    <string name="explore_empty">Nenhum lugar encontrado. Experimente outra busca.</string>
+    <string name="explore_legacy_status">%1$s\nFiltros indisponíveis nesta versão do catálogo.</string>
+    <string name="explore_more">Carregar mais lugares</string>
+    <string name="explore_city">Destino</string>
+    <string name="explore_all_cities">Todos os destinos</string>
+    <string name="explore_category">Categoria</string>
+    <string name="explore_all_categories">Todas as categorias</string>
+    <string name="explore_min_rating">Avaliação mínima</string>
+    <string name="explore_sort">Ordenação</string>
+    <string name="explore_max_price">Preço máximo (R$)</string>
+    <string name="explore_price_error">Informe um preço entre R$ 0,00 e R$ 21.474.836,47, com até duas casas decimais.</string>
+    <string name="explore_clear_filters">Limpar filtros</string>
+    <string name="explore_apply_filters">Aplicar</string>
+    <string name="catalog_no_ratings">Sem avaliações</string>
+    <string name="catalog_price">Preço informado: %1$s</string>
+    <plurals name="explore_result_count">
+        <item quantity="one">%d lugar encontrado</item>
+        <item quantity="other">%d lugares encontrados</item>
+    </plurals>
+    <string-array name="explore_rating_choices">
+        <item>Qualquer avaliação</item>
+        <item>3 ou mais</item>
+        <item>4 ou mais</item>
+        <item>4,5 ou mais</item>
+    </string-array>
+    <string-array name="explore_sort_choices">
+        <item>Nome</item>
+        <item>Melhor avaliação</item>
+        <item>Menor preço</item>
+    </string-array>
+    <string name="saved_title">Salvos</string>
+    <string name="saved_visitor">Entre para acessar os lugares salvos na sua conta.</string>
+    <string name="saved_loading">Carregando seus lugares salvos…</string>
+    <string name="saved_empty">Você ainda não salvou lugares.</string>
+    <string name="saved_sign_in">Entrar</string>
+    <string name="saved_browse">Explorar lugares</string>
+    <string name="saved_place">Lugar salvo</string>
+    <string name="saved_place_unavailable">Detalhes indisponíveis</string>
+    <plurals name="saved_count">
+        <item quantity="one">%d lugar salvo</item>
+        <item quantity="other">%d lugares salvos</item>
+    </plurals>
+</resources>
