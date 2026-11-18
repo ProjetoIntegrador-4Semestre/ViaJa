@@ -307,7 +307,7 @@ class HomeActivity : AppCompatActivity() {
     private fun bindVi(trip: Trip?) {
         findViewById<View>(R.id.pageAi).setOnClickListener {
             val chat = Intent(this, AiTripChatActivity::class.java).putExtra(PAGE_TAB_EXTRA, R.id.nav_home)
-            trip?.let { chat.putExtra("trip_name", it.name).putExtra("trip_mode", it.mode) }
+            trip?.let { chat.putExtra("trip_id", it.id?.toLongOrNull() ?: -1L).putExtra("trip_name", it.name).putExtra("trip_mode", it.mode) }
             startActivity(chat)
         }
     }
