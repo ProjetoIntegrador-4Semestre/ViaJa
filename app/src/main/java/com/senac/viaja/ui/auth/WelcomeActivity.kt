@@ -59,7 +59,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            Toast.makeText(this, "Login com Google em breve", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, GoogleLoginActivity::class.java))
         }
 
         tvVisitante.setOnClickListener {
@@ -69,4 +69,12 @@ class WelcomeActivity : AppCompatActivity() {
             finish()
         }
     }
+    override fun onResume() {
+        super.onResume()
+        findViewById<android.view.View>(R.id.tvOfflineWelcome)?.apply {
+            visibility=if(AuthRepository(this@WelcomeActivity).offlineOwner()!=null) android.view.View.VISIBLE else android.view.View.GONE
+            setOnClickListener { startActivity(Intent(this@WelcomeActivity,com.senac.viaja.ui.trips.OfflineTripsActivity::class.java)) }
+        }
+    }
+
 }

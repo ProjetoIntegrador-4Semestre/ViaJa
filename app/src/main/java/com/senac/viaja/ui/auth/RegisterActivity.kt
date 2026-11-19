@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
-import com.senac.viaja.ui.auth.AuthViewModel
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -80,7 +79,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnGoogleReg.setOnClickListener {
-            Toast.makeText(this, "Cadastro com Google em breve", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, GoogleLoginActivity::class.java))
         }
     }
 

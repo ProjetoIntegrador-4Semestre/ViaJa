@@ -1,5 +1,6 @@
 package com.senac.viaja.ui.auth
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -12,10 +13,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
+import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.R
 import com.senac.viaja.data.model.ViajaUser
 import com.senac.viaja.ui.auth.AuthViewModel
 import com.senac.viaja.ui.main.HomeActivity
+import com.senac.viaja.ui.profile.PremiumActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -52,10 +55,14 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.user.observe(this) { user ->
             if (user != null) {
-                val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                intent.putExtra("email", user.email)
-                intent.putExtra("origem", "login")
-                startActivity(intent)
+                val destination = if (intent.getBooleanExtra(RETURN_TO_SUBSCRIPTION, false)) {
+                    subscriptionAfterLogin(this)
+                } else {
+                    Intent(this, HomeActivity::class.java)
+                        .putExtra("email", user.email)
+                        .putExtra("origem", "login")
+                }
+                startActivity(destination)
                 finish()
             }
         }
@@ -91,7 +98,23 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnGoogleLogin.setOnClickListener {
-            Toast.makeText(this, "Login com Google em breve", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, GoogleLoginActivity::class.java)
+                .putExtra(RETURN_TO_SUBSCRIPTION, intent.getBooleanExtra(RETURN_TO_SUBSCRIPTION, false)))
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        findViewById<android.view.View>(R.id.btnOfflineLogin)?.apply {
+            visibility=if(AuthRepository(this@LoginActivity).offlineOwner()!=null) android.view.View.VISIBLE else android.view.View.GONE
+            setOnClickListener { startActivity(Intent(this@LoginActivity,com.senac.viaja.ui.trips.OfflineTripsActivity::class.java)) }
+        }
+    }
+
+    companion object {
+        internal const val RETURN_TO_SUBSCRIPTION = "return_to_subscription"
+
+        internal fun subscriptionAfterLogin(context: Context): Intent =
+            Intent(context, PremiumActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
     }
 }

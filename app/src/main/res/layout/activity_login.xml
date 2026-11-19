@@ -19,6 +19,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="144dp"
+        android:background="@drawable/bg_auth_brand_gradient"
+        app:layout_constraintEnd_toEndOf="@id/imgHeader"
+        app:layout_constraintStart_toStartOf="@id/imgHeader"
+        app:layout_constraintTop_toTopOf="@id/imgHeader" />
+
     <ImageButton
         android:id="@+id/btnVoltar"
         android:layout_width="48dp"
@@ -32,20 +40,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivViajaBadge"
-        android:layout_width="182dp"
-        android:layout_height="72dp"
-        android:background="@drawable/bg_brand_badge"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:contentDescription="Viajá"
-        android:scaleType="fitCenter"
-        android:src="@drawable/viaja_badge"
-        android:layout_marginTop="48dp"
+    <include
+        layout="@layout/view_auth_brand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/btnVoltar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/btnVoltar" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -190,6 +192,16 @@
                         app:icon="@drawable/ic_google_g"
                         app:iconSize="22dp"
                         app:iconTint="@null" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOfflineLogin"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:text="Ler viagens baixadas"
+                        android:textColor="@color/vi_primary"
+                        android:visibility="gone" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

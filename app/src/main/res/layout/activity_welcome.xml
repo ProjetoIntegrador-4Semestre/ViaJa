@@ -27,20 +27,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivViajaBadge"
-        android:layout_width="218dp"
-        android:layout_height="86dp"
-        android:background="@drawable/bg_brand_badge"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:contentDescription="Viajá"
-        android:scaleType="fitCenter"
-        android:src="@drawable/viaja_badge"
+    <LinearLayout
+        android:id="@+id/welcomeBrand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            android:src="@drawable/viaja_circle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/viaja_brand_name"
+            android:textColor="@color/white"
+            android:textSize="36sp"
+            app:fontFamily="@font/be_vietnam_pro_extrabold" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvSubtitle"
@@ -55,7 +68,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivViajaBadge" />
+        app:layout_constraintTop_toBottomOf="@id/welcomeBrand" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEntrar"
@@ -121,7 +134,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvContinueCom"
-        app:layout_constraintBottom_toTopOf="@id/tvVisitante">
+        app:layout_constraintBottom_toTopOf="@id/tvOfflineWelcome">
 
         <ImageView
             android:layout_width="24dp"
@@ -131,6 +144,23 @@
             android:src="@drawable/ic_google_g" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvOfflineWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:text="Ler viagens baixadas"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/btnGoogle"
+        app:layout_constraintBottom_toTopOf="@id/tvVisitante"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tvVisitante"
@@ -145,6 +175,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnGoogle" />
+        app:layout_constraintTop_toBottomOf="@id/tvOfflineWelcome" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

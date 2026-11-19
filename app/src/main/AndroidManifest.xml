@@ -24,6 +24,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/receipt_paths" />
         </provider>
+        <activity android:name=".ui.auth.GoogleLoginActivity" android:exported="false" />
         <activity android:name=".ui.trips.TripResourcesActivity" android:exported="false" />
         <activity android:name=".ui.trips.OfflineTripsActivity" android:exported="false" />
         <activity
