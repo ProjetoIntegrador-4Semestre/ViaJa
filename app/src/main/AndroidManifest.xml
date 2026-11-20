@@ -113,14 +113,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.profile.SubscriptionActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.profile.PremiumPaywallActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ui.places.AiTripChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

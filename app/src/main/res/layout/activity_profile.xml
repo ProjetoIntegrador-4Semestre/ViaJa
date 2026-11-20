@@ -49,16 +49,18 @@
                         android:layout_height="68dp"
                         android:background="@drawable/bg_avatar_circle"
                         android:clipToOutline="true"
-                        android:contentDescription="Foto ilustrativa do perfil"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/curtis" />
+                        android:importantForAccessibility="no"
+                        android:padding="19dp"
+                        android:src="@drawable/ic_nav_profile"
+                        android:tint="@color/viaja_green_dark" />
 
                     <TextView
                         android:id="@+id/tvProfileName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Viajante"
+                        android:text="@string/profile_traveler"
+                        android:gravity="center"
                         tools:text="Victor D. Curtis"
                         android:textColor="#064B2B"
                         android:textSize="20sp"
@@ -70,6 +72,7 @@
                         android:layout_marginTop="2dp"
                         android:orientation="horizontal">
                         <TextView
+                            android:id="@+id/tvProfileRole"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/bg_profile_chip"
@@ -77,10 +80,11 @@
                             android:paddingTop="4dp"
                             android:paddingEnd="10dp"
                             android:paddingBottom="4dp"
-                            android:text="Viajante"
+                            android:text="@string/profile_traveler"
                             android:textColor="@color/viaja_green_dark"
                             android:textSize="10sp" />
                         <TextView
+                            android:id="@+id/tvProfileMode"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -89,7 +93,7 @@
                             android:paddingTop="4dp"
                             android:paddingEnd="10dp"
                             android:paddingBottom="4dp"
-                            android:text="Perfil de viagem"
+                            tools:text="@string/profile_tourism"
                             android:textColor="#1763A5"
                             android:textSize="10sp" />
                     </LinearLayout>
@@ -97,9 +101,10 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnEditProfile"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="24dp"
-                        android:text="Editar perfil"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:layout_marginTop="18dp"
+                        android:text="@string/profile_edit"
                         android:textAllCaps="false"
                         android:textSize="12sp"
                         app:backgroundTint="#00AD63"
@@ -130,33 +135,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Alterne os modos para ajustar recomendações e a densidade da interface."
+                        android:text="@string/profile_preferences_description"
                         android:textColor="#666B68"
                         android:textSize="10sp" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="36dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:background="@drawable/bg_preference_track"
                         android:gravity="center"
-                        android:orientation="horizontal">
-                        <TextView
+                        android:orientation="horizontal"
+                        android:padding="3dp">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnProfileTourism"
                             android:layout_width="0dp"
-                            android:layout_height="30dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="48dp"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_preference_selected"
-                            android:gravity="center"
-                            android:text="☀  Turismo"
+                            android:text="@string/profile_tourism"
+                            android:textAllCaps="false"
                             android:textColor="#526043"
-                            android:textSize="10sp" />
-                        <TextView
+                            android:textSize="12sp"
+                            app:cornerRadius="18dp" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnProfileWork"
                             android:layout_width="0dp"
-                            android:layout_height="30dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="48dp"
                             android:layout_weight="1"
-                            android:gravity="center"
-                            android:text="♙  Trabalho"
-                            android:textColor="#777A74"
-                            android:textSize="10sp" />
+                            android:text="@string/profile_work"
+                            android:textAllCaps="false"
+                            android:textColor="#526043"
+                            android:textSize="12sp"
+                            app:cornerRadius="18dp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -182,47 +193,33 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Sugestões de interesses"
+                            android:text="@string/profile_interests"
                             android:textColor="#123D2B"
                             android:textSize="14sp"
                             app:fontFamily="@font/plus_jakarta_sans_bold" />
-                        <TextView
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnEditInterests"
+                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?attr/selectableItemBackground"
-                            android:padding="4dp"
-                            android:text="Editar"
-                            android:textColor="@color/viaja_green"
-                            android:textSize="10sp" />
+                            android:text="@string/profile_edit_interests"
+                            android:textColor="@color/viaja_green_dark"
+                            android:textSize="12sp" />
                     </LinearLayout>
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvProfileInterestsStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView style="@style/ProfileInterestChip" android:text="🏛  Cultura" />
-                        <TextView style="@style/ProfileInterestChip" android:text="♧  Natureza e ar livre" />
-                    </LinearLayout>
-                    <LinearLayout
+                        android:accessibilityLiveRegion="polite"
+                        android:textColor="#666B68"
+                        android:textSize="12sp"
+                        tools:text="@string/profile_interests_empty" />
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/profileInterestChips"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:orientation="horizontal">
-                        <TextView style="@style/ProfileInterestChip" android:text="🍴  Culinária" />
-                        <TextView style="@style/ProfileInterestChip" android:text="♨  Esportes de aventura" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:orientation="horizontal">
-                        <TextView style="@style/ProfileInterestChip" android:text="✿  Bem-estar" />
-                        <TextView
-                            android:id="@+id/btnAddInterest"
-                            style="@style/ProfileInterestChip"
-                            android:text="＋  Adicionar" />
-                    </LinearLayout>
+                        android:layout_marginTop="4dp"
+                        app:chipSpacingVertical="6dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -232,64 +229,63 @@
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="#FFF0A6"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="0dp">
-                <androidx.constraintlayout.widget.ConstraintLayout
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="14dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
                     <TextView
-                        android:id="@+id/tvSubscriptionLabel"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="★  ASSINATURA"
-                        android:textColor="#C99C00"
-                        android:textSize="10sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:text="@string/subscription_current_plan"
+                        android:textColor="#675317"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/plus_jakarta_sans_bold" />
+
                     <TextView
-                        android:id="@+id/tvPremiumTitle"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/profileSubscriptionPlan"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text="Plano Premium"
-                        android:textColor="#17472E"
-                        android:textSize="17sp"
-                        app:fontFamily="@font/plus_jakarta_sans_bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvSubscriptionLabel" />
+                        android:layout_marginTop="6dp"
+                        android:accessibilityLiveRegion="polite"
+                        android:textColor="@color/viaja_text"
+                        android:textSize="20sp"
+                        app:fontFamily="@font/be_vietnam_pro_extrabold"
+                        tools:text="@string/subscription_free" />
+
                     <TextView
-                        android:id="@+id/tvRenewalDescription"
-                        android:layout_width="0dp"
+                        android:id="@+id/profileSubscriptionPrice"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Consulte seu plano e gerencie a assinatura."
-                        android:textColor="#656453"
-                        android:textSize="10sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvPremiumTitle" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Mensal"
-                        android:textColor="#173C28"
-                        android:textSize="11sp"
+                        android:textColor="@color/viaja_text"
+                        android:textSize="15sp"
                         app:fontFamily="@font/plus_jakarta_sans_bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvRenewalDescription" />
+                        tools:text="@string/subscription_price_free" />
+
                     <TextView
-                        android:id="@+id/btnManageSubscription"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/profileSubscriptionDetail"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:padding="6dp"
-                        android:text="Gerenciar"
-                        android:textColor="#755D00"
-                        android:textSize="10sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        android:layout_marginTop="6dp"
+                        android:textColor="#554B36"
+                        android:textSize="13sp"
+                        tools:text="@string/subscription_summary_free" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnManageSubscription"
+                        style="@style/Widget.Viaja.Button.Outline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:minHeight="48dp"
+                        android:text="@string/subscription_settings"
+                        android:textAllCaps="false" />
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -325,18 +321,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Recuperação de conta\nNão configurada"
-                        android:textColor="#666B68"
-                        android:textSize="11sp" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#F0F0ED" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:id="@+id/tvProfileStatus"
                         android:text="Status da conta\nVisitante"
                         android:textColor="@color/viaja_green"
                         android:textSize="10sp" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnProfileOffline"
+                        style="@style/Widget.Viaja.Button.Outline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/profile_offline"
+                        android:textAllCaps="false"
+                        android:textColor="#07563A" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnProfileLogout"
                         style="@style/Widget.Viaja.Button.Outline"
