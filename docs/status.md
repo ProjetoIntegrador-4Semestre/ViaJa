@@ -1,58 +1,39 @@
 # Viajá — estado da implementação
 
-Revisado em 05/11/2026 a partir do código local e das verificações da sessão. Referência de produto: [product-baseline.md](product-baseline.md). Esta é a única matriz atual; relatórios em history/storage são snapshots.
+Revisão: 18/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [plano de execução](recovery-plan.md). **Implementado** descreve código; **verificado** exige indicar o ambiente e o comportamento executado. A API original e a hospedada não receberam o patch desta rodada.
 
-**Verificado** significa um fluxo específico executado. **Parcial** significa integração incompleta ou validação insuficiente. **Simulado** significa resposta local/fixa. **Ausente** significa que não foi encontrado um fluxo implementado. Nenhum desses rótulos é percentual de conclusão.
+## Matriz atual
 
-## Matriz
+| Área | Código Android e API preparada | Validação ainda necessária |
+| --- | --- | --- |
+| Acesso e sessão | Login/cadastro existentes; JWT protegido pelo Keystore; sessão por conta; servidor exige segredo configurado e revoga sessões após reset | Instalação, reinício do Android, expiração e troca de conta em dispositivo |
+| Google | Navegador do sistema, PKCE/nonce/state, assinatura RSA e claims verificados no servidor; resultado de uso único por segredo separado | Credenciais/redirect HTTPS, consentimento real e retorno ao app |
+| Recuperação | Serviço Resend, token temporário com hash, resposta genérica e reset de uso único; telas enviam dados reais | Remetente verificado, entrega real e fluxo Android completo |
+| Home/cidades | Consultas existentes, navegação para viagens/Vi e paleta compartilhada | Revisão visual, erros e retorno entre telas no APK |
+| Descoberta | Filtros por cidade/tipo/preço/nota, acentos, ordenação e paginação; fallback textual para API antiga | Catálogo suficiente e revisado, desempenho em volume |
+| Lugar e avaliações | Fotos HTTPS quando disponíveis, fonte visível, dados desconhecidos sem amenidades fictícias; avaliação 1–5 por conta/lugar, com atualização da média | Catálogo seed continua demonstrativo; imagens e avaliações no dispositivo |
+| Salvos | Fluxo já existente, separado da inclusão no roteiro | Regressão de paginação, falhas, retentativa e visitantes |
+| Viagens e painel | Pacote 1: criar/editar/excluir, status, datas/orçamento, resumos e navegação | HTTP e regressão no Android; proteção cidade/duração reforçada no patch |
+| Roteiro | Pacote 2: editor por dia, mover/reordenar, horário/conclusão, notas, exclusão e PUT atômico com snapshot | Aplicar/publicar API e executar conflito/retorno no app |
+| Notas e checklist | Pacote 3: notas gerais, memos e itens individuais; propriedade/idempotência/limpeza | HTTP e preservação dos editores em dispositivo |
+| Despesas e comprovantes | Pacote 4: centavos, categorias, datas, reembolso manual, versão e anexos privados | Multipart, seletor de documentos e FileProvider no APK |
+| Perfil/interesses | Pacote 5: gravação real, seleção persistida, senha atual para alterar e-mail e JWT renovado | Reabrir/rotacionar, falha de rede e mudança de e-mail no app |
+| Vi/IA | Pacote 7: OpenAI Responses, sessões/histórico remotos, quota, contexto autorizado, proposta revisável e aplicação explícita/idempotente | Configurar chave/modelo, publicar API e validar resposta real; sem streaming, voz ou imagens |
+| Mapa e clima | Pacote 8: Leaflet/OSM, navegação externa, Open-Meteo com fonte/data/fuso e cache | Rede/WebView real, atribuição, falha de tiles e previsão no dispositivo |
+| PDF e offline | Pacote 9: PDF básico/completo, download privado por conta e leitura local; servidor exige Premium para novos pacotes completos/offline | Arquivos extensos, seletor de destino, expiração/logout e leitura sem rede |
+| Premium/Stripe | Integração já existente; benefícios novos usam período pago no servidor, nunca flag do app | Checkout/webhook/Portal em testes, renovação e eventos fora de ordem |
+| Persistência | Perfil optativo `persistent`, H2 em arquivo, seed desativado; reinício testado com conta/viagem/direito de acesso | Configurar volume durável e verificar schema existente sem perda de dados |
+| Visual e publicação | Tokens floresta/marfim/sálvia e tema claro consistente; novas páginas usam componentes Material | Acessibilidade, teclado/fonte ampliada, APK Gradle, deploy e demonstração |
 
-| Área | Android | API/dados | O que falta para concluir |
-| --- | --- | --- | --- |
-| Login/sessão | Login real, token persistido e retorno à Home verificados em rodada anterior | Login de demonstração, 401 sem sessão válida e consulta pública com token inválido verificados na API local | Logout na UI, expiração em tela aberta, armazenamento protegido e verificação do login hospedado |
-| Cadastro | Callback real; não reexecutado integralmente na última rodada | Rota existente | Validação de campos/senha, duplicidade e regressão ponta a ponta |
-| Google | Botão “em breve” | Ausente | OAuth/configuração e verificação da identidade |
-| Recuperar/redefinir | Telas sem ação | Ausente | E-mail, token temporário, submissão e links |
-| Home/cidades | Consulta real de cidades; visual problemático | HAL e seed existentes | Estado de erro/retentativa, próxima viagem e revisão visual |
-| Explore/filtros | Pesquisa e cards; filtros sem efeito real | Busca textual simples | Filtros, acentos, catálogo suficiente e ordenação |
-| Lugar | Leitura/detalhe verificados; favorito e inclusão real | PlaceResponse alinhado | Fotos/mapa/horários/amenidades reais, ação do site; remover ilustrações enganosas |
-| Salvos | Salvar/remover/lista/retorno vazio verificados | Proprietário e mutações testados | Falhas de consulta/retentativa no favorito, paginação Android em volume e visita sem sessão |
-| Viagens | Criar/listar e abrir detalhe verificados | CRUD e proprietário testados | Edição/exclusão na UI, conflitos de cidade/datas, finalização/histórico completo |
-| Roteiro | Adiciona ao dia 1 e mostra primeira parada | CRUD/ordenação por dia e acesso testados | Editor completo, horários, dia escolhido, ordem sem colisões e memos na exclusão |
-| Perfil/interesses | Leitura do perfil pela API; nome da conta verificado no emulador; edição ainda local | Conta com leitura/mutação restritas ao proprietário; interesses ainda pendentes | Gravação real na edição, validação de campos, interesses e sessão após alterar e-mail |
-| Notas/checklists | Sem fluxo | Texto de viagem/parada parcial | Autorização, telas e itens de checklist |
-| Despesas/recibos | Ausente | Ausente | Registro, totais, anexos privados, orçamento/reembolso |
-| Mapas/localização | Imagem ilustrativa | Coordenadas no catálogo | Mapa/renderização, permissões e navegação real |
-| Clima | “Indisponível” no dashboard | Ausente | Provedor, consulta contextual e estados de falha |
-| Avaliações | Apenas exibe nota do catálogo | CRUD parcial | Regra de repetição, validação uniforme, média/contagem e interface |
-| Vi/IA | Respostas fixas por palavras | Ausente | Provedor, quota, rascunho validado e aprovação/aplicação |
-| Premium/Stripe | Telas sobrepostas/simuladas | CRUD Subscription; sem Stripe | Checkout/webhook/retorno/Portal, persistência e benefícios no servidor |
-| PDF/offline | Ausente | Ausente | Exportação e download conforme os planos |
-| Navegação/visual | Fragmentos/Activities sobrepostos e estados incompletos | Não se aplica | Um caminho coerente por área, botões reais, acessibilidade e revisão das telas |
-| Publicação | APK local verificado em fluxos selecionados | Atualizações locais | Checkout limpo reproduzível, deploy validado e demonstração completa |
+## Evidências de 18/11
 
-## Falhas prioritárias confirmadas na auditoria
+- **30 testes Kotlin/JUnit passaram**, incluindo moeda/datas/roteiro, notas/despesas e proteção do HTML do mapa. Todos os fontes Kotlin foram checados com dependências locais e classe R real gerada por AAPT2. Recursos Android compilaram e vincularam.
+- **8 testes da API passaram**, em sete classes: roteiro, notas, despesas, integração dos pacotes 5–9, parsing meteorológico, verificação criptográfica Google e persistência após reinício. Integrações usam Spring/H2 real e provedores substituídos por dublês; não fazem chamadas pagas.
+- Maven empacotou a API isolada. O patch cumulativo passa no `git apply --check` contra a fonte original.
+- A checagem Kotlin/AAPT2 não monta nem instala um APK. Gradle completo, emulador, HTTP público, Stripe e provedores reais **não foram validados nesta rodada**.
 
-1. A conta própria ainda precisa de validação uniforme, tratamento da sessão após mudança de e-mail e exclusão de vínculos. Exposição do hash e acesso cruzado em UserController foram corrigidos e verificados nesta rodada.
-2. `GET /trips/2/notes`, `/trip-memos` e `/users/2/interests` retornaram 200 com a mesma conta. A proteção de TripController não protege esses caminhos automaticamente.
-3. Regras públicas de places/cities/interests/medias abrangem métodos de escrita, não só leitura.
-4. A API local corrigiu o 403 sem sessão válida, o bloqueio de consultas públicas por token inválido e o tratamento genérico de falhas como 404. Ainda há uma chave JWT padrão no código. No Render, `GET /trips` sem token retornou 403 e `POST /auth/login` com corpo vazio retornou 404.
-5. Editar perfil ainda anuncia sucesso sem gravar na API. A consulta de UserRepository agora é real e não substitui o usuário pelo mock; sua operação de edição não implementada passa a retornar erro explícito.
-6. Busca local confirmou “São Paulo” com zero resultados e “Sao Paulo” com um.
-7. Falta tratar memos na remoção de uma parada. Como existe FK composta, isso pode impedir a exclusão; não é correto afirmar que sempre produz órfãos.
-8. Há alterações Android pré-existentes, inclusive arquivos fora do versionamento. Compilar o diretório atual não prova compilação e execução de um checkout limpo.
+A aplicação na API original foi rejeitada automaticamente pela política de escrita da sessão, mesmo com autorização do responsável. O código completo está preservado em [all-packages.patch](../backend-patches/all-packages.patch); configuração e aplicação em [backend-patches/README.md](../backend-patches/README.md). Nenhum deploy ou commit foi realizado.
 
-A rodada de conta/perfil corrigiu localmente a leitura e listagem com hash, o acesso cruzado à conta e removeu o `POST /users`. A API publicada ainda lista `POST /users` no OpenAPI e carece de verificação após a publicação das correções.
+## Histórico e próxima verificação
 
-## Evidência disponível e seus limites
-
-- Compilação Android debug e Maven verify passaram nas rodadas de implementação anteriores.
-- Os 11 grupos de verificações do `scripts/smoke_test.py` da API passaram na instância local, incluindo os códigos de autenticação e roteamento, catálogo, login, salvos, viagens, paradas e privacidade da conta.
-- `AuthRepositoryTest` passou diretamente com AndroidJUnitRunner: sessão simulada/expirada, restauração, IDs longos e rejeição do token correspondente. O launcher de testes Gradle offline não tinha uma dependência no cache.
-- Emulador: login/restauração, busca→detalhe, ciclo de salvos, criar viagem e incluir lugar na viagem foram demonstrados. Não houve regressão de todas as telas, modo escuro, rotação, rede lenta ou troca de conta.
-- Capturas atuais de Home/Perfil mostram contraste ruim, roxo herdado, seleção duplicada, chips cortados e persona fictícia. A prévia visual da conversa não foi implementada no APK.
-- Checkout Stripe, webhook e novos planos são decisões, não funcionalidades existentes. H2 persistente ainda não foi configurado.
-- Não houve envio dos commits nem publicação dos contratos atuais no remoto durante estas rodadas.
-
-## Como atualizar
-
-Trocar um estado exige registrar o fluxo executado, ambiente, resultado e limite relevante. Não usar quantidade de arquivos, presença de classes, data configurada de commit ou compilação como prova de funcionalidade. Guardar histórico fora desta matriz e substituir informações superadas, em vez de adicionar relatórios contraditórios no fim do arquivo.
+As verificações antigas de login, catálogo e salvos continuam registradas no histórico; não comprovam regressão das alterações atuais. [Entrega dos pacotes 5–9](remaining-packages.md) separa o código entregue da fila de integração operacional. Atualizar esta matriz ao executar cada fluxo, registrando ambiente e limite da evidência.

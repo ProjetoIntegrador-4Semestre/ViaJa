@@ -1,6 +1,6 @@
 # Documentação do Viajá
 
-Revisão: 05/11/2026. Entrega confirmada: 02/12/2026. Android: branch `expansion`.
+Revisão: 18/11/2026. Entrega confirmada: 02/12/2026. Android: branch `expansion`.
 
 ## Por onde começar
 
@@ -10,7 +10,9 @@ Revisão: 05/11/2026. Entrega confirmada: 02/12/2026. Android: branch `expansion
 | O que existe no código, como se comunica e quais dados usa? | [Arquitetura e dados](architecture.md) |
 | O que funciona, o que está parcial e o que falta? | [Estado da implementação](status.md) |
 | Em que ordem trabalhar e como concluir cada etapa? | [Plano de execução](recovery-plan.md) |
+| O que foi entregue nos pacotes restantes e como validar? | [Entrega dos pacotes 5–9](remaining-packages.md) |
 | Como explicar as telas, a API e o fluxo do Stripe na apresentação? | [Guia do app](app-walkthrough.md) |
+| Como a Vi deve conversar, organizar sessões e evoluir com IA? | [Assistente Vi](vi-assistant.md) |
 | O que demonstrar e entregar à faculdade? | [Entrega acadêmica](academic.md) |
 | O que foi aproveitado, corrigido ou arquivado nos documentos antigos? | [Revisão documental](documentation-audit.md) |
 

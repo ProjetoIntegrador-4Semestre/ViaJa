@@ -1,6 +1,6 @@
 # Viajá — produto e experiência
 
-Referência vigente, revisada em 05/11/2026. Este documento descreve o produto desejado. Consulte [status.md](status.md) para saber o que já foi implementado.
+Referência vigente, revisada em 18/11/2026. Este documento descreve o produto desejado. Consulte [status.md](status.md) para saber o que já foi implementado.
 
 ## Proposta e limites
 
@@ -44,13 +44,13 @@ Notas gerais pertencem à viagem. Notas de parada pertencem à associação daqu
 
 Despesas têm categoria, valor em centavos, data e viagem. Recibo é anexo privado opcional. Resumo soma despesas e compara com o orçamento informado; reembolso tem estado próprio, sem fingir integração com uma empresa. BRL é a moeda inicial; conversão cambial não está confirmada.
 
-Avaliações de lugar permanecem sem autor público e com nota de 1 a 5. A regra de repetição/moderação e a atualização de média/contagem precisam ser definidas antes de expor a escrita. Não transformar essa decisão em avaliação de viagem automaticamente. Estatísticas e badges só aparecem quando calculados de dados reais.
+Avaliações de lugar permanecem sem autor público e com nota de 1 a 5. Adotado em 18/11: uma nota por conta/lugar; nova avaliação atualiza a anterior e recalcula média/contagem dos registros. Moderação continua futura. Não transformar essa decisão em avaliação de viagem automaticamente. Estatísticas e badges só aparecem quando calculados de dados reais.
 
 ### IA, PDF e offline
 
 A Vi gera ou revisa um rascunho usando contexto da viagem, interesses e lugares disponíveis. Deve validar IDs e estrutura da resposta, guardar a proposta e solicitar aprovação antes de inserir paradas. Não inventar reservas, horários ou preços. Falha deve preservar o pedido; nenhuma resposta fixa é apresentada como chamada real ao provedor.
 
-A quota conta uma geração ou revisão substancial concluída, não cada mensagem. Falhas do provedor não consomem cota. Limitar entrada/saída e duração do roteiro; modelo e preços precisam de verificação na integração, sem versões herdadas de prompts antigos. Histórico bruto de conversa e personalização automática por viagens antigas não estão confirmados para a entrega.
+A quota conta uma geração ou revisão substancial concluída, não cada mensagem. Falhas do provedor não consomem cota. Limitar entrada/saída e duração do roteiro; modelo e preços precisam de verificação na integração, sem versões herdadas de prompts antigos. Histórico de sessões foi autorizado em 17/11/2026; em 18/11, sessões remotas e rascunhos locais por conta têm implementação, conforme [experiência da Vi](vi-assistant.md). Personalização automática por viagens antigas continua futura. Há teto operacional separado de interações diárias, explicitado na Vi.
 
 PDF básico contém o itinerário. O pacote completo inclui roteiro, notas/checklists e resumo de gastos. Offline é leitura de uma viagem baixada explicitamente; não inclui sincronização colaborativa, mapas offline, IA ou clima sem conexão. Arquivos já exportados/baixados não são apagados por cancelamento; produzir/atualizar novos pacotes Premium exige acesso vigente.
 
@@ -85,15 +85,15 @@ Confirmar assinatura pode demorar. Mostrar “Confirmando sua assinatura”, op�
 
 O servidor aplica benefícios; CRUD genérico de assinatura não pode concedê-los. Distinguir status Stripe, período pago e cancelamento do acesso efetivo. Evitar compras ativas duplicadas. Verificar assinatura do webhook com corpo original, persistir IDs de eventos e aplicar atualização transacional; reentregas e eventos fora de ordem não duplicam benefícios. Reconciliar estado com o provedor. Sem fila, microsserviço ou framework de eventos para esse fluxo.
 
-H2 em memória/create-drop não preserva clientes, assinaturas e eventos ao reiniciar. Manter H2 conforme a disciplina, preparando persistência em arquivo e carga inicial controlada para a demonstração de cobrança. Isso é requisito pendente, não configuração já aplicada. Chaves de teste/segredo do webhook permanecem no servidor; usar Stripe CLI no desenvolvimento. Não semear um usuário pago fictício como se tivesse assinatura verificada.
+H2 em memória/create-drop não preserva clientes, assinaturas e eventos ao reiniciar. Manter H2 conforme a disciplina, preparando persistência em arquivo e carga inicial controlada para a demonstração de cobrança. O perfil persistente foi implementado/testado em 18/11; configuração na implantação e verificação Stripe após reinício continuam pendentes. Chaves de teste/segredo do webhook permanecem no servidor; usar Stripe CLI no desenvolvimento. Não semear um usuário pago fictício como se tivesse assinatura verificada.
 
 Publicação futura na Play exige revisar as regras de benefícios digitais e os programas aplicáveis ao mercado. Usar Stripe ou uma aba de navegador não resolve essa elegibilidade por si só.
 
 ## Direção visual e contrato das telas
 
-Uma família tipográfica, componentes Material com cores explícitas, rótulos em português e uma única marcação de seleção. Paleta clara inicial: verde `#087A49`, creme `#F7F5EF`, superfície `#FFFFFF`, texto `#19382A`, secundário `#53675A`. Contrastes calculados: branco/verde 5,40:1; texto/creme 11,74:1; secundário/branco 6,08:1. Isso não é certificação integral de acessibilidade.
+Uma família tipográfica, componentes Material com cores explícitas, rótulos em português e uma única marcação de seleção. Paleta atual: floresta `#176B54`, marfim `#F6F7F3`, superfície `#FFFFFF`, texto `#183C34`, secundário `#576B63` e sálvia `#E7EFE8`. Acessibilidade integral ainda exige verificação no dispositivo.
 
-Espaçamento 8/16/24dp, margem de tela 16dp, alvo de toque mínimo 48dp, título de tela aproximadamente 24sp, seção 18sp, corpo 16sp e secundário 14sp. Altura acompanha conteúdo; suportar fonte ampliada, teclado, tela menor e modo escuro. Sem coordenadas absolutas copiadas de capturas. A família final e os tokens escuros serão validados na implementação, aproveitando as fontes já existentes.
+Espaçamento 8/16/24dp, margem de tela 16dp, alvo de toque mínimo 48dp, título de tela aproximadamente 24sp, seção 18sp, corpo 16sp e secundário 14sp. Altura acompanha conteúdo; suportar fonte ampliada, teclado e tela menor. A implementação atual usa tema claro consistente; variante escura completa é futura. Sem coordenadas absolutas copiadas de capturas. A família final e os tokens escuros serão validados na implementação, aproveitando as fontes já existentes.
 
 | Área | Ação principal e conteúdo | Estados e restrições |
 | --- | --- | --- |
@@ -115,9 +115,9 @@ A revisão do emulador encontrou texto branco em fundo claro, roxo herdado do te
 
 ## Pontos que não devem ser inventados na implementação
 
-- Escolha e condições de uso do mapa/clima; Open-Meteo é candidato histórico, não integração comprovada.
-- Modelo Gemini, custos, limites e políticas atuais do provedor.
-- Repetição/moderação de avaliações e retenção de rascunhos da IA.
+- Mapa Leaflet/OSM e previsão Open-Meteo têm código preparado; verificar condições de uso e execução real antes da publicação.
+- IA preparada usa OpenAI Responses com modelo configurado no servidor; não presumir custos, acesso ou limites de um modelo específico.
+- Moderação de avaliações e política de retenção remota de conversas exigem evolução explícita; não afirmar que foram implementadas.
 - Anexos de notas, lembretes, cartões de embarque, agenda de reuniões e lugares personalizados: aparecem nas fontes antigas e precisam de escopo/aceitação antes de gerar tabelas ou páginas. Não estão sendo declarados concluídos nem descartados.
 - Garantia de disponibilidade/preços de hospedagem, personalização automática de perfil e múltiplos destinos por viagem não foram aprovados para esta entrega.
 

@@ -21,9 +21,9 @@ Os repositórios organizam as operações por assunto. Por exemplo, `PlaceReposi
 | --- | --- |
 | Login e cadastro | Enviam os dados a `/auth/login` e `/auth/signup`. O login recupera a conta e o token da sessão. |
 | Início | Consulta viagens, paradas e lugares salvos para compor o painel. Também consulta candidatos do catálogo para exibir lugares próximos quando tem acesso à localização. |
-| Explorar | Consulta as cidades em `GET /cities`. Ao buscar ou tocar numa cidade, abre a lista de lugares com o termo escolhido. |
+| Explorar | Consulta `GET /discovery/options` para montar o painel de filtros e `GET /discovery/places` para exibir resultados paginados na própria aba. Em versões antigas da API, usa a busca por texto em `GET /places/search`. |
 | Resultados e detalhe | A lista chama `GET /places/search?q=...`. A ficha busca `GET /places/{id}` e permite salvar ou remover o lugar dos favoritos. |
-| Salvos | Consulta os favoritos em `/users/{userId}/saved-locals`. Ao tocar em um item, abre a ficha pelo ID do lugar. |
+| Salvos | Consulta os favoritos em `/users/{userId}/saved-locals` e monta o filtro com as categorias dos lugares retornados. Ao tocar em um item, abre a ficha do lugar. Visitantes podem entrar na conta pela própria aba. |
 | Viagens | Lista as viagens da conta e consulta as cidades para preencher o seletor do formulário. Ao confirmar, envia a nova viagem para `POST /trips`. |
 | Painel da viagem e roteiro | Consultam a viagem e suas paradas. O roteiro agrupa as paradas por dia e permite alterar horário e conclusão. O fluxo de inclusão pela ficha do lugar adiciona a visita ao primeiro dia. |
 | Perfil | Consulta `GET /users/{id}` e permite encerrar a sessão local. A gravação pelo formulário de edição ainda está indisponível no Android. |
@@ -69,7 +69,7 @@ A distinção ajuda na apresentação. `TripRequest` representa os dados enviado
 
 ### 1. Abrir o checkout
 
-Ao abrir a área Premium, `PremiumActivity` verifica a sessão e chama `BillingRepository.subscription()`, que consulta `GET /billing/stripe/subscription`. Ao confirmar o plano, o app chama `POST /billing/stripe/checkout` com o JWT da conta.
+Em **Perfil → Configurações da assinatura**, `PremiumActivity` consulta `GET /billing/stripe/subscription`. Na conta gratuita, **Assinar Premium** chama `POST /billing/stripe/checkout` com o JWT da conta e abre o Stripe, onde a pessoa vê o valor e autoriza a cobrança.
 
 O servidor verifica se o Payment Link de teste está ativo e usa o preço mensal configurado. Se já houver uma assinatura que precisa ser gerenciada, retorna um conflito. Caso contrário, guarda uma referência temporária vinculada à conta e a inclui como `client_reference_id` na URL devolvida ao app. Essa referência permite identificar a conta Viajá quando o Stripe avisar sobre o checkout.
 
@@ -85,17 +85,17 @@ Quando encontra uma fatura paga para o preço esperado, a API registra até quan
 
 O Stripe direciona o navegador para a página `/billing/stripe/return` da API. Essa página oferece um link para `viaja://billing/return`, que o manifesto Android associa à `PremiumActivity`.
 
-Ao voltar ao primeiro plano, a tela consulta novamente `GET /billing/stripe/subscription`. Se o webhook ainda não chegou, a API também pode procurar uma sessão paga no Stripe pela referência do checkout e atualizar o registro. O Android lê um objeto `StripeSubscription`, com o status, o campo `premiumActive`, a data paga e a possibilidade de abrir o portal. A tela de sucesso aparece quando o app aguarda um checkout e a API confirma `premiumActive`. O retorno pelo link serve para reabrir o app e disparar a consulta.
+Ao retomar o app ou tocar em **Atualizar status**, a tela consulta novamente `GET /billing/stripe/subscription`. Se o webhook ainda não chegou, a API pode procurar uma sessão paga no Stripe pela referência do checkout. A mesma tela mostra **Compra iniciada** enquanto o checkout pode ser retomado e **Premium ativo** quando a API confirma o acesso.
 
 ### 4. Gerenciar, renovar ou cancelar
 
-Quando a conta já tem um cliente Stripe associado, o app oferece o gerenciamento. Ele chama `POST /billing/stripe/portal`, a API cria uma sessão para aquele cliente e o Android abre a URL de `billing.stripe.com` no navegador. Ao voltar, o app consulta o status novamente.
+Com Premium ativo, **Cancelar no Stripe** abre o portal onde a pessoa escolhe a assinatura e confirma o cancelamento. O app chama `POST /billing/stripe/portal`, a API cria uma sessão para aquele cliente e o Android abre a URL de `billing.stripe.com` no navegador. Ao voltar, o app consulta o status novamente.
 
-A API considera o Premium ativo enquanto o período pago estiver vigente e o status estiver em `active` ou `past_due`. Por isso, um cancelamento agendado para o fim do ciclo pode manter o acesso até a data paga. Uma renovação confirmada pode estender essa data. Esse fluxo usa os registros de cobrança Stripe em ambiente de testes. O CRUD de `Subscription` que também existe no projeto é separado.
+A API considera o Premium ativo enquanto o período pago estiver vigente e o status estiver em `active` ou `past_due`. Com o cancelamento no fim do ciclo, a tela mostra **Renovação cancelada** e a data até a qual o Premium continua disponível. Uma renovação confirmada pode estender essa data. Esse fluxo usa os registros de cobrança Stripe em ambiente de testes. O CRUD de `Subscription` que também existe no projeto é separado.
 
 ### Configuração para a demonstração
 
-Use um Payment Link ativo no sandbox, com um único preço mensal e sem período grátis. Aponte o redirecionamento após o pagamento para a página de retorno da API e habilite o cancelamento no Customer Portal. Configure no Stripe a limitação de assinaturas ativas duplicadas para o link hospedado. As variáveis da API estão no [README do servidor](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring/tree/develop#assinaturas-no-stripe-sandbox).
+Use um Payment Link ativo no sandbox, com um único preço mensal e sem período grátis. Aponte o redirecionamento após o pagamento para a página de retorno da API e habilite o cancelamento ao final do período no Customer Portal. Mantenha a troca de preço desabilitada no portal. Configure no Stripe a limitação de assinaturas ativas duplicadas para o link hospedado. As variáveis da API estão no [README do servidor](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring/tree/develop#assinaturas-no-stripe-sandbox).
 
 O webhook trata `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid` e `invoice.payment_failed`. Para testar com o servidor na sua máquina, o Stripe CLI pode encaminhar os eventos para `localhost:18080/billing/stripe/webhook`. Use o segredo de assinatura informado pelo CLI. Em um ambiente hospedado, mantenha o diretório `data/` em armazenamento persistente para preservar os vínculos após reinícios.
 
