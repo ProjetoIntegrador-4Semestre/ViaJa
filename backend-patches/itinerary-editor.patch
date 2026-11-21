@@ -1,0 +1,427 @@
+diff --git a/pom.xml b/pom.xml
+--- a/pom.xml
++++ b/pom.xml
+@@ -60,6 +60,11 @@
+             <version>0.12.3</version>
+             <scope>runtime</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-test</artifactId>
++            <scope>test</scope>
++        </dependency>
+     </dependencies>
+     <build>
+         <plugins>
+diff --git a/src/main/java/com/senac/viajaapi/ItineraryController.java b/src/main/java/com/senac/viajaapi/ItineraryController.java
+new file mode 100644
+--- /dev/null
++++ b/src/main/java/com/senac/viajaapi/ItineraryController.java
+@@ -0,0 +1,135 @@
++package com.senac.viajaapi;
++
++import java.time.LocalTime;
++import java.time.temporal.ChronoUnit;
++import java.util.ArrayList;
++import java.util.Comparator;
++import java.util.HashMap;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Map;
++import java.util.Objects;
++import java.util.Set;
++
++import org.springframework.http.HttpStatus;
++import org.springframework.transaction.annotation.Transactional;
++import org.springframework.web.bind.annotation.*;
++import org.springframework.web.server.ResponseStatusException;
++
++import io.swagger.v3.oas.annotations.Operation;
++import jakarta.validation.Valid;
++import jakarta.validation.constraints.NotNull;
++import jakarta.validation.constraints.Pattern;
++import jakarta.validation.constraints.Size;
++
++@RestController
++@RequestMapping("/trips/{tripId}/itinerary")
++public class ItineraryController {
++    private final TripAccess access;
++    private final TripLocalRepository stops;
++    private final TripMemoRepository memos;
++    private final LocalRepository places;
++
++    public ItineraryController(TripAccess access, TripLocalRepository stops, TripMemoRepository memos, LocalRepository places) {
++        this.access = access;
++        this.stops = stops;
++        this.memos = memos;
++        this.places = places;
++    }
++
++    @GetMapping
++    @Operation(summary = "Consultar roteiro editável")
++    public List<TripLocal> get(@PathVariable Long tripId) {
++        access.requireOwner(tripId);
++        return stops.findById_TripIdOrderByDayAscOrderIndexAsc(tripId);
++    }
++
++    @GetMapping("/places")
++    @Operation(summary = "Lugares da cidade para incluir no roteiro")
++    public List<PlaceOption> options(@PathVariable Long tripId) {
++        Trip trip = access.requireOwner(tripId);
++        return places.findByCityIdOrderByNameAsc(trip.getCityId()).stream()
++                .map(place -> new PlaceOption(place.getId(), place.getName())).toList();
++    }
++
++    public record PlaceOption(Long id, String name) { }
++
++    @PutMapping
++    @Transactional
++    @Operation(summary = "Salvar roteiro completo atomicamente", description = "Compara expected com o estado atual; conflito retorna 409. Uma repetição do mesmo estado final é idempotente. Remover uma parada também remove seus memos na mesma transação.")
++    public List<TripLocal> save(@PathVariable Long tripId, @Valid @RequestBody ItineraryRequest request) {
++        Trip trip = access.requireOwnerForUpdate(tripId);
++        List<TripLocal> current = stops.findById_TripIdOrderByDayAscOrderIndexAsc(tripId);
++        List<Stop> actual = current.stream().map(Stop::from).toList();
++        validate(trip, request.stops());
++        if (!same(actual, request.expected())) {
++            if (same(actual, request.stops())) return current;
++            throw new ResponseStatusException(HttpStatus.CONFLICT, "Itinerary changed; reload before saving");
++        }
++        Map<Long, TripLocal> existing = new HashMap<>();
++        for (TripLocal stop : current) existing.put(stop.getLocalId(), stop);
++        Set<Long> retained = new HashSet<>();
++        for (Stop item : request.stops()) {
++            Local place = places.findById(item.localId()).orElseThrow(() -> new IllegalArgumentException("Place does not exist"));
++            if (!Objects.equals(place.getCityId(), trip.getCityId())) throw new IllegalArgumentException("Place must belong to the trip city");
++            retained.add(item.localId());
++        }
++        for (TripLocal stop : current) {
++            if (!retained.contains(stop.getLocalId())) {
++                memos.deleteAll(memos.findByTripIdAndLocalId(tripId, stop.getLocalId()));
++                memos.flush();
++                stops.delete(stop);
++            }
++        }
++        stops.flush();
++        List<TripLocal> saved = new ArrayList<>();
++        for (Stop item : request.stops()) {
++            TripLocal stop = existing.get(item.localId());
++            if (stop == null) stop = new TripLocal(tripId, item.localId(), item.orderIndex(), item.day(), item.note());
++            stop.setDay(item.day());
++            stop.setOrderIndex(item.orderIndex());
++            stop.setNote(item.note());
++            stop.setScheduledTime(item.scheduledTime() == null ? null : LocalTime.parse(item.scheduledTime()));
++            stop.setCompleted(item.completed());
++            saved.add(stops.save(stop));
++        }
++        stops.flush();
++        return saved.stream().sorted(Comparator.comparing(TripLocal::getDay).thenComparing(TripLocal::getOrderIndex)).toList();
++    }
++
++    static boolean same(List<Stop> first, List<Stop> second) {
++        Comparator<Stop> order = Comparator.comparing(Stop::localId, Comparator.nullsFirst(Long::compareTo));
++        return first.stream().sorted(order).toList().equals(second.stream().sorted(order).toList());
++    }
++
++    static void validate(Trip trip, List<Stop> items) {
++        Set<Long> ids = new HashSet<>();
++        Map<Integer, Set<Integer>> orders = new HashMap<>();
++        Long duration = trip.getStartDate() != null && trip.getEndDate() != null
++                ? ChronoUnit.DAYS.between(trip.getStartDate(), trip.getEndDate()) + 1 : null;
++        for (Stop item : items) {
++            if (item == null || item.localId() == null || item.day() == null || item.day() < 1
++                    || item.orderIndex() == null || item.orderIndex() < 1 || item.completed() == null) throw new IllegalArgumentException("Invalid stop");
++            if (!ids.add(item.localId())) throw new IllegalArgumentException("Duplicate place in itinerary");
++            if (duration != null && item.day() > duration) throw new IllegalArgumentException("Day exceeds trip dates");
++            if (!orders.computeIfAbsent(item.day(), key -> new HashSet<>()).add(item.orderIndex())) throw new IllegalArgumentException("Duplicate order in day");
++        }
++        for (Set<Integer> indices : orders.values()) {
++            for (int index = 1; index <= indices.size(); index++) {
++                if (!indices.contains(index)) throw new IllegalArgumentException("Order must be contiguous within each day");
++            }
++        }
++    }
++
++    public record Stop(@NotNull Long localId, @NotNull Integer day, @NotNull Integer orderIndex, String note,
++            @Pattern(regexp = "(?:[01][0-9]|2[0-3]):[0-5][0-9]") String scheduledTime, @NotNull Boolean completed) {
++        static Stop from(TripLocal stop) {
++            return new Stop(stop.getLocalId(), stop.getDay(), stop.getOrderIndex(), stop.getNote(),
++                    stop.getScheduledTime() == null ? null : stop.getScheduledTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")), stop.isCompleted());
++        }
++    }
++
++    public record ItineraryRequest(@NotNull @Size(max = 1000) List<@NotNull @Valid Stop> expected,
++            @NotNull @Size(max = 1000) List<@NotNull @Valid Stop> stops) {
++    }
++}
+diff --git a/src/main/java/com/senac/viajaapi/TripAccess.java b/src/main/java/com/senac/viajaapi/TripAccess.java
+--- a/src/main/java/com/senac/viajaapi/TripAccess.java
++++ b/src/main/java/com/senac/viajaapi/TripAccess.java
+@@ -23,6 +23,14 @@
+                 .orElseThrow(() -> new AccessDeniedException("Access denied")).getId();
+     }
+ 
++    public Trip requireOwnerForUpdate(Long tripId) {
++        if (tripId == null) throw new IllegalArgumentException("Trip is required");
++        Trip trip = trips.findForUpdate(tripId)
++                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip does not exist"));
++        if (!currentUserId().equals(trip.getUserId())) throw new AccessDeniedException("Access denied");
++        return trip;
++    }
++
+     public Trip requireOwner(Long tripId) {
+         if (tripId == null) throw new IllegalArgumentException("Trip is required");
+         Trip trip = trips.findById(tripId)
+diff --git a/src/main/java/com/senac/viajaapi/TripRepository.java b/src/main/java/com/senac/viajaapi/TripRepository.java
+--- a/src/main/java/com/senac/viajaapi/TripRepository.java
++++ b/src/main/java/com/senac/viajaapi/TripRepository.java
+@@ -8,5 +8,9 @@
+ @Repository
+ public interface TripRepository extends JpaRepository<Trip, Long> {
+ 
++    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
++    @org.springframework.data.jpa.repository.Query("select t from Trip t where t.id = :id")
++    java.util.Optional<Trip> findForUpdate(@org.springframework.data.repository.query.Param("id") Long id);
++
+     Page<Trip> findByUserId(Long userId, Pageable pageable);
+ }
+diff --git a/src/main/java/com/senac/viajaapi/TripLocalController.java b/src/main/java/com/senac/viajaapi/TripLocalController.java
+--- a/src/main/java/com/senac/viajaapi/TripLocalController.java
++++ b/src/main/java/com/senac/viajaapi/TripLocalController.java
+@@ -37,13 +37,15 @@
+     private final TripLocalRepository repository;
+     private final TripRepository tripRepository;
+     private final TripAccess tripAccess;
++    private final TripMemoRepository memos;
+     private final LocalRepository localRepository;
+     private final TripLocalModelAssembler assembler;
+     private final org.springframework.data.web.PagedResourcesAssembler<TripLocal> pagedResourcesAssembler;
+ 
+-    public TripLocalController(TripLocalRepository repository, TripRepository tripRepository, TripAccess tripAccess, LocalRepository localRepository, TripLocalModelAssembler assembler,
++    public TripLocalController(TripLocalRepository repository, TripRepository tripRepository, TripAccess tripAccess, TripMemoRepository memos, LocalRepository localRepository, TripLocalModelAssembler assembler,
+             org.springframework.data.web.PagedResourcesAssembler<TripLocal> pagedResourcesAssembler) {
+         this.repository = repository;
++        this.memos = memos;
+         this.tripRepository = tripRepository;
+         this.tripAccess = tripAccess;
+         this.localRepository = localRepository;
+@@ -73,12 +75,14 @@
+     @Operation(summary = "Criar parada de roteiro")
+     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Parada criada com sucesso")
+     @PostMapping
++    @Transactional
+     public ResponseEntity<EntityModel<TripLocal>> newTripLocal(@RequestBody @Valid TripLocal newTripLocal) {
+-        Trip trip = tripAccess.requireOwner(newTripLocal.getTripId());
++        Trip trip = tripAccess.requireOwnerForUpdate(newTripLocal.getTripId());
+         if (newTripLocal.getLocalId() == null) throw new IllegalArgumentException("Place is required");
+         Local place = localRepository.findById(newTripLocal.getLocalId()).orElseThrow(() -> new IllegalArgumentException("Place does not exist"));
+         if (!java.util.Objects.equals(trip.getCityId(), place.getCityId())) throw new IllegalArgumentException("Place must belong to the trip city");
+         validate(newTripLocal);
++        validatePosition(newTripLocal, trip);
+         if (repository.existsById(newTripLocal.getId())) throw new IllegalArgumentException("Place already belongs to the itinerary");
+         newTripLocal.setCreatedAt(java.time.LocalDateTime.now());
+         TripLocal saved = repository.save(newTripLocal);
+@@ -108,10 +112,13 @@
+             @Parameter(description = "Identificador numerico da viagem") @PathVariable Long tripId,
+             @Parameter(description = "Identificador numerico do local") @PathVariable Long localId,
+             @RequestBody @Valid TripLocal newTripLocal) {
+-        tripAccess.requireOwner(tripId);
++        Trip trip = tripAccess.requireOwnerForUpdate(tripId);
+         TripLocal tripLocal = repository.findById(new TripLocalId(tripId, localId))
+                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Parada nao encontrada com tripId: " + tripId + " e localId: " + localId));
+         validate(newTripLocal);
++        newTripLocal.setTripId(tripId);
++        newTripLocal.setLocalId(localId);
++        validatePosition(newTripLocal, trip);
+         tripLocal.setOrderIndex(newTripLocal.getOrderIndex());
+         tripLocal.setDay(newTripLocal.getDay());
+         tripLocal.setNote(newTripLocal.getNote());
+@@ -123,7 +130,7 @@
+     @Transactional
+     public EntityModel<TripLocal> updateSchedule(@PathVariable Long tripId, @PathVariable Long localId,
+             @Valid @RequestBody StopSchedule request) {
+-        tripAccess.requireOwner(tripId);
++        tripAccess.requireOwnerForUpdate(tripId);
+         TripLocal stop = repository.findById(new TripLocalId(tripId, localId))
+                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Stop does not exist"));
+         stop.setScheduledTime(request.scheduledTime() == null ? null : LocalTime.parse(request.scheduledTime()));
+@@ -140,15 +147,28 @@
+     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "Parada excluída com sucesso")
+     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Parada nao encontrada")
+     @DeleteMapping("/{tripId}/{localId}")
++    @Transactional
+     public ResponseEntity<?> deleteTripLocal(
+             @Parameter(description = "Identificador numerico da viagem") @PathVariable Long tripId,
+             @Parameter(description = "Identificador numerico do local") @PathVariable Long localId) {
+-        tripAccess.requireOwner(tripId);
++        tripAccess.requireOwnerForUpdate(tripId);
+         if (!repository.existsById(new TripLocalId(tripId, localId))) {
+             return ResponseEntity.notFound().build();
+         }
++        memos.deleteAll(memos.findByTripIdAndLocalId(tripId, localId));
++        memos.flush();
+         repository.deleteById(new TripLocalId(tripId, localId));
+         return ResponseEntity.noContent().build();
++    }
++
++    private void validatePosition(TripLocal stop, Trip trip) {
++        if (trip.getStartDate() != null && trip.getEndDate() != null && stop.getDay() >
++                java.time.temporal.ChronoUnit.DAYS.between(trip.getStartDate(), trip.getEndDate()) + 1) {
++            throw new IllegalArgumentException("Day exceeds trip dates");
++        }
++        boolean collision = repository.findById_TripIdOrderByDayAscOrderIndexAsc(trip.getId()).stream().anyMatch(existing ->
++                !existing.getLocalId().equals(stop.getLocalId()) && existing.getDay().equals(stop.getDay()) && existing.getOrderIndex().equals(stop.getOrderIndex()));
++        if (collision) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Order already used");
+     }
+ 
+     private void validate(TripLocal stop) {
+diff --git a/src/main/java/com/senac/viajaapi/TripController.java b/src/main/java/com/senac/viajaapi/TripController.java
+--- a/src/main/java/com/senac/viajaapi/TripController.java
++++ b/src/main/java/com/senac/viajaapi/TripController.java
+@@ -118,14 +118,27 @@
+     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Viagem atualizada com sucesso")
+     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Viagem nao encontrada para o id informado")
+     @PutMapping("/{id}")
++    @org.springframework.transaction.annotation.Transactional
+     public ResponseEntity<EntityModel<Trip>> updateTrip(
+             @Parameter(description = "Identificador numerico da viagem a ser atualizada") @PathVariable Long id,
+             @RequestBody @Valid TripRequest request) {
+-        Trip viagem = repository.findById(id)
++        Trip viagem = repository.findForUpdate(id)
+                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Viagem nao encontrada com ID: " + id));
+         requireUser(viagem.getUserId());
+         if (request.getUserId() != null) requireUser(request.getUserId());
+         validate(request);
++        var currentStops = stopRepository.findById_TripIdOrderByDayAscOrderIndexAsc(id);
++        if (!java.util.Objects.equals(viagem.getCityId(), request.getCityId()) && !currentStops.isEmpty()) {
++            throw new ResponseStatusException(HttpStatus.CONFLICT, "Remove stops before changing city");
++        }
++        LocalDate start = date(request.getStartDate());
++        LocalDate end = date(request.getEndDate());
++        if (start != null && end != null) {
++            long days = java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
++            if (currentStops.stream().anyMatch(stop -> stop.getDay() > days)) {
++                throw new ResponseStatusException(HttpStatus.CONFLICT, "Trip dates would hide itinerary days");
++            }
++        }
+         viagem.setCityId(request.getCityId());
+         viagem.setUpdatedAt(java.time.LocalDateTime.now());
+         viagem.setName(request.getName().trim());
+@@ -145,7 +158,7 @@
+     @org.springframework.transaction.annotation.Transactional
+     @DeleteMapping("/{id}")
+     public ResponseEntity<?> deleteTrip(@Parameter(description = "Identificador numerico da viagem a ser excluída") @PathVariable Long id) {
+-        Trip trip = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip does not exist"));
++        Trip trip = repository.findForUpdate(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trip does not exist"));
+         requireUser(trip.getUserId());
+         memoRepository.deleteByTripId(id);
+         noteRepository.deleteByTripId(id);
+diff --git a/src/main/java/com/senac/viajaapi/LocalRepository.java b/src/main/java/com/senac/viajaapi/LocalRepository.java
+--- a/src/main/java/com/senac/viajaapi/LocalRepository.java
++++ b/src/main/java/com/senac/viajaapi/LocalRepository.java
+@@ -5,5 +5,6 @@
+ 
+ @Repository
+ public interface LocalRepository extends JpaRepository<Local, Long> {
++    java.util.List<Local> findByCityIdOrderByNameAsc(Long cityId);
+     boolean existsByCityIdAndNameIgnoreCase(Long cityId, String name);
+ }
+diff --git a/src/test/java/com/senac/viajaapi/ItineraryIntegrationTest.java b/src/test/java/com/senac/viajaapi/ItineraryIntegrationTest.java
+new file mode 100644
+--- /dev/null
++++ b/src/test/java/com/senac/viajaapi/ItineraryIntegrationTest.java
+@@ -0,0 +1,95 @@
++package com.senac.viajaapi;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++import java.time.LocalDate;
++import java.time.LocalDateTime;
++import java.util.List;
++import java.util.function.Supplier;
++
++import org.junit.jupiter.api.Test;
++import org.springframework.boot.WebApplicationType;
++import org.springframework.boot.builder.SpringApplicationBuilder;
++import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
++import org.springframework.security.core.context.SecurityContextHolder;
++import org.springframework.transaction.PlatformTransactionManager;
++import org.springframework.transaction.support.TransactionTemplate;
++import org.springframework.web.server.ResponseStatusException;
++
++class ItineraryIntegrationTest {
++    @Test
++    void savesAtomicallyAndProtectsExpectedStateOwnershipAndMemos() {
++        try (var context = new SpringApplicationBuilder(ViajaApiApplication.class).web(WebApplicationType.NONE).run(
++                "--spring.main.lazy-initialization=true", "--spring.h2.console.enabled=false",
++                "--spring.datasource.url=jdbc:h2:mem:itinerary-test;DB_CLOSE_DELAY=-1",
++                "--spring.jpa.hibernate.ddl-auto=create-drop", "--spring.jpa.show-sql=false",
++                "--spring.main.banner-mode=off", "--logging.level.root=ERROR")) {
++            var users = context.getBean(UserRepository.class);
++            var trips = context.getBean(TripRepository.class);
++            var stops = context.getBean(TripLocalRepository.class);
++            var memos = context.getBean(TripMemoRepository.class);
++            var places = context.getBean(LocalRepository.class);
++            var access = context.getBean(TripAccess.class);
++            var transaction = new TransactionTemplate(context.getBean(PlatformTransactionManager.class));
++            var controller = new ItineraryController(access, stops, memos, places);
++            User owner = users.findAll().get(0);
++            SecurityContextHolder.getContext().setAuthentication(
++                    UsernamePasswordAuthenticationToken.authenticated(owner.getEmail(), "", List.of()));
++            Local first = places.findAll().get(0);
++            var candidates = places.findByCityIdOrderByNameAsc(first.getCityId());
++            assertTrue(candidates.size() >= 2, "Fixture needs two places in the same city");
++            Long a = candidates.get(0).getId();
++            Long b = candidates.get(1).getId();
++            var trip = trips.saveAndFlush(new Trip(owner.getId(), first.getCityId(), "Itinerary test", "tourism",
++                    LocalDate.of(2026, 12, 1), LocalDate.of(2026, 12, 3), 10000, "planned", LocalDateTime.now(), LocalDateTime.now()));
++            var entryA = new ItineraryController.Stop(a, 1, 1, "Keep note", "09:00", false);
++            var entryB = new ItineraryController.Stop(b, 1, 2, "Keep completion", "12:00", true);
++            List<ItineraryController.Stop> initial = List.of(entryA, entryB);
++            in(transaction, () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(List.of(), initial)));
++            var movedB = new ItineraryController.Stop(b, 2, 1, entryB.note(), entryB.scheduledTime(), true);
++            List<ItineraryController.Stop> desired = List.of(entryA, movedB);
++            in(transaction, () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(initial, desired)));
++            assertEquals(desired, snapshot(controller.get(trip.getId())));
++            in(transaction, () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(initial, desired)));
++            assertEquals(2, controller.get(trip.getId()).size(), "Retry must not duplicate stops");
++            var conflict = assertThrows(ResponseStatusException.class, () -> in(transaction,
++                    () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(initial, List.of(entryA)))));
++            assertEquals(409, conflict.getStatusCode().value());
++            assertEquals(desired, snapshot(controller.get(trip.getId())));
++            assertThrows(IllegalArgumentException.class, () -> in(transaction, () -> controller.save(trip.getId(),
++                    new ItineraryController.ItineraryRequest(desired, List.of(entryA, entryA)))));
++            assertThrows(IllegalArgumentException.class, () -> in(transaction, () -> controller.save(trip.getId(),
++                    new ItineraryController.ItineraryRequest(desired, List.of(new ItineraryController.Stop(a, 4, 1, null, null, false))))));
++            Long memoId = in(transaction, () -> {
++                var stop = stops.findById(new TripLocalId(trip.getId(), a)).orElseThrow();
++                var memo = new TripMemo(trip.getId(), a, "Linked memo", LocalDateTime.now());
++                memo.setTripLocal(stop);
++                return memos.saveAndFlush(memo).getId();
++            });
++            var invalidTime = new ItineraryController.Stop(b, 2, 1, "bad time", "25:99", false);
++            assertThrows(RuntimeException.class, () -> in(transaction,
++                    () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(desired, List.of(invalidTime)))));
++            assertTrue(memos.existsById(memoId), "Rollback must restore a memo deleted earlier in the transaction");
++            assertEquals(desired, snapshot(controller.get(trip.getId())));
++            in(transaction, () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(desired, List.of(movedB))));
++            assertFalse(memos.existsById(memoId));
++            assertFalse(stops.existsById(new TripLocalId(trip.getId(), a)));
++            SecurityContextHolder.getContext().setAuthentication(
++                    UsernamePasswordAuthenticationToken.authenticated("not-an-owner@example.invalid", "", List.of()));
++            assertThrows(org.springframework.security.access.AccessDeniedException.class,
++                    () -> controller.get(trip.getId()));
++            assertThrows(org.springframework.security.access.AccessDeniedException.class, () -> in(transaction,
++                    () -> controller.save(trip.getId(), new ItineraryController.ItineraryRequest(List.of(movedB), List.of()))));
++        } finally {
++            SecurityContextHolder.clearContext();
++        }
++    }
++
++    private static <T> T in(TransactionTemplate transaction, Supplier<T> action) {
++        return transaction.execute(status -> action.get());
++    }
++
++    private static List<ItineraryController.Stop> snapshot(List<TripLocal> stops) {
++        return stops.stream().map(ItineraryController.Stop::from).toList();
++    }
++}
