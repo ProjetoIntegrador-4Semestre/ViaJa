@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="terms_privacy_title">Termos e Privacidade</string>
+    <string name="terms_back">Voltar</string>
+    <string name="terms_read">Ler Termos e Privacidade</string>
+    <string name="terms_accept">Aceito os termos de uso e li o aviso de privacidade.</string>
+    <string name="terms_accept_required">Leia os termos e confirme o aceite para criar a conta.</string>
+
+    <string name="terms_use_title">Uso do Viajá</string>
+    <string name="terms_use_body">O Viajá é um projeto acadêmico de planejamento de viagens. Use uma conta própria e mantenha seus dados de acesso protegidos. Confira horários, preços, disponibilidade e condições nos canais oficiais antes de viajar. Sugestões da Vi e previsões do tempo ajudam no planejamento.</string>
+
+    <string name="terms_premium_title">Assinatura Premium</string>
+    <string name="terms_premium_body">O Stripe apresenta o valor e as condições antes da confirmação. Use as configurações da assinatura para consultar o status ou abrir o portal do Stripe. Se a renovação estiver cancelada para o fim do ciclo, o acesso continua até o fim do período pago.</string>
+
+    <string name="privacy_account_title">Dados da conta e das viagens</string>
+    <string name="privacy_account_body">Usamos nome e e-mail para identificar sua conta. Preferências, lugares salvos, avaliações, roteiros, notas, despesas e comprovantes são usados nos recursos em que você os registra. O Viajá pode guardar cópias das viagens baixadas no dispositivo para leitura offline.</string>
+
+    <string name="privacy_device_title">Localização do dispositivo</string>
+    <string name="privacy_device_body">Ao pedir sugestões próximas, você pode permitir o uso da localização aproximada no Android. O aplicativo usa a localização para ordenar os lugares por distância. Você pode gerenciar essa permissão nas configurações do Android.</string>
+
+    <string name="privacy_services_title">Serviços externos</string>
+    <string name="privacy_services_body">Conforme o recurso e a configuração da demonstração, o Google autentica sua conta, a Resend envia e-mails de recuperação e o Stripe processa a assinatura. Ao usar a Vi, seu pedido e o contexto da viagem necessário à resposta podem ser enviados à OpenAI. Evite incluir senhas, documentos ou dados sensíveis nas conversas. A tela de mapas e clima consulta serviços externos para exibir o mapa e a previsão dos destinos.</string>
+
+    <string name="privacy_controls_title">Seus dados e solicitações</string>
+    <string name="privacy_controls_body">No Perfil, você pode consultar e editar os dados da conta. Em Viagens baixadas, você pode remover cópias locais. Para solicitar acesso, correção ou exclusão de dados, procure a equipe responsável pelo projeto pelo canal em que você recebeu acesso à demonstração.</string>
+</resources>

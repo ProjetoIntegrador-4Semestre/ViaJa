@@ -174,12 +174,21 @@
                         android:textColor="@color/viaja_green"
                         android:textSize="12sp" />
 
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRegisterTerms"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/terms_read" />
+
                     <CheckBox
                         android:id="@+id/cbTermos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Ao criar uma conta, você concorda com os Termos de Privacidade."
+                        android:minHeight="48dp"
+                        android:text="@string/terms_accept"
                         android:textColor="@color/viaja_text"
                         android:textSize="13sp" />
 

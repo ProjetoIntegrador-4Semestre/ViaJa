@@ -19,6 +19,7 @@ import com.senac.viaja.data.remote.deliver
 import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.data.repository.BillingRepository
 import com.senac.viaja.ui.auth.LoginActivity
+import com.senac.viaja.ui.legal.TermsPrivacyActivity
 import com.senac.viaja.ui.profile.EditProfileActivity
 import com.senac.viaja.ui.profile.PremiumActivity
 import com.senac.viaja.ui.profile.SubscriptionState
@@ -49,6 +50,9 @@ class ProfileActivity : AppCompatActivity() {
         }
         findViewById<MaterialButton>(R.id.btnProfileOffline).setOnClickListener {
             startActivity(Intent(this, OfflineTripsActivity::class.java))
+        }
+        findViewById<MaterialButton>(R.id.btnProfileTerms).setOnClickListener {
+            startActivity(Intent(this, TermsPrivacyActivity::class.java))
         }
         findViewById<MaterialButton>(R.id.btnProfileLogout).setOnClickListener { confirmLogout() }
     }

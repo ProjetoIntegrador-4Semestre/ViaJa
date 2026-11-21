@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.senac.viaja.R
+import com.senac.viaja.ui.legal.TermsPrivacyActivity
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -69,6 +70,10 @@ class RegisterActivity : AppCompatActivity() {
             blockRegister()
         }
 
+        findViewById<Button>(R.id.btnRegisterTerms).setOnClickListener {
+            startActivity(Intent(this, TermsPrivacyActivity::class.java))
+        }
+
         btnVoltar.setOnClickListener {
             finish()
         }
@@ -104,7 +109,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         if (!cbTermos.isChecked) {
-            Toast.makeText(this, "Aceite os Termos e Privacidade", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.terms_accept_required, Toast.LENGTH_SHORT).show()
             return
         }
 
