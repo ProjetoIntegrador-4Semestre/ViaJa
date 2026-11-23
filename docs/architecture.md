@@ -1,6 +1,6 @@
 # Viajá — arquitetura e dados
 
-Revisão: 18/11/2026. Esta descrição inclui o código Android e a API preparada no patch; não significa que a API hospedada já o executa. Regras: [produto](product-baseline.md). Evidências: [estado](status.md).
+Revisão: 25/11/2026. Esta descrição inclui o código Android, a API Spring nos repositórios locais e recursos ainda preservados no patch cumulativo; não significa que a API hospedada já execute todas as alterações. Regras: [produto](product-baseline.md). Evidências: [estado](status.md).
 
 ## Estrutura
 
@@ -10,8 +10,8 @@ Revisão: 18/11/2026. Esta descrição inclui o código Android e a API preparad
 | API | Java/Spring Boot/JPA; controllers/repositories e gateways específicos para provedores |
 | Banco | H2; padrão de demonstração em memória/create-drop; perfil optativo `persistent` em arquivo/update, sem seed automático |
 | Sessão | JWT identifica e-mail e versão de sessão; segredo obrigatório no servidor; token Android criptografado com AES/GCM no Keystore |
-| Provedores | OpenAI Responses, Google OIDC, Resend e Open-Meteo pelo servidor; Stripe existente |
-| Mapa | Leaflet/OSM em WebView restrita sem ponte JavaScript, coordenadas da viagem; navegação externa por Intent |
+| Provedores | Provider configurável de lugares; Google Places, Routes e Geocoding pelo servidor; OpenAI Responses, Google OIDC, Resend, Open-Meteo e Stripe nas integrações correspondentes |
+| Mapa | Maps SDK e Street View nativos na ficha do lugar; Leaflet/OSM em WebView restrita para recursos de viagem; navegação externa por Intent |
 | Offline | JSON schema 1, AtomicFile em armazenamento privado separado por conta; somente leitura, excluído do backup |
 | PDF/recibos | PdfDocument + seletor de destino; comprovantes autenticados no banco e cache privado via FileProvider |
 
@@ -29,6 +29,7 @@ Sem prefixo `/api`. Os contratos novos abaixo exigem o [patch cumulativo](../bac
 | Perfil | `GET/PUT /account/profile`; gravação devolve perfil seguro e JWT renovado |
 | Descoberta | `GET /discovery/options`, `/discovery/places`; `PUT /discovery/places/{id}/rating` |
 | Catálogo legado | `GET /cities`, `/places/search`, `/places/{id}`; formatos HAL/lista preservados |
+| Google Maps | `GET /places/nearby`, `/places/photos`; `POST /maps/routes`; `GET /maps/geocode`, `/maps/reverse-geocode` |
 | Viagens e salvos | `/trips`, `/trips/user/{userId}`, `/users/{userId}/saved-locals` |
 | Roteiro | `GET/PUT /trips/{tripId}/itinerary`, `GET .../itinerary/places`; snapshot esperado e lista final |
 | Organização | `/trips/{tripId}/notes`, `/trip-memos`, `/trips/{tripId}/checklist/{uuid}` |
@@ -64,4 +65,4 @@ Configuração e aplicação: [backend-patches/README.md](../backend-patches/REA
 adb reverse tcp:18080 tcp:18080
 ```
 
-A API padrão ainda usa H2 em memória e seed demonstrativo. O perfil persistente requer URL/credenciais e volume durável; `ddl-auto=update` não substitui revisão de migração/backup de um banco existente. Nenhuma implantação foi alterada nesta rodada. Versões/dependências estão nos arquivos Gradle/pom; o modelo de IA é configuração obrigatória, sem versão presumida.
+A API padrão ainda usa H2 em memória, seed demonstrativo e provider `mock`. O provider Google exige `GOOGLE_MAPS_SERVER_API_KEY` e `VIAJA_LOCALS_PROVIDER=google`; o app lê sua chave Android separada de `secrets.properties`. O perfil persistente requer URL/credenciais e volume durável; `ddl-auto=update` não substitui revisão de migração/backup de um banco existente. Nenhuma implantação foi alterada nesta rodada. Versões/dependências estão nos arquivos Gradle/pom; o modelo de IA é configuração obrigatória, sem versão presumida.

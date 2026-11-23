@@ -1,6 +1,6 @@
 # Viajá — estado da implementação
 
-Revisão: 18/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [plano de execução](recovery-plan.md). **Implementado** descreve código; **verificado** exige indicar o ambiente e o comportamento executado. A API original e a hospedada não receberam o patch desta rodada.
+Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [plano de execução](recovery-plan.md). **Implementado** descreve código; **verificado** exige indicar o ambiente e o comportamento executado. A API hospedada não recebeu as alterações locais desta rodada.
 
 ## Matriz atual
 
@@ -19,7 +19,7 @@ Revisão: 18/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 | Despesas e comprovantes | Pacote 4: centavos, categorias, datas, reembolso manual, versão e anexos privados | Multipart, seletor de documentos e FileProvider no APK |
 | Perfil/interesses | Pacote 5: gravação real, seleção persistida, senha atual para alterar e-mail e JWT renovado | Reabrir/rotacionar, falha de rede e mudança de e-mail no app |
 | Vi/IA | Pacote 7: OpenAI Responses, sessões/histórico remotos, quota, contexto autorizado, proposta revisável e aplicação explícita/idempotente | Configurar chave/modelo, publicar API e validar resposta real; sem streaming, voz ou imagens |
-| Mapa e clima | Pacote 8: Leaflet/OSM, navegação externa, Open-Meteo com fonte/data/fuso e cache | Rede/WebView real, atribuição, falha de tiles e previsão no dispositivo |
+| Mapa e clima | Maps SDK nativo na ficha, Street View, Places/Routes/Geocoding protegidos pelo backend; pacote 8 mantém Leaflet/OSM e Open-Meteo nos recursos de viagem | Credenciais Google reais, chamadas faturadas, tiles/panorama no dispositivo e fluxo completo de rotas |
 | PDF e offline | Pacote 9: PDF básico/completo, download privado por conta e leitura local; servidor exige Premium para novos pacotes completos/offline | Arquivos extensos, seletor de destino, expiração/logout e leitura sem rede |
 | Premium/Stripe | Integração já existente; benefícios novos usam período pago no servidor, nunca flag do app | Checkout/webhook/Portal em testes, renovação e eventos fora de ordem |
 | Persistência | Perfil optativo `persistent`, H2 em arquivo, seed desativado; reinício testado com conta/viagem/direito de acesso | Configurar volume durável e verificar schema existente sem perda de dados |
@@ -31,6 +31,12 @@ Revisão: 18/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 - **8 testes da API passaram**, em sete classes: roteiro, notas, despesas, integração dos pacotes 5–9, parsing meteorológico, verificação criptográfica Google e persistência após reinício. Integrações usam Spring/H2 real e provedores substituídos por dublês; não fazem chamadas pagas.
 - Maven empacotou a API isolada. O patch cumulativo passa no `git apply --check` contra a fonte original.
 - A checagem Kotlin/AAPT2 não monta nem instala um APK. Gradle completo, emulador, HTTP público, Stripe e provedores reais **não foram validados nesta rodada**.
+
+## Evidências de 25/11
+
+- A API Spring compilou e executou **7 testes** para provider mock, roteamento de IDs por origem, mapper Google e validação de Routes/Geocoding.
+- O Android executou os testes unitários e `assembleDebug` com Maps SDK 20.1.0, gerando o APK debug com endpoint local configurado.
+- Não havia chaves Google reais no workspace. Places, Routes, Geocoding, tiles e Street View não fizeram chamadas externas; faturamento, restrições de chave e comportamento em dispositivo ainda precisam de validação operacional.
 
 A aplicação na API original foi rejeitada automaticamente pela política de escrita da sessão, mesmo com autorização do responsável. O código completo está preservado em [all-packages.patch](../backend-patches/all-packages.patch); configuração e aplicação em [backend-patches/README.md](../backend-patches/README.md). Nenhum deploy ou commit foi realizado.
 
