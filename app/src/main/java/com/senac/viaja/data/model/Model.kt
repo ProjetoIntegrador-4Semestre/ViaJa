@@ -57,7 +57,11 @@ data class Place(
     val openNow: Boolean?,
     val tags: List<String>?,
     val description: String?,
-    val website: String? = null
+    val website: String? = null,
+    val phone: String? = null,
+    val openingHours: String? = null,
+    val googleMapsUri: String? = null,
+    val photoName: String? = null
 )
 
 

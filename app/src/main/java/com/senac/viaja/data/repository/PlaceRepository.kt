@@ -26,7 +26,7 @@ class PlaceRepository {
         ApiClient.service.searchPlaces(query.trim()).enqueue(object : Callback<List<Place>> {
             override fun onResponse(call: Call<List<Place>>, response: Response<List<Place>>) {
                 val places = response.body()
-                if (response.isSuccessful && places != null) callback.onSuccess(places)
+                if (response.isSuccessful && places != null) callback.onSuccess(places.map(::withResolvedPhoto))
                 else callback.onError("Não foi possível carregar os lugares (${response.code()}).")
             }
 
@@ -39,14 +39,14 @@ class PlaceRepository {
     fun getPlace(id: String, callback: PlaceCallback) = getPlace(id, callback::onPlace, callback::onError)
 
     fun getPlace(id: String, onSuccess: (Place) -> Unit, onError: (String) -> Unit) {
-        if (id.toLongOrNull() == null) {
+        if (id.isBlank()) {
             onError("Lugar inválido.")
             return
         }
         ApiClient.service.getPlace(id).enqueue(object : Callback<Place> {
             override fun onResponse(call: Call<Place>, response: Response<Place>) {
                 val place = response.body()
-                if (response.isSuccessful && place != null) onSuccess(place)
+                if (response.isSuccessful && place != null) onSuccess(withResolvedPhoto(place))
                 else onError(if (response.code() == 404) "Lugar não encontrado." else "Não foi possível carregar o lugar (${response.code()}).")
             }
 
@@ -57,6 +57,20 @@ class PlaceRepository {
     }
 
     fun searchByCity(city: String, callback: PlaceCallback) = search(city, callback)
+
+    fun nearby(latitude: Double, longitude: Double, onSuccess: (List<Place>) -> Unit, onError: () -> Unit) {
+        ApiClient.service.nearbyPlaces(latitude, longitude).enqueue(object : Callback<List<Place>> {
+            override fun onResponse(call: Call<List<Place>>, response: Response<List<Place>>) {
+                val places = response.body()
+                if (response.isSuccessful && places != null) onSuccess(places.map(::withResolvedPhoto)) else onError()
+            }
+
+            override fun onFailure(call: Call<List<Place>>, error: Throwable) = onError()
+        })
+    }
+
+    private fun withResolvedPhoto(place: Place): Place =
+        if (place.photoUrl == null) place.copy(photoUrl = ApiClient.photoUrl(place.photoName)) else place
 }
 
 interface PlaceCallback {

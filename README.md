@@ -17,6 +17,14 @@ O app também tem um fluxo de assinatura Premium para testes. Ele abre o pagamen
 
 Abra este repositório no Android Studio, instale o SDK do Android 37 e aguarde a sincronização do Gradle. O app roda em dispositivos com Android 7.0 (API 24) ou superior.
 
+Para exibir o mapa nativo, ative o Maps SDK for Android, crie uma chave restrita ao application ID `com.senac.viaja` e ao certificado de assinatura usado no build, e salve-a fora do Git em `secrets.properties`:
+
+```properties
+MAPS_API_KEY=sua-chave-android
+```
+
+A chave Android é diferente da chave de servidor usada pela API para consultar Places.
+
 A configuração padrão usa a API hospedada. Para testar o app com o backend da sua máquina, siga o [README da API](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring) e deixe o servidor rodando na porta 18080. Com o emulador iniciado, execute na raiz deste repositório:
 
 ```sh

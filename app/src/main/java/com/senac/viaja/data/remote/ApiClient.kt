@@ -17,6 +17,8 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 object ApiClient {
     private val BASE_URL = com.senac.viaja.BuildConfig.API_BASE_URL
@@ -43,6 +45,12 @@ object ApiClient {
 
     val service: ApiService by lazy {
         retrofit.create(ApiService::class.java)
+    }
+
+    fun photoUrl(photoName: String?): String? {
+        if (photoName.isNullOrBlank()) return null
+        val encodedName = URLEncoder.encode(photoName, StandardCharsets.UTF_8.name())
+        return BASE_URL.trimEnd('/') + "/places/photos?name=" + encodedName
     }
 
     object AuthSession {
@@ -97,6 +105,13 @@ interface ApiService {
 
     @GET("places/search")
     fun searchPlaces(@Query("q") q: String?): Call<List<Place>>
+
+    @GET("places/nearby")
+    fun nearbyPlaces(
+        @Query("lat") latitude: Double,
+        @Query("lng") longitude: Double,
+        @Query("radius") radiusMeters: Double = 20_000.0
+    ): Call<List<Place>>
 
     @GET("places")
     fun getPlaces(@Query("size") size: Int): Call<CatalogPlacePage>

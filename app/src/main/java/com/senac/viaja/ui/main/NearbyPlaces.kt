@@ -11,7 +11,7 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.core.os.CancellationSignal
-import com.senac.viaja.data.model.CatalogPlace
+import com.senac.viaja.data.model.Place
 
 internal class NearbyPlaces(private val context: Context) {
     private val handler = Handler(Looper.getMainLooper())
@@ -67,7 +67,7 @@ internal class NearbyPlaces(private val context: Context) {
     }
 }
 
-internal fun closestPlaces(location: Location, candidates: List<CatalogPlace>): List<Pair<CatalogPlace, Float>> {
+internal fun closestPlaces(location: Location, candidates: List<Place>): List<Pair<Place, Float>> {
     val distance = FloatArray(1)
     return candidates.mapNotNull { place ->
         val latitude = place.lat ?: return@mapNotNull null

@@ -5,10 +5,14 @@ import java.util.concurrent.Executors
 internal object CatalogImages{
     private val executor=Executors.newFixedThreadPool(2)
     fun show(view:ImageView,url:String?){
+        val uri=runCatching{android.net.Uri.parse(url)}.getOrNull()
+        val secure=uri?.scheme=="https"
+        val local=uri?.scheme=="http"&&(uri.host=="127.0.0.1"||uri.host=="10.0.2.2")
+        val allowed=secure||local
         view.tag=url;
         view.setImageDrawable(null);
-        view.visibility=if(url?.startsWith("https://")==true)android.view.View.VISIBLE else android.view.View.GONE;
-        if(url?.startsWith("https://")!=true)return
+        view.visibility=if(allowed)android.view.View.VISIBLE else android.view.View.GONE;
+        if(!allowed)return
         executor.execute{
             runCatching{
                 val connection=java.net.URL(url).openConnection().apply{

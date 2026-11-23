@@ -265,7 +265,7 @@ class HomeActivity : AppCompatActivity() {
                 if (location == null) {
                     showNearbyStatus("Localização indisponível. Você pode tentar novamente ou abrir Explorar.")
                 } else {
-                    places.nearbyCandidates({ candidates ->
+                    places.nearby(location.latitude, location.longitude, { candidates ->
                         if (version == nearbyVersion) {
                             val results = closestPlaces(location, candidates)
                             if (results.isEmpty()) {

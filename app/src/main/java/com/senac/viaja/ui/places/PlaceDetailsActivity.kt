@@ -9,6 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.senac.viaja.R
 import com.senac.viaja.ui.main.PAGE_TAB_EXTRA
 import com.senac.viaja.ui.main.PageTab
@@ -25,6 +30,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
     private var currentPlace: Place? = null
     private var isSaved = false
+    private var googleMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +55,21 @@ class PlaceDetailsActivity : AppCompatActivity() {
         val chipType = findViewById<Chip>(R.id.chipType)
         val chipRating = findViewById<Chip>(R.id.chipRating)
 
+        val mapFragment = supportFragmentManager.findFragmentByTag("place-map") as? SupportMapFragment
+            ?: SupportMapFragment.newInstance().also {
+                supportFragmentManager.beginTransaction().replace(R.id.imgPlaceMap, it, "place-map").commit()
+            }
+        mapFragment.getMapAsync {
+            googleMap = it
+            renderMap()
+        }
+
         val user = AuthRepository(this).getUser()
         val localId = placeId.toLongOrNull()
         val savedRepository = SavedRepository()
+        ivBookmark.visibility = if (localId == null) View.GONE else View.VISIBLE
+        btnAddToTrip.visibility = if (localId == null) View.GONE else View.VISIBLE
+        chipRating.visibility = if (localId == null) View.GONE else View.VISIBLE
         ivBookmark.isEnabled = user == null
         if (user != null && localId != null) {
             savedRepository.isSaved(user.id, localId, { saved ->
@@ -92,7 +110,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
         btnConsultSite.visibility = View.GONE
         btnConsultSite.setOnClickListener {
-            val url = currentPlace?.website ?: return@setOnClickListener
+            val url = currentPlace?.website ?: currentPlace?.googleMapsUri ?: return@setOnClickListener
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
             } catch (_: android.content.ActivityNotFoundException) {
@@ -100,15 +118,18 @@ class PlaceDetailsActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<View>(R.id.imgPlaceMap).visibility=View.GONE
         findViewById<View>(R.id.imgHero).visibility=View.GONE
         placeViewModel.place.observe(this) { place ->
             CatalogImages.show(findViewById(R.id.imgHero),place.photoUrl)
             chipRating.text="Avaliar"
             currentPlace = place
-            tvPlaceDescription.text = place.description.orEmpty()+"\n\nFonte: "+when(place.source){"mock","demo"->"catálogo demonstrativo; confirme os dados antes de viajar";null->"catálogo do Viajá";else->place.source}
-            val website = place.website?.let(android.net.Uri::parse)
+            val source = when(place.source){"mock","demo"->"catálogo demonstrativo; confirme os dados antes de viajar";"google"->"Google Places";null->"catálogo do Viajá";else->place.source}
+            val hours = place.openingHours?.takeIf { it.isNotBlank() }?.let { "\n\nHorários\n$it" }.orEmpty()
+            tvPlaceDescription.text = place.description.orEmpty()+hours+"\n\nFonte: "+source
+            val externalUrl = place.website ?: place.googleMapsUri
+            val website = externalUrl?.let(android.net.Uri::parse)
             btnConsultSite.visibility = if (website?.scheme == "https" && !website.host.isNullOrBlank()) View.VISIBLE else View.GONE
+            btnConsultSite.text = if (place.website == null && place.googleMapsUri != null) "Abrir no Maps" else "Consultar site"
             headerTitle.text = place.name
             tvPlaceName.text = place.name
             tvPlaceRating.text = place.rating?.toString() ?: "Sem avaliações"
@@ -118,9 +139,12 @@ class PlaceDetailsActivity : AppCompatActivity() {
             chipRating.text = "Avaliar"
             tvPlacePrice.text = if (place.price != null) {
                 java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(place.price / 100.0)
+            } else if (!place.priceHint.isNullOrBlank()) {
+                "Faixa de preço: ${place.priceHint}"
             } else {
                 "Preço sob consulta"
             }
+            renderMap()
         }
 
         placeViewModel.error.observe(this) { message ->
@@ -153,5 +177,23 @@ class PlaceDetailsActivity : AppCompatActivity() {
         ivBookmark.isSelected = isSaved
         ivBookmark.alpha = if (isSaved) 1f else 0.5f
         ivBookmark.contentDescription = if (isSaved) "Remover dos salvos" else "Salvar lugar"
+    }
+
+    private fun renderMap() {
+        val map = googleMap ?: return
+        val place = currentPlace ?: return
+        val latitude = place.lat
+        val longitude = place.lng
+        val container = findViewById<View>(R.id.imgPlaceMap)
+        if (latitude == null || longitude == null || latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
+            container.visibility = View.GONE
+            return
+        }
+        container.visibility = View.VISIBLE
+        val position = LatLng(latitude, longitude)
+        map.clear()
+        map.addMarker(MarkerOptions().position(position).title(place.name).snippet(place.address))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15f))
+        map.uiSettings.isMapToolbarEnabled = true
     }
 }
