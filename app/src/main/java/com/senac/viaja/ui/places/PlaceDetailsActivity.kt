@@ -45,6 +45,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         val ivBookmark: ImageView = findViewById(R.id.ivBookmark)
         val btnAddToTrip: MaterialButton = findViewById(R.id.btnAddToTrip)
         val btnConsultSite: MaterialButton = findViewById(R.id.btnConsultSite)
+        val btnStreetView: MaterialButton = findViewById(R.id.btnStreetView)
 
         val tvPlaceName = findViewById<android.widget.TextView>(R.id.tvPlaceName)
         val tvPlaceRating = findViewById<android.widget.TextView>(R.id.tvPlaceRating)
@@ -117,6 +118,17 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Nenhum navegador disponível.", Toast.LENGTH_SHORT).show()
             }
         }
+        btnStreetView.visibility = View.GONE
+        btnStreetView.setOnClickListener {
+            val place = currentPlace ?: return@setOnClickListener
+            val latitude = place.lat ?: return@setOnClickListener
+            val longitude = place.lng ?: return@setOnClickListener
+            startActivity(Intent(this, StreetViewActivity::class.java)
+                .putExtra(StreetViewActivity.EXTRA_LATITUDE, latitude)
+                .putExtra(StreetViewActivity.EXTRA_LONGITUDE, longitude)
+                .putExtra(StreetViewActivity.EXTRA_NAME, place.name)
+                .putExtra(PAGE_TAB_EXTRA, tab.menuId))
+        }
 
         findViewById<View>(R.id.imgHero).visibility=View.GONE
         placeViewModel.place.observe(this) { place ->
@@ -130,6 +142,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
             val website = externalUrl?.let(android.net.Uri::parse)
             btnConsultSite.visibility = if (website?.scheme == "https" && !website.host.isNullOrBlank()) View.VISIBLE else View.GONE
             btnConsultSite.text = if (place.website == null && place.googleMapsUri != null) "Abrir no Maps" else "Consultar site"
+            btnStreetView.visibility = if (place.lat != null && place.lng != null) View.VISIBLE else View.GONE
             headerTitle.text = place.name
             tvPlaceName.text = place.name
             tvPlaceRating.text = place.rating?.toString() ?: "Sem avaliações"

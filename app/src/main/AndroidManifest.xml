@@ -32,6 +32,7 @@
         </provider>
         <activity android:name=".ui.auth.GoogleLoginActivity" android:exported="false" />
         <activity android:name=".ui.legal.TermsPrivacyActivity" android:exported="false" />
+        <activity android:name=".ui.places.StreetViewActivity" android:exported="false" />
         <activity android:name=".ui.trips.TripResourcesActivity" android:exported="false" />
         <activity android:name=".ui.trips.OfflineTripsActivity" android:exported="false" />
         <activity

@@ -25,6 +25,8 @@ MAPS_API_KEY=sua-chave-android
 
 A chave Android é diferente da chave de servidor usada pela API para consultar Places.
 
+Com a chave configurada, a ficha do lugar exibe o mapa nativo e oferece Street View quando houver panorama próximo às coordenadas. A descoberta e a busca de lugares continuam passando pela API do Viajá; o APK não chama o Places Web Service diretamente.
+
 A configuração padrão usa a API hospedada. Para testar o app com o backend da sua máquina, siga o [README da API](https://github.com/ProjetoIntegrador-4Semestre/viaja-api-spring) e deixe o servidor rodando na porta 18080. Com o emulador iniciado, execute na raiz deste repositório:
 
 ```sh
