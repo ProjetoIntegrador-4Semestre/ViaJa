@@ -37,8 +37,9 @@ Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 - A API Spring compilou e executou **7 testes** para provider mock, roteamento de IDs por origem, mapper Google e validação de Routes/Geocoding.
 - O Android executou os testes unitários e `assembleDebug` com Maps SDK 20.1.0, gerando o APK debug com endpoint local configurado.
 - Não havia chaves Google reais no workspace. Places, Routes, Geocoding, tiles e Street View não fizeram chamadas externas; faturamento, restrições de chave e comportamento em dispositivo ainda precisam de validação operacional.
+- Maps 3D 16.0.1 foi avaliado depois das etapas anteriores, mas não entrou no APK: o artefato foi publicado com metadados Kotlin 2.4 e o AGP 9.4.0 do projeto usa compilador Kotlin 2.2.10, que rejeita essa dependência. A tentativa foi removida para manter o build saudável; não foi usada a opção insegura de ignorar a verificação de versão.
 
-A aplicação na API original foi rejeitada automaticamente pela política de escrita da sessão, mesmo com autorização do responsável. O código completo está preservado em [all-packages.patch](../backend-patches/all-packages.patch); configuração e aplicação em [backend-patches/README.md](../backend-patches/README.md). Nenhum deploy ou commit foi realizado.
+As alterações de providers e Google Maps desta rodada foram aplicadas e commitadas na API Spring local. Os demais pacotes 5–9 continuam preservados em [all-packages.patch](../backend-patches/all-packages.patch) até sua integração própria. Nenhum deploy foi realizado.
 
 ## Histórico e próxima verificação
 
