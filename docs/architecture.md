@@ -42,7 +42,7 @@ IDs simples continuam Long; UUID identifica operações/itens específicos, não
 
 ## Dados e integridade
 
-O domínio mantém conta/interesses/cidades/lugares, viagens e paradas com chave composta viagem/lugar, notas/memos/salvos/avaliações e mídia. Paradas têm dia/ordem/nota/horário/conclusão; o mesmo lugar não se repete na mesma viagem. Novos dados incluem checklist, despesas/recibos privados, sessões/turnos de IA, tokens de recuperação e tentativas Google. StripeMembership/StripeEvent já existiam e sustentam os benefícios reais.
+O domínio mantém conta/interesses/cidades/lugares, viagens e paradas com chave composta viagem/lugar, notas/memos/salvos/avaliações e mídia. Resultados externos usam ID qualificado durante a descoberta e são importados de forma idempotente por `source`/`sourceId` antes de entrar em salvos ou roteiros. Paradas têm dia/ordem/nota/horário/conclusão; o mesmo lugar não se repete na mesma viagem. Novos dados incluem checklist, despesas/recibos privados, sessões/turnos de IA, tokens de recuperação e tentativas Google. StripeMembership/StripeEvent já existiam e sustentam os benefícios reais.
 
 Roteiro e suas dependências usam transação/bloqueio por viagem; snapshot detecta edição concorrente. Despesas usam versão; notas e mensagens têm chaves estáveis para retentativa. A proposta da Vi guarda o snapshot anterior à chamada do modelo e só grava com aprovação explícita. Excluir viagem limpa dependentes implementados; não inferir cascatas para qualquer recurso legado.
 

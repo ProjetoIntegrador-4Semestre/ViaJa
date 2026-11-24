@@ -11,7 +11,7 @@ Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 | Recuperação | Serviço Resend, token temporário com hash, resposta genérica e reset de uso único; telas enviam dados reais | Remetente verificado, entrega real e fluxo Android completo |
 | Home/cidades | Consultas existentes, navegação para viagens/Vi e paleta compartilhada | Revisão visual, erros e retorno entre telas no APK |
 | Descoberta | Filtros por cidade/tipo/preço/nota, acentos, ordenação e paginação; fallback textual para API antiga | Catálogo suficiente e revisado, desempenho em volume |
-| Lugar e avaliações | Fotos HTTPS quando disponíveis, fonte visível, dados desconhecidos sem amenidades fictícias; avaliação 1–5 por conta/lugar, com atualização da média | Catálogo seed continua demonstrativo; imagens e avaliações no dispositivo |
+| Lugar e avaliações | Fotos HTTPS quando disponíveis, fonte visível, dados desconhecidos sem amenidades fictícias; lugares Google são importados sem duplicação antes de salvar ou adicionar ao roteiro; avaliação 1–5 por conta/lugar | Credenciais Google reais, imagens e avaliações no dispositivo |
 | Salvos | Fluxo já existente, separado da inclusão no roteiro | Regressão de paginação, falhas, retentativa e visitantes |
 | Viagens e painel | Pacote 1: criar/editar/excluir, status, datas/orçamento, resumos e navegação | HTTP e regressão no Android; proteção cidade/duração reforçada no patch |
 | Roteiro | Pacote 2: editor por dia, mover/reordenar, horário/conclusão, notas, exclusão e PUT atômico com snapshot | Aplicar/publicar API e executar conflito/retorno no app |
@@ -34,7 +34,7 @@ Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 
 ## Evidências de 25/11
 
-- A API Spring compilou e executou **7 testes** para provider mock, roteamento de IDs por origem, mapper Google e validação de Routes/Geocoding.
+- A API Spring compilou e executou **8 testes** para provider mock, roteamento de IDs por origem, mapper Google, importação idempotente e validação de Routes/Geocoding.
 - O Android executou os testes unitários e `assembleDebug` com Maps SDK 20.1.0, gerando o APK debug com endpoint local configurado.
 - Não havia chaves Google reais no workspace. Places, Routes, Geocoding, tiles e Street View não fizeram chamadas externas; faturamento, restrições de chave e comportamento em dispositivo ainda precisam de validação operacional.
 - Maps 3D 16.0.1 foi avaliado depois das etapas anteriores, mas não entrou no APK: o artefato foi publicado com metadados Kotlin 2.4 e o AGP 9.4.0 do projeto usa compilador Kotlin 2.2.10, que rejeita essa dependência. A tentativa foi removida para manter o build saudável; não foi usada a opção insegura de ignorar a verificação de versão.
