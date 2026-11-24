@@ -119,6 +119,9 @@ interface ApiService {
     @GET("places/{id}")
     fun getPlace(@Path("id") id: String): Call<Place>
 
+    @POST("places/import")
+    fun importPlace(@Body body: LocalImportRequest): Call<Place>
+
     @POST("places")
     fun createPlace(@Body body: Any): Call<Any>
 

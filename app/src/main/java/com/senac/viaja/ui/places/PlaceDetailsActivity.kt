@@ -21,6 +21,7 @@ import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.data.model.Place
 import com.senac.viaja.data.repository.AuthRepository
 import com.senac.viaja.data.repository.SavedRepository
+import com.senac.viaja.data.repository.PlaceRepository
 import com.senac.viaja.ui.main.PlaceViewModel
 import com.senac.viaja.ui.trips.TripListActivity
 
@@ -67,9 +68,31 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
         val user = AuthRepository(this).getUser()
         val localId = placeId.toLongOrNull()
+        var persistedLocalId = localId
         val savedRepository = SavedRepository()
-        ivBookmark.visibility = if (localId == null) View.GONE else View.VISIBLE
-        btnAddToTrip.visibility = if (localId == null) View.GONE else View.VISIBLE
+        val placeRepository = PlaceRepository()
+        fun withPersistedLocal(onReady: (Long) -> Unit) {
+            val existingId = persistedLocalId
+            if (existingId != null) {
+                onReady(existingId)
+                return
+            }
+            placeRepository.importPlace(placeId, { imported ->
+                val importedId = imported.id.toLongOrNull()
+                if (importedId == null) {
+                    ivBookmark.isEnabled = true
+                    Toast.makeText(this, "A API não devolveu um lugar válido.", Toast.LENGTH_LONG).show()
+                } else {
+                    persistedLocalId = importedId
+                    onReady(importedId)
+                }
+            }, { message ->
+                ivBookmark.isEnabled = true
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            })
+        }
+        ivBookmark.visibility = View.VISIBLE
+        btnAddToTrip.visibility = View.VISIBLE
         chipRating.visibility = if (localId == null) View.GONE else View.VISIBLE
         ivBookmark.isEnabled = user == null
         if (user != null && localId != null) {
@@ -87,26 +110,35 @@ class PlaceDetailsActivity : AppCompatActivity() {
                 finish()
                 return@setOnClickListener
             }
-            if (localId == null) return@setOnClickListener
             ivBookmark.isEnabled = false
-            val onSuccess = {
-                isSaved = !isSaved
-                updateBookmarkIcon(ivBookmark)
-                ivBookmark.isEnabled = true
-                Toast.makeText(this, if (isSaved) "Lugar salvo" else "Lugar removido dos salvos", Toast.LENGTH_SHORT).show()
+            withPersistedLocal { resolvedId ->
+                savedRepository.isSaved(user.id, resolvedId, { saved ->
+                    isSaved = saved
+                    val onSuccess = {
+                        isSaved = !isSaved
+                        updateBookmarkIcon(ivBookmark)
+                        ivBookmark.isEnabled = true
+                        Toast.makeText(this, if (isSaved) "Lugar salvo" else "Lugar removido dos salvos", Toast.LENGTH_SHORT).show()
+                    }
+                    val onError: (String) -> Unit = { message ->
+                        ivBookmark.isEnabled = true
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                    if (isSaved) savedRepository.unsave(user.id, resolvedId, onSuccess, onError)
+                    else savedRepository.save(user.id, resolvedId, onSuccess, onError)
+                }, { message ->
+                    ivBookmark.isEnabled = true
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                })
             }
-            val onError: (String) -> Unit = { message ->
-                ivBookmark.isEnabled = true
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-            }
-            if (isSaved) savedRepository.unsave(user.id, localId, onSuccess, onError)
-            else savedRepository.save(user.id, localId, onSuccess, onError)
         }
 
         btnAddToTrip.setOnClickListener {
-            val intent = Intent(this@PlaceDetailsActivity, TripListActivity::class.java)
-            intent.putExtra("add_place_id", placeId)
-            startActivity(intent)
+            withPersistedLocal { resolvedId ->
+                val intent = Intent(this@PlaceDetailsActivity, TripListActivity::class.java)
+                intent.putExtra("add_place_id", resolvedId.toString())
+                startActivity(intent)
+            }
         }
 
         btnConsultSite.visibility = View.GONE

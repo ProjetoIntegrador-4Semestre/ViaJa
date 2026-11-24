@@ -3,6 +3,7 @@ package com.senac.viaja.data.repository
 import com.senac.viaja.data.model.CatalogPlace
 import com.senac.viaja.data.model.CatalogPlacePage
 import com.senac.viaja.data.model.Place
+import com.senac.viaja.data.model.LocalImportRequest
 import com.senac.viaja.data.remote.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -66,6 +67,20 @@ class PlaceRepository {
             }
 
             override fun onFailure(call: Call<List<Place>>, error: Throwable) = onError()
+        })
+    }
+
+    fun importPlace(id: String, onSuccess: (Place) -> Unit, onError: (String) -> Unit) {
+        ApiClient.service.importPlace(LocalImportRequest(id)).enqueue(object : Callback<Place> {
+            override fun onResponse(call: Call<Place>, response: Response<Place>) {
+                val place = response.body()
+                if (response.isSuccessful && place != null) onSuccess(withResolvedPhoto(place))
+                else onError("Não foi possível preparar este lugar (${response.code()}).")
+            }
+
+            override fun onFailure(call: Call<Place>, error: Throwable) {
+                onError("Não foi possível conectar ao servidor. Tente novamente.")
+            }
         })
     }
 

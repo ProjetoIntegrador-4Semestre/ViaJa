@@ -38,6 +38,8 @@ data class AuthToken(
     val user: ViajaUser
 )
 
+data class LocalImportRequest(val id: String)
+
 
 
 data class Place(
