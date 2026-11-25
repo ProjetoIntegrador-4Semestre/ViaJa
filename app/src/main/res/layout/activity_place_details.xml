@@ -348,6 +348,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imgPlaceMap" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRoute"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:text="Traçar rota"
+        android:textColor="@color/viaja_green"
+        app:layout_constraintStart_toEndOf="@id/btnStreetView"
+        app:layout_constraintTop_toTopOf="@id/btnStreetView" />
+
     <TextView
         android:id="@+id/tvPriceLabel"
         android:layout_width="wrap_content"

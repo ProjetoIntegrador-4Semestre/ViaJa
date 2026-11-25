@@ -1,11 +1,15 @@
 package com.senac.viaja.ui.places
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
@@ -13,16 +17,22 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.senac.viaja.R
+import com.senac.viaja.data.model.MapCoordinate
+import com.senac.viaja.data.model.Place
+import com.senac.viaja.data.model.RouteResponse
+import com.senac.viaja.data.repository.AuthRepository
+import com.senac.viaja.data.repository.MapsRepository
+import com.senac.viaja.data.repository.PlaceRepository
+import com.senac.viaja.data.repository.SavedRepository
+import com.senac.viaja.ui.main.NearbyPlaces
 import com.senac.viaja.ui.main.PAGE_TAB_EXTRA
 import com.senac.viaja.ui.main.PageTab
-import com.senac.viaja.ui.main.setPageContent
-import com.senac.viaja.data.model.Place
-import com.senac.viaja.data.repository.AuthRepository
-import com.senac.viaja.data.repository.SavedRepository
-import com.senac.viaja.data.repository.PlaceRepository
 import com.senac.viaja.ui.main.PlaceViewModel
+import com.senac.viaja.ui.main.setPageContent
 import com.senac.viaja.ui.trips.TripListActivity
 
 class PlaceDetailsActivity : AppCompatActivity() {
@@ -32,6 +42,14 @@ class PlaceDetailsActivity : AppCompatActivity() {
     private var currentPlace: Place? = null
     private var isSaved = false
     private var googleMap: GoogleMap? = null
+    private var mapPosition: LatLng? = null
+    private var geocodingAddress: String? = null
+    private val mapsRepository = MapsRepository()
+    private var nearby: NearbyPlaces? = null
+    private lateinit var routeButton: MaterialButton
+    private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) traceRoute() else Toast.makeText(this, "Permita o acesso à localização para calcular a rota.", Toast.LENGTH_LONG).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +65,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
         val btnAddToTrip: MaterialButton = findViewById(R.id.btnAddToTrip)
         val btnConsultSite: MaterialButton = findViewById(R.id.btnConsultSite)
         val btnStreetView: MaterialButton = findViewById(R.id.btnStreetView)
+        routeButton = findViewById(R.id.btnRoute)
 
         val tvPlaceName = findViewById<android.widget.TextView>(R.id.tvPlaceName)
         val tvPlaceRating = findViewById<android.widget.TextView>(R.id.tvPlaceRating)
@@ -151,13 +170,14 @@ class PlaceDetailsActivity : AppCompatActivity() {
             }
         }
         btnStreetView.visibility = View.GONE
+        routeButton.visibility = View.GONE
+        routeButton.setOnClickListener { traceRoute() }
         btnStreetView.setOnClickListener {
             val place = currentPlace ?: return@setOnClickListener
-            val latitude = place.lat ?: return@setOnClickListener
-            val longitude = place.lng ?: return@setOnClickListener
+            val position = mapPosition ?: return@setOnClickListener
             startActivity(Intent(this, StreetViewActivity::class.java)
-                .putExtra(StreetViewActivity.EXTRA_LATITUDE, latitude)
-                .putExtra(StreetViewActivity.EXTRA_LONGITUDE, longitude)
+                .putExtra(StreetViewActivity.EXTRA_LATITUDE, position.latitude)
+                .putExtra(StreetViewActivity.EXTRA_LONGITUDE, position.longitude)
                 .putExtra(StreetViewActivity.EXTRA_NAME, place.name)
                 .putExtra(PAGE_TAB_EXTRA, tab.menuId))
         }
@@ -174,7 +194,6 @@ class PlaceDetailsActivity : AppCompatActivity() {
             val website = externalUrl?.let(android.net.Uri::parse)
             btnConsultSite.visibility = if (website?.scheme == "https" && !website.host.isNullOrBlank()) View.VISIBLE else View.GONE
             btnConsultSite.text = if (place.website == null && place.googleMapsUri != null) "Abrir no Maps" else "Consultar site"
-            btnStreetView.visibility = if (place.lat != null && place.lng != null) View.VISIBLE else View.GONE
             headerTitle.text = place.name
             tvPlaceName.text = place.name
             tvPlaceRating.text = place.rating?.toString() ?: "Sem avaliações"
@@ -189,7 +208,7 @@ class PlaceDetailsActivity : AppCompatActivity() {
             } else {
                 "Preço sob consulta"
             }
-            renderMap()
+            resolveMapPosition(place)
         }
 
         placeViewModel.error.observe(this) { message ->
@@ -227,18 +246,109 @@ class PlaceDetailsActivity : AppCompatActivity() {
     private fun renderMap() {
         val map = googleMap ?: return
         val place = currentPlace ?: return
-        val latitude = place.lat
-        val longitude = place.lng
+        val position = mapPosition
         val container = findViewById<View>(R.id.imgPlaceMap)
-        if (latitude == null || longitude == null || latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
+        if (position == null) {
             container.visibility = View.GONE
             return
         }
         container.visibility = View.VISIBLE
-        val position = LatLng(latitude, longitude)
         map.clear()
         map.addMarker(MarkerOptions().position(position).title(place.name).snippet(place.address))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15f))
         map.uiSettings.isMapToolbarEnabled = true
+    }
+
+    private fun resolveMapPosition(place: Place) {
+        val latitude = place.lat
+        val longitude = place.lng
+        if (latitude != null && longitude != null && latitude in -90.0..90.0 && longitude in -180.0..180.0) {
+            updateMapPosition(LatLng(latitude, longitude))
+            return
+        }
+        val address = place.address?.takeIf { it.isNotBlank() }
+        if (address == null || geocodingAddress == address) {
+            updateMapPosition(null)
+            return
+        }
+        geocodingAddress = address
+        mapsRepository.geocode(address, { result ->
+            if (currentPlace == place) updateMapPosition(result?.let { LatLng(it.latitude, it.longitude) })
+        }, {
+            if (currentPlace == place) updateMapPosition(null)
+        })
+    }
+
+    private fun updateMapPosition(position: LatLng?) {
+        mapPosition = position
+        val visibility = if (position == null) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.btnStreetView).visibility = visibility
+        routeButton.visibility = visibility
+        renderMap()
+    }
+
+    private fun traceRoute() {
+        val destination = mapPosition ?: return
+        if (AuthRepository(this).getUser() == null) {
+            Toast.makeText(this, "Entre na sua conta para calcular rotas.", Toast.LENGTH_LONG).show()
+            startActivity(Intent(this, com.senac.viaja.ui.auth.LoginActivity::class.java))
+            return
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationPermission.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            return
+        }
+        routeButton.isEnabled = false
+        routeButton.text = "Calculando…"
+        val locator = nearby ?: NearbyPlaces(this).also { nearby = it }
+        locator.locate { location ->
+            if (location == null) {
+                restoreRouteButton()
+                Toast.makeText(this, "Não foi possível obter sua localização.", Toast.LENGTH_LONG).show()
+            } else {
+                mapsRepository.route(
+                    MapCoordinate(location.latitude, location.longitude),
+                    MapCoordinate(destination.latitude, destination.longitude),
+                    { route -> showRoute(route, LatLng(location.latitude, location.longitude), destination) },
+                    { message ->
+                        restoreRouteButton()
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
+        }
+    }
+
+    private fun showRoute(route: RouteResponse, origin: LatLng, destination: LatLng) {
+        val map = googleMap
+        val points = runCatching { decodePolyline(route.encodedPolyline.orEmpty()) }.getOrDefault(emptyList())
+            .map { LatLng(it.latitude, it.longitude) }
+        if (map != null && points.isNotEmpty()) {
+            map.clear()
+            map.addMarker(MarkerOptions().position(origin).title("Sua localização"))
+            map.addMarker(MarkerOptions().position(destination).title(currentPlace?.name))
+            map.addPolyline(PolylineOptions().addAll(points)
+                .color(ContextCompat.getColor(this, R.color.viaja_green)).width(10f))
+            val bounds = LatLngBounds.builder().include(origin).include(destination).also { builder ->
+                points.forEach(builder::include)
+            }.build()
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64))
+        }
+        restoreRouteButton()
+        val distance = if (route.distanceMeters < 1000) "${route.distanceMeters} m"
+            else String.format(java.util.Locale.forLanguageTag("pt-BR"), "%.1f km", route.distanceMeters / 1000.0)
+        val seconds = route.duration?.removeSuffix("s")?.toDoubleOrNull()
+        val duration = seconds?.let { " · ${maxOf(1, kotlin.math.ceil(it / 60).toInt())} min" }.orEmpty()
+        Toast.makeText(this, "Rota: $distance$duration", Toast.LENGTH_LONG).show()
+    }
+
+    private fun restoreRouteButton() {
+        routeButton.isEnabled = true
+        routeButton.text = "Traçar rota"
+    }
+
+    override fun onDestroy() {
+        nearby?.cancel()
+        super.onDestroy()
     }
 }

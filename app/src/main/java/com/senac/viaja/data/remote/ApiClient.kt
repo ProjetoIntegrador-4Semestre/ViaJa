@@ -122,6 +122,12 @@ interface ApiService {
     @POST("places/import")
     fun importPlace(@Body body: LocalImportRequest): Call<Place>
 
+    @POST("maps/routes")
+    fun route(@Body body: RouteRequest): Call<RouteResponse>
+
+    @GET("maps/geocode")
+    fun geocode(@Query("address") address: String): Call<List<GeocodeResponse>>
+
     @POST("places")
     fun createPlace(@Body body: Any): Call<Any>
 
