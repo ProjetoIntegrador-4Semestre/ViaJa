@@ -11,7 +11,7 @@ Revisão: 25/11/2026. Esta descrição inclui o código Android, a API Spring no
 | Banco | H2; padrão de demonstração em memória/create-drop; perfil optativo `persistent` em arquivo/update, sem seed automático |
 | Sessão | JWT identifica e-mail e versão de sessão; segredo obrigatório no servidor; token Android criptografado com AES/GCM no Keystore |
 | Provedores | Provider configurável de lugares; Google Places, Routes e Geocoding pelo servidor; OpenAI Responses, Google OIDC, Resend, Open-Meteo e Stripe nas integrações correspondentes |
-| Mapa | Maps SDK e Street View nativos na ficha do lugar; Leaflet/OSM em WebView restrita para recursos de viagem; navegação externa por Intent |
+| Mapa | Maps SDK e Street View nativos na ficha do lugar; Routes desenha o trajeto desde a localização atual e Geocoding resolve fichas sem coordenadas; Leaflet/OSM em WebView restrita para recursos de viagem; navegação externa por Intent |
 | Offline | JSON schema 1, AtomicFile em armazenamento privado separado por conta; somente leitura, excluído do backup |
 | PDF/recibos | PdfDocument + seletor de destino; comprovantes autenticados no banco e cache privado via FileProvider |
 

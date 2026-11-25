@@ -19,7 +19,7 @@ Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 | Despesas e comprovantes | Pacote 4: centavos, categorias, datas, reembolso manual, versão e anexos privados | Multipart, seletor de documentos e FileProvider no APK |
 | Perfil/interesses | Pacote 5: gravação real, seleção persistida, senha atual para alterar e-mail e JWT renovado | Reabrir/rotacionar, falha de rede e mudança de e-mail no app |
 | Vi/IA | Pacote 7: OpenAI Responses, sessões/histórico remotos, quota, contexto autorizado, proposta revisável e aplicação explícita/idempotente | Configurar chave/modelo, publicar API e validar resposta real; sem streaming, voz ou imagens |
-| Mapa e clima | Maps SDK nativo na ficha, Street View, Places/Routes/Geocoding protegidos pelo backend; pacote 8 mantém Leaflet/OSM e Open-Meteo nos recursos de viagem | Credenciais Google reais, chamadas faturadas, tiles/panorama no dispositivo e fluxo completo de rotas |
+| Mapa e clima | Maps SDK nativo na ficha, Street View, rota desenhada desde a localização atual e geocodificação de endereços sem coordenadas; Places/Routes/Geocoding ficam protegidos pelo backend; pacote 8 mantém Leaflet/OSM e Open-Meteo nos recursos de viagem | Credenciais Google reais, chamadas faturadas, tiles, panorama e rota em dispositivo |
 | PDF e offline | Pacote 9: PDF básico/completo, download privado por conta e leitura local; servidor exige Premium para novos pacotes completos/offline | Arquivos extensos, seletor de destino, expiração/logout e leitura sem rede |
 | Premium/Stripe | Integração já existente; benefícios novos usam período pago no servidor, nunca flag do app | Checkout/webhook/Portal em testes, renovação e eventos fora de ordem |
 | Persistência | Perfil optativo `persistent`, H2 em arquivo, seed desativado; reinício testado com conta/viagem/direito de acesso | Configurar volume durável e verificar schema existente sem perda de dados |
@@ -34,8 +34,8 @@ Revisão: 25/11/2026. Requisito: [produto](product-baseline.md). Planejamento: [
 
 ## Evidências de 25/11
 
-- A API Spring compilou e executou **8 testes** para provider mock, roteamento de IDs por origem, mapper Google, importação idempotente e validação de Routes/Geocoding.
-- O Android executou os testes unitários e `assembleDebug` com Maps SDK 20.1.0, gerando o APK debug com endpoint local configurado.
+- A API Spring compilou e executou **10 testes** para provider mock, roteamento de IDs e fotos por origem, mapper Google, importação idempotente, preservação de metadados e validação de Routes/Geocoding. A ausência da chave de servidor agora produz indisponibilidade explícita, sem erro interno genérico.
+- O Android executou os testes unitários e `assembleDebug` com Maps SDK 20.1.0, gerando o APK debug com endpoint local configurado. A validação inclui a decodificação usada para desenhar a rota devolvida pelo backend.
 - Não havia chaves Google reais no workspace. Places, Routes, Geocoding, tiles e Street View não fizeram chamadas externas; faturamento, restrições de chave e comportamento em dispositivo ainda precisam de validação operacional.
 - Maps 3D 16.0.1 foi avaliado depois das etapas anteriores, mas não entrou no APK: o artefato foi publicado com metadados Kotlin 2.4 e o AGP 9.4.0 do projeto usa compilador Kotlin 2.2.10, que rejeita essa dependência. A tentativa foi removida para manter o build saudável; não foi usada a opção insegura de ignorar a verificação de versão.
 
